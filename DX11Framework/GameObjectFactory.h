@@ -12,7 +12,10 @@ public:
 	static std::shared_ptr<RenderObject> CreateRenderObject(
 		const std::string& meshPath,
 		MeshType meshType,
-		const std::string& texturePath, 
+		const std::string& texturePath,
+		DirectX::XMFLOAT3 position,
+		DirectX::XMFLOAT3 rotation,
+		DirectX::XMFLOAT3 scale,
 		const ComPtr<ID3D11Device>& device);
 
 	static std::shared_ptr<Skybox> CreateSkybox(
@@ -53,7 +56,7 @@ public:
 		DirectX::XMFLOAT3 ambientColor,
 		float constantAttenuation,
 		float linearAttenuation,
-		float quadraticAttention,
+		float quadraticAttenuation,
 		float lightRadius,
 		const ComPtr<ID3D11Device>& device);
 };

@@ -187,6 +187,7 @@ XCOPY "$(ProjectDir)Config\" "$(OutputPath)Config\" /s /e /y</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="Config\CameraConfig.json" />
+    <None Include="Config\GameScene.json" />
     <None Include="Config\ObjectManipulationConfig.json" />
     <None Include="packages.config" />
     <None Include="Shaders\PhongShader.hlsl">
@@ -207,6 +208,7 @@ XCOPY "$(ProjectDir)Config\" "$(OutputPath)Config\" /s /e /y</Command>
     <ClInclude Include="Config.h" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="BlinnConstantBuffer.h" />
+    <ClInclude Include="Config\GameSceneConfig.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="DX11Framework.h" />
     <ClInclude Include="GameObject.h" />

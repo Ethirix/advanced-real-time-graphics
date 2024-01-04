@@ -7,7 +7,10 @@
 std::shared_ptr<RenderObject> GameObjectFactory::CreateRenderObject(
 	const std::string& meshPath,
 	MeshType meshType,
-	const std::string& texturePath, 
+	const std::string& texturePath,
+	const DirectX::XMFLOAT3 position,
+	const DirectX::XMFLOAT3 rotation,
+	const DirectX::XMFLOAT3 scale,
 	const ComPtr<ID3D11Device>& device)
 {
 	SP_RENDEROBJECT obj = std::make_shared<RenderObject>(RenderObject());
@@ -22,6 +25,9 @@ std::shared_ptr<RenderObject> GameObjectFactory::CreateRenderObject(
 		obj->_textures = nullptr;
 
 	obj->Transform->GameObject = obj->GetPtr();
+	obj->Transform->SetPosition(position);
+	obj->Transform->SetRotation(rotation);
+	obj->Transform->SetScale(scale);
 	obj->SetParent({});
 
 	return obj;
@@ -190,7 +196,7 @@ std::shared_ptr<Light> GameObjectFactory::CreatePointLight(
 	DirectX::XMFLOAT3 ambientColor,
 	float constantAttenuation,
 	float linearAttenuation,
-	float quadraticAttention,
+	float quadraticAttenuation,
 	float lightRadius,
 	const ComPtr<ID3D11Device>& device)
 {
@@ -202,7 +208,7 @@ std::shared_ptr<Light> GameObjectFactory::CreatePointLight(
 	light->AmbientColor = ambientColor;
 	light->ConstantAttenuation = constantAttenuation;
 	light->LinearAttenuation = linearAttenuation;
-	light->QuadraticAttenuation = quadraticAttention;
+	light->QuadraticAttenuation = quadraticAttenuation;
 	light->LightRadius = lightRadius;
 
 	light->_mesh = std::make_shared<Mesh>(Mesh("Point Light"));

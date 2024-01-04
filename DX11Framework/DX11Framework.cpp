@@ -1,26 +1,28 @@
 #include "DX11Framework.h"
 
 #include <chrono>
+#include <d3d11_4.h>
+#include <d3dcompiler.h>
 
 #include "ConfigManager.h"
 #include "GameObjectFactory.h"
 #include "Helpers.h"
 #include "Textures.h"
-
-//#define RETURNFAIL(x) if(FAILED(x)) return x;
+#include "Mesh.h"
+#include "Light.h"
 
 //Grabs windows messages
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)
 {
     PAINTSTRUCT ps;
     HDC hdc;
-    auto* framework = reinterpret_cast<DX11Framework*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+    auto* framework = reinterpret_cast<DX11Framework*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
     switch (message)
     {
     case WM_PAINT:
-        hdc = BeginPaint(hWnd, &ps);
-        EndPaint(hWnd, &ps);
+        hdc = BeginPaint(hwnd, &ps);
+        EndPaint(hwnd, &ps);
         break;
 
     case WM_DESTROY:
@@ -28,15 +30,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
         
     case WM_CLOSE:
-        if (GetForegroundWindow() == hWnd)
-	        DestroyWindow(hWnd);
+        if (GetForegroundWindow() == hwnd)
+	        DestroyWindow(hwnd);
         
     case WM_SIZE:
     {
         if (!framework) break;
 
-        UINT width = LOWORD(lParam);
-        UINT height = HIWORD(lParam);
+        const UINT width = LOWORD(lParam);
+        const UINT height = HIWORD(lParam);
 
         framework->PassResizeInfo(wParam, width, height);
         break;
@@ -48,13 +50,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
     default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+        return DefWindowProc(hwnd, message, wParam, lParam);
     }
 
     return 0;
 }
 
-HRESULT DX11Framework::Initialise(HINSTANCE hInstance, int nCmdShow)
+HRESULT DX11Framework::Initialise(const HINSTANCE hInstance, const int nCmdShow)
 {
     //Enum bool wrapper with error codes.
     HRESULT hr = S_OK;
@@ -83,7 +85,7 @@ HRESULT DX11Framework::Initialise(HINSTANCE hInstance, int nCmdShow)
     return hr;
 }
 
-HRESULT DX11Framework::CreateWindowHandle(HINSTANCE hInstance, int nCmdShow)
+HRESULT DX11Framework::CreateWindowHandle(const HINSTANCE hInstance, int nCmdShow)
 {
     const wchar_t* windowName  = L"DX11Framework";
 
@@ -480,27 +482,39 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     auto obj1 = GameObjectFactory::CreateRenderObject(
         "Meshes/suzanne.obj",
         RightHanded,
-        "", 
+        "",
+        {0,0,0},
+        {0,0,0},
+        {1,1,1},
         _device);
     _manager.Add(obj1);
     
     auto obj2 = GameObjectFactory::CreateRenderObject(
         "Meshes/cube2.obj", 
         RightHanded, 
-        "Crate", 
+        "Crate",
+        { 0,0,0 },
+        { 0,0,0 },
+        { 1,1,1 },
         _device);
     obj2->SetParent(obj1);
 
     auto obj3 = GameObjectFactory::CreateRenderObject(
         "Meshes/cone.obj",
         RightHanded, 
-        "Cone", 
+        "Cone",
+        { 0,0,0 },
+        { 0,0,0 },
+        { 1,1,1 },
         _device);
 
     auto plane = GameObjectFactory::CreateRenderObject(
 		"Meshes/plane.obj",
         RightHanded,
         "Plane",
+        { 0,0,0 },
+        { 0,0,0 },
+        { 1,1,1 },
         _device);
 
     plane->Transform->SetScale(10, 10, 10);
@@ -934,7 +948,7 @@ void DX11Framework::Draw()
     _swapChain->Present(0, 0);
 }
 
-HRESULT DX11Framework::PassResizeInfo(WPARAM resizeType, UINT width, UINT height)
+HRESULT DX11Framework::PassResizeInfo(const WPARAM resizeType, const UINT width, const UINT height)
 {
     //https://learn.microsoft.com/en-gb/windows/win32/direct3ddxgi/d3d10-graphics-programming-guide-dxgi
 
