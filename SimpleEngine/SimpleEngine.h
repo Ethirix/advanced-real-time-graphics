@@ -1,11 +1,14 @@
 #pragma once
 #include <d3d11.h>
 #include <dxgi1_2.h>
+#include <map>
 #include <memory>
+#include <string>
 #include <windows.h>
 #include <wrl.h>
 
 #include "Screen.h"
+#include "ShaderComponent.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -43,6 +46,7 @@ private:
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
 
+	std::map<std::string, ShaderComponent> _shaders = {};
 
 	std::unique_ptr<Screen> _screen;
 };

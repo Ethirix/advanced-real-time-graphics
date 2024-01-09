@@ -1,5 +1,6 @@
 #include "SimpleEngine.h"
 #include <d3d11_4.h>
+#include <filesystem>
 
 LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)
 {
@@ -22,6 +23,7 @@ LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wPara
 			DestroyWindow(hwnd);
 		break;
 	case WM_SIZE:
+	{
 		if (!engine) break;
 
 		UINT width = LOWORD(lParam);
@@ -29,6 +31,7 @@ LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wPara
 
 		engine->OnWindowSizeChanged(wParam, width, height);
 		break;
+	}
 	case WM_EXITSIZEMOVE:
 		if (!engine) break;
 
@@ -207,3 +210,19 @@ HRESULT SimpleEngine::CreateFrameBuffer()
 	return hr;
 }
 
+HRESULT SimpleEngine::InitializeShaders()
+{
+	std::string path = "/Assets/Shaders";
+
+	if (!std::filesystem::is_directory(path))
+		return E_FAIL;
+
+	for (const std::filesystem::directory_entry& directoryEntry : std::filesystem::directory_iterator(path))
+	{
+		if (directoryEntry.is_directory() || directoryEntry.path().extension() != ".hlsl")
+			continue;
+
+		//TODO: Shader Compilation
+		
+	}
+}
