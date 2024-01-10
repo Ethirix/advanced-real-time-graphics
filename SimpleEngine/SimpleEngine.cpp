@@ -223,6 +223,7 @@ HRESULT SimpleEngine::InitializeShaders()
 			continue;
 
 		//TODO: Shader Compilation
+
 		
 	}
 }

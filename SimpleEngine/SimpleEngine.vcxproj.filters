@@ -17,6 +17,24 @@
       <UniqueIdentifier>{847543b6-6b5f-43df-9f02-c63322755524}</UniqueIdentifier>
       <Extensions>.hlsl, .hlsli</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Shaders\Buffers">
+      <UniqueIdentifier>{c2f5b0c4-ab90-48a1-b392-b73b20217228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Structs">
+      <UniqueIdentifier>{b0f363b6-95b2-4e62-b37e-db635a22a229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Samplers">
+      <UniqueIdentifier>{36ec57f1-6404-42ef-a0c8-f16220e8b6e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Structured Resources">
+      <UniqueIdentifier>{22438084-b69b-4edd-baea-287365b5e691}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Functions">
+      <UniqueIdentifier>{f64bf01e-9b72-425e-9d56-8b71f52fd69b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Buffers">
+      <UniqueIdentifier>{2abcf64f-5ba1-48be-af30-c4579376c947}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -45,10 +63,76 @@
     <ClInclude Include="ComponentBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CBObjectCameraData.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="CBMaterial.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="CBTextures.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="CBLighting.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="LightData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffers.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Assets\Shaders\VS_PS_BlinnPhongShader.hlsl">
+    <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
       <Filter>Resource Files\Shaders</Filter>
-    </FxCompile>
+    </None>
+    <None Include="Assets\Shaders\PS_BlinnPhong.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\LightData.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli">
+      <Filter>Resource Files\Shaders\Samplers</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\Material.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\Textures.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\VS_BaseOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\Texture.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Functions\Lighting.hlsli">
+      <Filter>Resource Files\Shaders\Functions</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\LightingOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
+    </None>
   </ItemGroup>
 </Project>

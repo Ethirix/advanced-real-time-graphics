@@ -1,0 +1,1 @@
+SamplerState BilinearSampler : register(s0);
