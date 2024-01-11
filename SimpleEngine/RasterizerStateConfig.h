@@ -1,14 +1,16 @@
 ﻿#pragma once
 #include <d3d11.h>
+#include <string>
+#include <vector>
 #include <nlohmann/json.hpp>
 
 class RasterizerStateConfig
 {
 public:
 	RasterizerStateConfig();
-	std::vector<D3D11_RASTERIZER_DESC> GetRasterizerDescriptions();
-
+	std::vector<std::pair<std::string, D3D11_RASTERIZER_DESC>>
+		RasterizerDescriptions;
+	std::string DefaultRasterizerStateKey;
 private:
 	nlohmann::json _json;
-	std::vector<D3D11_RASTERIZER_DESC> _rasterizerDescriptions;
 };

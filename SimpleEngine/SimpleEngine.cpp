@@ -3,6 +3,7 @@
 #include <d3dcompiler.h>
 #include <filesystem>
 
+#include "Configuration.h"
 #include "DataStore.h"
 
 LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)  
@@ -399,18 +400,8 @@ HRESULT SimpleEngine::InitializeRasterizerStates()
 {
 	HRESULT hr = S_OK;
 
-#pragma region Fill State
-	D3D11_RASTERIZER_DESC rasterizerDesc = {};
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = D3D11_CULL_BACK;
-	
-
-	ComPtr<ID3D11RasterizerState> fillState = {};
-	hr = _device->CreateRasterizerState(&rasterizerDesc, fillState.GetAddressOf());
-	if (FAILED(hr)) return hr;
-
-	DataStore::RasterizerStates.Store(FILL_STATE_KEY, fillState);
-#pragma endregion
-
-#pragma region Reverse Fill State
+	for (auto& pair : Configuration::RasterizerStateConfig.RasterizerDescriptions)
+	{
+		
+	}
 }

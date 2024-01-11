@@ -52,5 +52,6 @@
       "MultisampleEnable": false,
       "AntialiasedLineEnable": false
     }
-  ]
+  ],
+  "DefaultRasterizerKey":  "RSFillState"
 }
