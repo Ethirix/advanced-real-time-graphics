@@ -35,6 +35,11 @@ private:
 	HRESULT InitializePipeline();
 	HRESULT InitializeRunTimeData();
 
+	HRESULT InitializeVertexShaderLayout(ID3DBlob* vsBlob);
+	ComPtr<ID3D11VertexShader> CompileVertexShader(LPCWSTR path);
+	ComPtr<ID3D11PixelShader> CompilePixelShader(LPCWSTR path);
+	HRESULT InitializeRasterizerStates();
+
 	HWND _hwnd;
 
 	ComPtr<ID3D11Device> _device;
@@ -45,6 +50,7 @@ private:
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
+	ComPtr<ID3D11InputLayout> _inputLayout;
 
 	std::map<std::string, ShaderComponent> _shaders = {};
 

@@ -1,13 +1,16 @@
 #include "SimpleEngine.h"
 #include <d3d11_4.h>
+#include <d3dcompiler.h>
 #include <filesystem>
 
-LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)
+#include "DataStore.h"
+
+LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)  
 {
 	PAINTSTRUCT ps;
 	HDC hdc;
 
-	SimpleEngine* engine = reinterpret_cast<SimpleEngine*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+	auto* engine = reinterpret_cast<SimpleEngine*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
 	switch (message)
 	{
@@ -223,7 +226,191 @@ HRESULT SimpleEngine::InitializeShaders()
 			continue;
 
 		//TODO: Shader Compilation
+		const std::filesystem::path& fsPath = directoryEntry.path();
 
-		
+		if (std::string filePath = fsPath.filename().string(); filePath.find("VS_") == 1)
+		{
+			ComPtr<ID3D11VertexShader> vs = CompileVertexShader(directoryEntry.path().c_str());
+			if (!vs)
+				return E_FAIL;
+
+			ShaderData vsData = { vs, Vertex };
+			DataStore::VertexShaders.Store(fsPath.string(), vsData);
+		}
+		else if (filePath.find("PS_") == 1)
+		{
+			ComPtr<ID3D11PixelShader> ps = CompilePixelShader(directoryEntry.path().c_str());
+			if (!ps)
+				return E_FAIL;
+
+			ShaderData psData = { ps, Pixel };
+			DataStore::PixelShaders.Store(fsPath.string(), psData);
+		}
 	}
+
+	return S_OK;
+}
+
+HRESULT SimpleEngine::InitializePipeline()
+{
+	HRESULT hr = S_OK;
+
+	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	_context->IASetInputLayout(_inputLayout.Get());
+
+	hr = InitializeRasterizerStates();
+	if (FAILED(hr)) return hr;
+}
+
+HRESULT SimpleEngine::InitializeVertexShaderLayout(ID3DBlob* vsBlob)
+{
+	D3D11_INPUT_ELEMENT_DESC vsInputLayout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+		{ "TEXCOORDS", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 }
+	};
+
+	return _device->CreateInputLayout(
+		vsInputLayout,
+		ARRAYSIZE(vsInputLayout),
+		vsBlob->GetBufferPointer(),
+		vsBlob->GetBufferSize(),
+		_inputLayout.GetAddressOf()
+	);
+}
+
+ComPtr<ID3D11VertexShader> SimpleEngine::CompileVertexShader(LPCWSTR path)
+{
+	ComPtr<ID3D11VertexShader> vs = {};
+	ID3DBlob* errorBlob;
+	ID3DBlob* vsBlob;
+
+	DWORD shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef _DEBUG
+	shaderFlags |= D3DCOMPILE_DEBUG;
+#endif
+
+	HRESULT hr = D3DCompileFromFile(
+		path, 
+		nullptr, 
+		D3D_COMPILE_STANDARD_FILE_INCLUDE, 
+		"VS_Main", 
+		"vs_5_0", 
+		shaderFlags, 
+		0, 
+		&vsBlob, 
+		&errorBlob
+	);
+
+	if (FAILED(hr))
+	{
+		MessageBoxA(_hwnd, 
+			static_cast<char*>(errorBlob->GetBufferPointer()), 
+			nullptr, 
+			ERROR
+		);
+		errorBlob->Release();
+		vsBlob->Release();
+		return nullptr;
+	}
+
+	hr = _device->CreateVertexShader(
+		vsBlob->GetBufferPointer(), 
+		vsBlob->GetBufferSize(), 
+		nullptr, 
+		vs.GetAddressOf()
+	);
+	if (FAILED(hr)) 
+	{
+		vsBlob->Release();
+		errorBlob->Release();
+		return nullptr;
+	}
+
+	if (_inputLayout == nullptr)
+	{
+		hr = InitializeVertexShaderLayout(vsBlob);
+		if (FAILED(hr)) return {};
+	}
+
+	vsBlob->Release();
+	errorBlob->Release();
+
+	return vs;
+}
+
+ComPtr<ID3D11PixelShader> SimpleEngine::CompilePixelShader(LPCWSTR path)
+{
+	ComPtr<ID3D11PixelShader> ps;
+	ID3DBlob* psBlob;
+	ID3DBlob* errorBlob;
+
+	DWORD shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef _DEBUG
+	shaderFlags |= D3DCOMPILE_DEBUG;
+#endif
+
+	HRESULT hr = D3DCompileFromFile(
+		path,
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		"PS_Main",
+		"ps_5_0",
+		shaderFlags,
+		0,
+		&psBlob,
+		&errorBlob
+	);
+
+	if (FAILED(hr))
+	{
+		MessageBoxA(_hwnd,
+			static_cast<char*>(errorBlob->GetBufferPointer()),
+			nullptr,
+			ERROR
+		);
+		errorBlob->Release();
+		psBlob->Release();
+		return nullptr;
+	}
+
+	hr = _device->CreatePixelShader(
+		psBlob->GetBufferPointer(),
+		psBlob->GetBufferSize(),
+		nullptr,
+		ps.GetAddressOf()
+	);
+
+	if (FAILED(hr))
+	{
+		psBlob->Release();
+		errorBlob->Release();
+		return nullptr;
+	}
+
+	psBlob->Release();
+	errorBlob->Release();
+
+	return ps;
+}
+
+HRESULT SimpleEngine::InitializeRasterizerStates()
+{
+	HRESULT hr = S_OK;
+
+#pragma region Fill State
+	D3D11_RASTERIZER_DESC rasterizerDesc = {};
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	
+
+	ComPtr<ID3D11RasterizerState> fillState = {};
+	hr = _device->CreateRasterizerState(&rasterizerDesc, fillState.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	DataStore::RasterizerStates.Store(FILL_STATE_KEY, fillState);
+#pragma endregion
+
+#pragma region Reverse Fill State
 }

@@ -17,3 +17,8 @@ constexpr int CB_13 = 0b0010'0000'0000'0000; //UNUSED
 constexpr int CB_14 = 0b0100'0000'0000'0000; //UNUSED
 
 constexpr int MAX_BUFFERS = 15; //This is the Resource Limit for Constant Buffers
+
+constexpr std::string FILL_STATE_KEY = "RSFillState";
+constexpr std::string REVERSE_FILL_STATE_KEY = "RSReverseFillState";
+constexpr std::string WIREFRAME_STATE_KEY = "RSWireframeState";
+constexpr std::string CULLED_WIREFRAME_STATE_KEY = "RSCulledWireframeState";

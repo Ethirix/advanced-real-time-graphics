@@ -137,7 +137,9 @@ ROBOCOPY "$(ProjectDir)Assets\" "$(OutputPath)Assets\" /E /IS /IT /IM /COPYALL</
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -147,15 +149,21 @@ ROBOCOPY "$(ProjectDir)Assets\" "$(OutputPath)Assets\" /E /IS /IT /IM /COPYALL</
     <ClInclude Include="CBObjectCameraData.h" />
     <ClInclude Include="CBTextures.h" />
     <ClInclude Include="ComponentBase.h" />
+    <ClInclude Include="Configuration.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="DataStore.h" />
+    <ClInclude Include="Helpers.h" />
     <ClInclude Include="LightData.h" />
+    <ClInclude Include="RasterizerStateConfig.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="ShaderComponent.h" />
     <ClInclude Include="ShaderData.h" />
     <ClInclude Include="ShaderType.h" />
     <ClInclude Include="SimpleEngine.h" />
+    <ClInclude Include="Storage.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Configuration\RasterizerStateConfig.json" />
     <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli" />
     <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli" />
     <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli" />
@@ -173,6 +181,7 @@ ROBOCOPY "$(ProjectDir)Assets\" "$(OutputPath)Assets\" /E /IS /IT /IM /COPYALL</
     <None Include="Assets\Shaders\PS_BlinnPhong.hlsl">
       <FileType>Document</FileType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli" />
@@ -181,5 +190,12 @@ ROBOCOPY "$(ProjectDir)Assets\" "$(OutputPath)Assets\" /E /IS /IT /IM /COPYALL</
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets" Condition="Exists('packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets'))" />
+  </Target>
 </Project>

@@ -35,6 +35,15 @@
     <Filter Include="Header Files\Buffers">
       <UniqueIdentifier>{2abcf64f-5ba1-48be-af30-c4579376c947}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Configuration">
+      <UniqueIdentifier>{aa4e6d0d-b049-43e0-bc7f-6ddfaf5fa7da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Configuration\Files">
+      <UniqueIdentifier>{78d112bc-9870-45a4-9122-1e748f33479f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Configuration">
+      <UniqueIdentifier>{b77c26ae-784a-4538-8811-5fe632fe860c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -42,6 +51,12 @@
     </ClCompile>
     <ClCompile Include="SimpleEngine.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RasterizerStateConfig.cpp">
+      <Filter>Source Files\Configuration</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +98,21 @@
     </ClInclude>
     <ClInclude Include="Buffers.h">
       <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataStore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration.h">
+      <Filter>Header Files\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="RasterizerStateConfig.h">
+      <Filter>Header Files\Configuration</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +163,10 @@
     </None>
     <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli">
       <Filter>Resource Files\Shaders\Buffers</Filter>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Assets\Configuration\RasterizerStateConfig.json">
+      <Filter>Header Files\Configuration\Files</Filter>
     </None>
   </ItemGroup>
 </Project>
