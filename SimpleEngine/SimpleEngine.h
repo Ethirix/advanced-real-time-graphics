@@ -52,6 +52,8 @@ private:
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
 	ComPtr<ID3D11InputLayout> _inputLayout;
 
+	D3D11_VIEWPORT _viewport;
+
 	std::map<std::string, ShaderComponent> _shaders = {};
 
 	std::unique_ptr<Screen> _screen;

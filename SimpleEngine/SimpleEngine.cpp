@@ -261,6 +261,9 @@ HRESULT SimpleEngine::InitializePipeline()
 
 	hr = InitializeRasterizerStates();
 	if (FAILED(hr)) return hr;
+
+	_viewport = { 0.0f, 0.0f, static_cast<float>(_screen->Width), static_cast<float>(_screen->Height), 0.0f, 1.0f};
+	_context->RSSetViewports(1, &_viewport);
 }
 
 HRESULT SimpleEngine::InitializeVertexShaderLayout(ID3DBlob* vsBlob)
@@ -400,8 +403,21 @@ HRESULT SimpleEngine::InitializeRasterizerStates()
 {
 	HRESULT hr = S_OK;
 
-	for (auto& pair : Configuration::RasterizerStateConfig.RasterizerDescriptions)
+	for (auto& [key, description] : 
+		Configuration::RasterizerStateConfig.RasterizerDescriptions)
 	{
-		
+		ComPtr<ID3D11RasterizerState> state;
+		hr = _device->CreateRasterizerState(&description, state.GetAddressOf());
+		if (FAILED(hr)) return hr;
+
+		DataStore::RasterizerStates.Store(key, state);
 	}
+
+	if (auto state = DataStore::RasterizerStates.Retrieve(
+		Configuration::RasterizerStateConfig.DefaultRasterizerStateKey); state.has_value())
+		_context->RSSetState(state.value().Get());
+	else
+		return E_FAIL;
+
+	return hr;
 }
