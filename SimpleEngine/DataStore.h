@@ -8,5 +8,7 @@ struct DataStore
 {
 	static Storage<ShaderData<ID3D11VertexShader>> VertexShaders;
 	static Storage<ShaderData<ID3D11PixelShader>> PixelShaders;
-	static Storage<ComPtr<ID3D11RasterizerState>> RasterizerStates;
+	static Storage<Microsoft::WRL::ComPtr<ID3D11RasterizerState>> RasterizerStates;
+	static Storage<Microsoft::WRL::ComPtr<ID3D11SamplerState>> SamplerStates;
+	static Storage<Microsoft::WRL::ComPtr<ID3D11DepthStencilState>> DepthStencilStates;
 };

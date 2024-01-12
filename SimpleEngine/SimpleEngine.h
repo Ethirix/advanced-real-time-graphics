@@ -23,7 +23,7 @@ public:
 	void FixedUpdate();
 	void Draw();
 
-	void OnWindowSizeChanged(WPARAM wParam, UINT width, UINT height);
+	void OnWindowSizeChanged(WPARAM resizeType, UINT width, UINT height);
 	void OnWindowSizeChangeComplete();
 
 private:
@@ -39,6 +39,9 @@ private:
 	ComPtr<ID3D11VertexShader> CompileVertexShader(LPCWSTR path);
 	ComPtr<ID3D11PixelShader> CompilePixelShader(LPCWSTR path);
 	HRESULT InitializeRasterizerStates();
+	HRESULT InitializeBuffers();
+	HRESULT InitializeSamplers();
+	HRESULT InitializeDepthStencils();
 
 	HWND _hwnd;
 

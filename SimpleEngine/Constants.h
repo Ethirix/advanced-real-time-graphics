@@ -22,3 +22,7 @@ constexpr std::string FILL_STATE_KEY = "RSFillState";
 constexpr std::string REVERSE_FILL_STATE_KEY = "RSReverseFillState";
 constexpr std::string WIREFRAME_STATE_KEY = "RSWireframeState";
 constexpr std::string CULLED_WIREFRAME_STATE_KEY = "RSCulledWireframeState";
+
+constexpr std::string BILINEAR_SAMPLER_KEY = "SBilinear";
+
+constexpr std::string SKYBOX_DEPTH_STENCIL_KEY = "DSSkybox";

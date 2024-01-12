@@ -3,6 +3,8 @@
 #include <d3dcompiler.h>
 #include <filesystem>
 
+#include "Buffers.h"
+#include "CBObjectCameraData.h"
 #include "Configuration.h"
 #include "DataStore.h"
 
@@ -264,6 +266,24 @@ HRESULT SimpleEngine::InitializePipeline()
 
 	_viewport = { 0.0f, 0.0f, static_cast<float>(_screen->Width), static_cast<float>(_screen->Height), 0.0f, 1.0f};
 	_context->RSSetViewports(1, &_viewport);
+
+	hr = InitializeBuffers();
+	if (FAILED(hr)) return hr;
+
+	hr = InitializeSamplers();
+	if (FAILED(hr)) return hr;
+
+	hr = InitializeDepthStencils();
+	if (FAILED(hr)) return hr;
+
+	return hr;
+}
+
+HRESULT SimpleEngine::InitializeRunTimeData()
+{
+	//TODO: Load objects and other data from file.
+
+	return S_OK;
 }
 
 HRESULT SimpleEngine::InitializeVertexShaderLayout(ID3DBlob* vsBlob)
@@ -421,3 +441,154 @@ HRESULT SimpleEngine::InitializeRasterizerStates()
 
 	return hr;
 }
+
+HRESULT SimpleEngine::InitializeBuffers()
+{
+	HRESULT hr = S_OK;
+
+	D3D11_BUFFER_DESC bufferDescription = {};
+	bufferDescription.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+#pragma region CBObjectCameraData
+	bufferDescription.ByteWidth = sizeof(CBObjectCameraData);
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBObjectCameraData.Buffer.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	_context->VSSetConstantBuffers(0, 1, Buffers::CBObjectCameraData.Buffer.GetAddressOf());
+	_context->PSSetConstantBuffers(0, 1, Buffers::CBObjectCameraData.Buffer.GetAddressOf());
+#pragma endregion
+
+#pragma region CBMaterial
+	bufferDescription.ByteWidth = sizeof(CBMaterial);
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBMaterial.Buffer.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	_context->VSSetConstantBuffers(1, 1, Buffers::CBMaterial.Buffer.GetAddressOf());
+	_context->PSSetConstantBuffers(1, 1, Buffers::CBMaterial.Buffer.GetAddressOf());
+#pragma endregion
+
+#pragma region CBTextures
+	bufferDescription.ByteWidth = sizeof(CBTextures);
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBTextures.Buffer.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	_context->VSSetConstantBuffers(2, 1, Buffers::CBTextures.Buffer.GetAddressOf());
+	_context->PSSetConstantBuffers(2, 1, Buffers::CBTextures.Buffer.GetAddressOf());
+#pragma endregion
+
+#pragma region CBLighting
+	bufferDescription.ByteWidth = sizeof(CBLighting);
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBLighting.Buffer.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	_context->VSSetConstantBuffers(3, 1, Buffers::CBLighting.Buffer.GetAddressOf());
+	_context->PSSetConstantBuffers(3, 1, Buffers::CBLighting.Buffer.GetAddressOf());
+#pragma endregion
+
+	return hr;
+}
+
+HRESULT SimpleEngine::InitializeSamplers()
+{
+	HRESULT hr = S_OK;
+
+	D3D11_SAMPLER_DESC bilinearSamplerDesc = {};
+	bilinearSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    bilinearSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    bilinearSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    bilinearSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    bilinearSamplerDesc.MaxLOD = 1;
+    bilinearSamplerDesc.MinLOD = 0;
+
+	ComPtr<ID3D11SamplerState> bilinearSampler = {};
+	hr = _device->CreateSamplerState(&bilinearSamplerDesc, bilinearSampler.GetAddressOf());
+    if (FAILED(hr)) { return hr; }
+    _context->PSSetSamplers(0, 1, bilinearSampler.GetAddressOf());
+	DataStore::SamplerStates.Store(BILINEAR_SAMPLER_KEY, bilinearSampler);
+
+	return hr;
+}
+
+HRESULT SimpleEngine::InitializeDepthStencils()
+{
+	HRESULT hr = S_OK;
+
+	D3D11_DEPTH_STENCIL_DESC dsSkyboxDesc = {};
+	dsSkyboxDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	dsSkyboxDesc.DepthEnable = true;
+	dsSkyboxDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+	ComPtr<ID3D11DepthStencilState> skyboxDepthStencil = {};
+	hr = _device->CreateDepthStencilState(&dsSkyboxDesc, skyboxDepthStencil.GetAddressOf());
+	if (FAILED(hr)) { return hr; }
+	DataStore::DepthStencilStates.Store(SKYBOX_DEPTH_STENCIL_KEY, skyboxDepthStencil);
+
+	return hr;
+}
+
+void SimpleEngine::OnWindowSizeChanged(WPARAM resizeType, UINT width, UINT height)
+{
+	_screen->Width = static_cast<int>(width);
+	_screen->Height = static_cast<int>(height);
+
+	BOOL fsState;
+	HRESULT hr = _swapChain->GetFullscreenState(&fsState, nullptr);
+
+	if (resizeType == SIZE_MAXIMIZED || fsState != _screen->Fullscreen)
+	    _screen->Fullscreen = fsState;
+}
+
+void SimpleEngine::OnWindowSizeChangeComplete()
+{
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
+	_frameBufferView->Release();
+	_depthStencilView->Release();
+	_depthStencilBuffer->Release();
+
+	DXGI_MODE_DESC dxgiModeDesc {};
+	dxgiModeDesc.Width = _screen->Width;
+	dxgiModeDesc.Height = _screen->Height;
+	HRESULT hr = _swapChain->ResizeTarget(&dxgiModeDesc);
+	hr = _swapChain->ResizeBuffers(0, _screen->Width, _screen->Height, DXGI_FORMAT_UNKNOWN, 0);
+	ComPtr<ID3D11Texture2D> buffer;
+	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(buffer.GetAddressOf()));
+
+	D3D11_RENDER_TARGET_VIEW_DESC bufferDesc = {};
+	bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+    bufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+
+	hr = _device->CreateRenderTargetView(buffer.Get(), &bufferDesc, &_frameBufferView);
+
+	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
+	buffer->GetDesc(&depthBufferDesc);
+	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, &_depthStencilBuffer);
+	hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), nullptr, &_depthStencilView);
+
+	buffer->Release();
+
+	_context->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView.Get());
+
+	_viewport.Width = static_cast<float>(_screen->Width);
+	_viewport.Height = static_cast<float>(_screen->Height);
+    _viewport.MinDepth = 0.0f;
+    _viewport.MaxDepth = 1.0f;
+    _viewport.TopLeftX = 0;
+    _viewport.TopLeftY = 0;
+
+	_context->RSSetViewports(1, &_viewport);
+
+	float aspect = _viewport.Width / _viewport.Height;
+
+  //  for (auto camera : _manager.FindObjectsOfType<Camera>())
+  //  {
+	 //   XMMATRIX perspective = XMMatrixPerspectiveFovLH(XMConvertToRadians(ConfigManager::GetConfig()->CameraConfig.FieldOfView), 
+  //          aspect, _camera.lock()->GetNearDepth(),camera->GetFarDepth());
+		//XMStoreFloat4x4(&camera->GetProjection(), perspective);
+  //  }
+}
+

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "BufferPair.h"
 #include "CBLighting.h"
 #include "CBMaterial.h"
 #include "CBObjectCameraData.h"
@@ -6,8 +7,8 @@
 
 struct Buffers
 {
-	static CBObjectCameraData CBObjectCameraData; //Buffer Slot 0
-	static CBMaterial CBMaterial; //Buffer Slot 1;
-	static CBTextures CBTextures; //Buffer Slot 2;
-	static CBLighting CBLighting; //Buffer Slot 3;
+	static BufferPair<CBObjectCameraData> CBObjectCameraData; //Buffer Slot 0
+	static BufferPair<CBMaterial> CBMaterial; //Buffer Slot 1;
+	static BufferPair<CBTextures> CBTextures; //Buffer Slot 2;
+	static BufferPair<CBLighting> CBLighting; //Buffer Slot 3;
 };

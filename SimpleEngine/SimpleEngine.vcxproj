@@ -143,6 +143,7 @@ ROBOCOPY "$(ProjectDir)Assets\" "$(OutputPath)Assets\" /E /IS /IT /IM /COPYALL</
     <ClCompile Include="SimpleEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BufferPair.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="CBLighting.h" />
     <ClInclude Include="CBMaterial.h" />

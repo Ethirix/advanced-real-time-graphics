@@ -114,6 +114,9 @@
     <ClInclude Include="RasterizerStateConfig.h">
       <Filter>Header Files\Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="BufferPair.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
