@@ -9,13 +9,14 @@ class Storage
 public:
 	bool Store(std::string key, T object)
 	{
-		return _objectMap.try_emplace(key, object);
+		auto ret = _objectMap.try_emplace(key, object);
+		return ret.second;
 	}
 
 	std::optional<T> Retrieve(std::string key)
 	{
 		if (auto result = _objectMap.find(key); result != _objectMap.end())
-			return result;
+			return result->second;
 
 		return {};
 	}

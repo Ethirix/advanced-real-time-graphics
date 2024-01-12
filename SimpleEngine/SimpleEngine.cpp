@@ -591,4 +591,3 @@ void SimpleEngine::OnWindowSizeChangeComplete()
 		//XMStoreFloat4x4(&camera->GetProjection(), perspective);
   //  }
 }
-

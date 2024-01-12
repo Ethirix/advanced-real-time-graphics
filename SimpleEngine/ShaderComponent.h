@@ -4,6 +4,7 @@
 
 class ShaderComponent : public ComponentBase
 {
+	~ShaderComponent() {}
 public:
 	ShaderData<ID3D11PixelShader> PixelShader = {nullptr, Pixel, 0 };
 	ShaderData<ID3D11VertexShader> VertexShader = {nullptr, Vertex, 0 };

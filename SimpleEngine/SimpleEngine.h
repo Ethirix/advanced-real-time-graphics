@@ -19,9 +19,9 @@ public:
 
 	HRESULT Initialize(HINSTANCE hInstance, int nShowCmd);
 
-	void Update();
-	void FixedUpdate();
-	void Draw();
+	void Update() {};
+	void FixedUpdate() {};
+	void Draw() {};
 
 	void OnWindowSizeChanged(WPARAM resizeType, UINT width, UINT height);
 	void OnWindowSizeChangeComplete();
