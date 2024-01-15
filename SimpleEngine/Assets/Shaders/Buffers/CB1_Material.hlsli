@@ -1,3 +1,6 @@
+#ifndef __CB1_MATERIALS_HLSLI__
+#define __CB1_MATERIALS_HLSLI__
+
 cbuffer CB1_Materials : register(b1)
 {
     float4 DiffuseMaterial;
@@ -6,3 +9,5 @@ cbuffer CB1_Materials : register(b1)
     float SpecularExponent;
     float3 ___CB1Pad0;
 }
+
+#endif

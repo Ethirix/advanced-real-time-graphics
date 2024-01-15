@@ -11,7 +11,7 @@ RasterizerStateConfig::RasterizerStateConfig()
 
 	for (auto rsConfig : _json["RasterizerStateDescriptions"])
 	{
-		std::string key;
+		std::string key = rsConfig["Key"];
 		D3D11_RASTERIZER_DESC	description = {};
 
 		description.FillMode = static_cast<D3D11_FILL_MODE>(rsConfig["FillMode"]);

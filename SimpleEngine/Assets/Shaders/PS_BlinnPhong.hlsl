@@ -4,16 +4,13 @@
 #include "Buffers/CB3_Lighting.hlsli"
 #include "Functions/Lighting.hlsli"
 #include "Structs/VS_BaseOut.hlsli"
-#include "Structs/Texture.hlsli"
 #include "Structured Resources/T0_DiffuseTexture.hlsli"
 #include "Structured Resources/T1_SpecularTexture.hlsli"
 
-float4 PS_Main(VS_BaseOut Input) : SV_TARGET
+float4 PS_Main(VS_BaseOut input) : SV_TARGET
 {
-    Input.WorldNormal = normalize(Input.WorldNormal);
-    Input.Normal = normalize(Input.Normal);
-
-    float3 cameraDirection = normalize(CameraPosition - Input.WorldPosition);
+    input.WorldNormal = normalize(input.WorldNormal);
+    float3 cameraDirection = normalize(CameraPosition - input.WorldPosition);
 
     float4 ambient = float4(0, 0, 0, 0);
     float4 diffuse = float4(0, 0, 0, 0);
@@ -26,9 +23,9 @@ float4 PS_Main(VS_BaseOut Input) : SV_TARGET
     {
         LightingOut light = CalculatePointLight(
 	        PointLights[i], 
-	        Input.WorldPosition, 
-	        Input.WorldNormal, 
-	        Input.TextureCoordinates,
+	        input.WorldPosition, 
+	        input.WorldNormal,
+	        input.TextureCoordinates,
 			cameraDirection,
 			textures,
 			material

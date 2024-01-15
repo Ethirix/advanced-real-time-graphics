@@ -1,3 +1,6 @@
+#ifndef __LIGHTING_HLSLI__
+#define __LIGHTING_HLSLI__
+
 #include "Structs/Textures.hlsli"
 #include "Structs/Material.hlsli"
 #include "Structs/LightData.hlsli"
@@ -13,9 +16,9 @@ struct LightingOut
 LightingOut CalculatePointLight(
 	LightData light,
 	float3 fragmentPosition,
-	float3 cameraDirection,
 	float3 normal,
 	float2 textureCoordinates,
+	float3 cameraDirection,
 	Textures textures,
 	Material material)
 {
@@ -100,3 +103,5 @@ LightingOut CalculatePointLight(
 
     return lighting;
 }
+
+#endif

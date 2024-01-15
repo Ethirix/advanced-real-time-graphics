@@ -1,4 +1,7 @@
-#include "Texture.hlsli"
+#ifndef __TEXTURES_HLSLI__
+#define __TEXTURES_HLSLI__
+
+#include "Structs/Texture.hlsli"
 
 struct Textures
 {
@@ -23,3 +26,5 @@ Textures CreateTexturesFromTextures(Texture2D diffuseTexture, bool hasDiffuseTex
 
     return CreateTextures(diffuse, specular);
 }
+
+#endif

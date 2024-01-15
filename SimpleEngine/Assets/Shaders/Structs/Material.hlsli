@@ -1,3 +1,6 @@
+#ifndef __MATERIAL_HLSLI__
+#define __MATERIAL_HLSLI__
+
 struct Material
 {
     float4 Diffuse;
@@ -16,3 +19,5 @@ Material CreateMaterial(float4 diffuse, float4 ambient, float4 specular, float s
 
     return material;
 }
+
+#endif

@@ -1,8 +1,13 @@
-#include "../Structs/LightData.hlsli"
+#ifndef __CB3_LIGHTING_HLSLI__
+#define __CB3_LIGHTING_HLSLI__
 
-cbuffer LightBuffer : register(b1)
+#include "Structs/LightData.hlsli"
+
+cbuffer LightBuffer : register(b3)
 {
     LightData PointLights[32];
 	uint ActiveLightCount;
     float3 ___CB3Pad0;
 }
+
+#endif

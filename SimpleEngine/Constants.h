@@ -18,6 +18,8 @@ constexpr int CB_14 = 0b0100'0000'0000'0000; //UNUSED
 
 constexpr int MAX_BUFFERS = 15; //This is the Resource Limit for Constant Buffers
 
+constexpr double PHYSICS_TIMESTEP = 1.0f / 120.0f;
+
 #define FILL_STATE_KEY "RSFillState"
 #define REVERSE_FILL_STATE_KEY "RSReverseFillState"
 #define WIREFRAME_STATE_KEY "RSWireframeState"

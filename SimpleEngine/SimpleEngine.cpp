@@ -54,7 +54,7 @@ HRESULT SimpleEngine::Initialize(HINSTANCE hInstance, int nShowCmd)
 {
 	HRESULT hr = S_OK;
 
-	hr = CreateWindowHandle(hInstance, nShowCmd);
+	hr = CreateWindowHandle(hInstance);
 	if (FAILED(hr)) return E_FAIL;
 
 	hr = CreateD3DDevice();
@@ -78,7 +78,7 @@ HRESULT SimpleEngine::Initialize(HINSTANCE hInstance, int nShowCmd)
 	return hr;
 }
 
-HRESULT SimpleEngine::CreateWindowHandle(HINSTANCE hInstance, int nShowCmd)
+HRESULT SimpleEngine::CreateWindowHandle(HINSTANCE hInstance)
 {
 	const wchar_t* windowName = L"SimpleEngine";
 
@@ -91,6 +91,7 @@ HRESULT SimpleEngine::CreateWindowHandle(HINSTANCE hInstance, int nShowCmd)
 	wndClass.hIcon = nullptr;
 	wndClass.hCursor = nullptr;
 	wndClass.hbrBackground = nullptr;
+	wndClass.lpszMenuName = nullptr;
 	wndClass.lpszClassName = windowName;
 
 	RegisterClassW(&wndClass);
@@ -218,7 +219,7 @@ HRESULT SimpleEngine::CreateFrameBuffer()
 
 HRESULT SimpleEngine::InitializeShaders()
 {
-	std::string path = "/Assets/Shaders";
+	std::string path = "Assets/Shaders";
 
 	if (!std::filesystem::is_directory(path))
 		return E_FAIL;
@@ -231,7 +232,7 @@ HRESULT SimpleEngine::InitializeShaders()
 		//TODO: Shader Compilation
 		const std::filesystem::path& fsPath = directoryEntry.path();
 
-		if (std::string filePath = fsPath.filename().string(); filePath.find("VS_") == 1)
+		if (std::string filePath = fsPath.filename().string(); filePath.find("VS_") != std::string::npos)
 		{
 			ComPtr<ID3D11VertexShader> vs = CompileVertexShader(directoryEntry.path().c_str());
 			if (!vs)
@@ -240,7 +241,7 @@ HRESULT SimpleEngine::InitializeShaders()
 			ShaderData vsData = { vs, Vertex };
 			DataStore::VertexShaders.Store(fsPath.string(), vsData);
 		}
-		else if (filePath.find("PS_") == 1)
+		else if (filePath.find("PS_") != std::string::npos)
 		{
 			ComPtr<ID3D11PixelShader> ps = CompilePixelShader(directoryEntry.path().c_str());
 			if (!ps)
@@ -334,8 +335,8 @@ ComPtr<ID3D11VertexShader> SimpleEngine::CompileVertexShader(LPCWSTR path)
 			nullptr, 
 			ERROR
 		);
-		errorBlob->Release();
-		vsBlob->Release();
+		if (vsBlob) vsBlob->Release();
+		if (errorBlob) errorBlob->Release();
 		return nullptr;
 	}
 
@@ -347,8 +348,8 @@ ComPtr<ID3D11VertexShader> SimpleEngine::CompileVertexShader(LPCWSTR path)
 	);
 	if (FAILED(hr)) 
 	{
-		vsBlob->Release();
-		errorBlob->Release();
+		if (vsBlob) vsBlob->Release();
+		if (errorBlob) errorBlob->Release();
 		return nullptr;
 	}
 
@@ -358,8 +359,8 @@ ComPtr<ID3D11VertexShader> SimpleEngine::CompileVertexShader(LPCWSTR path)
 		if (FAILED(hr)) return {};
 	}
 
-	vsBlob->Release();
-	errorBlob->Release();
+	if (vsBlob) vsBlob->Release();
+	if (errorBlob) errorBlob->Release();
 
 	return vs;
 }
@@ -394,8 +395,8 @@ ComPtr<ID3D11PixelShader> SimpleEngine::CompilePixelShader(LPCWSTR path)
 			nullptr,
 			ERROR
 		);
-		errorBlob->Release();
-		psBlob->Release();
+		if (psBlob) psBlob->Release();
+		if (errorBlob) errorBlob->Release();
 		return nullptr;
 	}
 
@@ -408,13 +409,13 @@ ComPtr<ID3D11PixelShader> SimpleEngine::CompilePixelShader(LPCWSTR path)
 
 	if (FAILED(hr))
 	{
-		psBlob->Release();
-		errorBlob->Release();
+		if (psBlob) psBlob->Release();
+		if (errorBlob) errorBlob->Release();
 		return nullptr;
 	}
 
-	psBlob->Release();
-	errorBlob->Release();
+	if (psBlob) psBlob->Release();
+	if (errorBlob) errorBlob->Release();
 
 	return ps;
 }
@@ -559,19 +560,17 @@ void SimpleEngine::OnWindowSizeChangeComplete()
 	bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     bufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
-	hr = _device->CreateRenderTargetView(buffer.Get(), &bufferDesc, &_frameBufferView);
+	hr = _device->CreateRenderTargetView(buffer.Get(), &bufferDesc, _frameBufferView.GetAddressOf());
 
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
 	buffer->GetDesc(&depthBufferDesc);
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, &_depthStencilBuffer);
-	hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), nullptr, &_depthStencilView);
+	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf());
+	hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), nullptr, _depthStencilView.GetAddressOf());
 
-	buffer->Release();
-
-	_context->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView.Get());
+	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 
 	_viewport.Width = static_cast<float>(_screen->Width);
 	_viewport.Height = static_cast<float>(_screen->Height);
@@ -590,4 +589,34 @@ void SimpleEngine::OnWindowSizeChangeComplete()
   //          aspect, _camera.lock()->GetNearDepth(),camera->GetFarDepth());
 		//XMStoreFloat4x4(&camera->GetProjection(), perspective);
   //  }
+}
+
+void SimpleEngine::Update()
+{
+#pragma region DeltaTime
+	auto timePoint = std::chrono::high_resolution_clock::now();
+	double deltaTime = std::chrono::duration_cast
+		<std::chrono::nanoseconds>(timePoint - _lastFrameTime).count()
+		/ 1000000000.0;
+
+	_lastFrameTime = timePoint;
+
+	_timeSinceLastFixedUpdate += deltaTime;
+	if (_timeSinceLastFixedUpdate >= PHYSICS_TIMESTEP)
+	{
+		FixedUpdate(PHYSICS_TIMESTEP);
+		_timeSinceLastFixedUpdate -= PHYSICS_TIMESTEP;
+	}
+
+#pragma endregion
+}
+
+void SimpleEngine::Draw()
+{
+	float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
+	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
+	_context->ClearRenderTargetView(_frameBufferView.Get(), backgroundColor);
+	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+
+	_swapChain->Present(0, 0);
 }

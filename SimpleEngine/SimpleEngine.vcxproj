@@ -113,7 +113,8 @@
     </Link>
     <PostBuildEvent>
       <Command>MKDIR "$(OutputPath)Assets\"
-ROBOCOPY "$(ProjectDir)Assets\" "$(OutputPath)Assets\" /E /IS /IT /IM</Command>
+
+ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&amp; %ERRORLEVEL% LEQ 1 EXIT 0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -135,7 +136,8 @@ ROBOCOPY "$(ProjectDir)Assets\" "$(OutputPath)Assets\" /E /IS /IT /IM</Command>
     </Link>
     <PostBuildEvent>
       <Command>MKDIR "$(OutputPath)Assets\"
-ROBOCOPY "$(ProjectDir)Assets\" "$(OutputPath)Assets\" /E /IS /IT /IM</Command>
+
+ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&amp; %ERRORLEVEL% LEQ 1 EXIT 0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

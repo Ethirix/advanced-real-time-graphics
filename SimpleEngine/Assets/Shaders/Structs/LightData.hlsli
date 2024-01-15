@@ -1,3 +1,6 @@
+#ifndef __LIGHTDATA_HLSLI__
+#define __LIGHTDATA_HLSLI__
+
 struct LightData
 {
     float4 Position;
@@ -12,3 +15,5 @@ struct LightData
     float LightRadius;
     float ___LDPad0;
 };
+
+#endif 

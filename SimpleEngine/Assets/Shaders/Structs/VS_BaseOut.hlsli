@@ -1,3 +1,6 @@
+#ifndef __VS_BASEOUT_HLSLI__
+#define __VS_BASEOUT_HLSLI__
+
 struct VS_BaseOut
 {
     float4 Color : COLOR;
@@ -10,3 +13,5 @@ struct VS_BaseOut
 
     float2 TextureCoordinates : TEXCOORDS0;
 };
+
+#endif

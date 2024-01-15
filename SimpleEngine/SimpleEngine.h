@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <d3d11.h>
 #include <dxgi1_2.h>
 #include <map>
@@ -19,15 +20,15 @@ public:
 
 	HRESULT Initialize(HINSTANCE hInstance, int nShowCmd);
 
-	void Update() {};
-	void FixedUpdate() {};
-	void Draw() {};
+	void Update();
+	void FixedUpdate(double fixedDeltaTime) {};
+	void Draw();
 
 	void OnWindowSizeChanged(WPARAM resizeType, UINT width, UINT height);
 	void OnWindowSizeChangeComplete();
 
 private:
-	HRESULT CreateWindowHandle(HINSTANCE hInstance, int nShowCmd);
+	HRESULT CreateWindowHandle(HINSTANCE hInstance);
 	HRESULT CreateD3DDevice();
 	HRESULT CreateSwapChain();
 	HRESULT CreateFrameBuffer();
@@ -54,11 +55,11 @@ private:
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
 	ComPtr<ID3D11InputLayout> _inputLayout;
-
 	D3D11_VIEWPORT _viewport;
 
+	std::chrono::time_point<std::chrono::steady_clock> _lastFrameTime = std::chrono::high_resolution_clock::now();
+	double _timeSinceLastFixedUpdate = 0;
 	std::map<std::string, ShaderComponent> _shaders = {};
-
-	std::unique_ptr<Screen> _screen;
+	std::unique_ptr<Screen> _screen = std::make_unique<Screen>(800, 600);
 };
 
