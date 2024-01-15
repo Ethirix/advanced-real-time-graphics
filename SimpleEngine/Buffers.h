@@ -7,8 +7,8 @@
 
 struct Buffers
 {
-	static BufferPair<CBObjectCameraData> CBObjectCameraData; //Buffer Slot 0
-	static BufferPair<CBMaterial> CBMaterial; //Buffer Slot 1;
-	static BufferPair<CBTextures> CBTextures; //Buffer Slot 2;
-	static BufferPair<CBLighting> CBLighting; //Buffer Slot 3;
+	inline static BufferPair<CBObjectCameraData> CBObjectCameraData = {}; //Buffer Slot 0
+	inline static BufferPair<CBMaterial> CBMaterial = {}; //Buffer Slot 1;
+	inline static BufferPair<CBTextures> CBTextures = {}; //Buffer Slot 2;
+	inline static BufferPair<CBLighting> CBLighting = {}; //Buffer Slot 3;
 };

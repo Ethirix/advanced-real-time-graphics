@@ -1,14 +1,14 @@
 ﻿#pragma once
 #include <d3d11.h>
 
-#include "ShaderComponent.h"
+#include "ShaderData.h"
 #include "Storage.h"
 
 struct DataStore
 {
-	static Storage<ShaderData<ID3D11VertexShader>> VertexShaders;
-	static Storage<ShaderData<ID3D11PixelShader>> PixelShaders;
-	static Storage<Microsoft::WRL::ComPtr<ID3D11RasterizerState>> RasterizerStates;
-	static Storage<Microsoft::WRL::ComPtr<ID3D11SamplerState>> SamplerStates;
-	static Storage<Microsoft::WRL::ComPtr<ID3D11DepthStencilState>> DepthStencilStates;
+	inline static Storage<ShaderData<ID3D11VertexShader>> VertexShaders = {};
+	inline static Storage<ShaderData<ID3D11PixelShader>> PixelShaders = {};
+	inline static Storage<Microsoft::WRL::ComPtr<ID3D11RasterizerState>> RasterizerStates = {};
+	inline static Storage<Microsoft::WRL::ComPtr<ID3D11SamplerState>> SamplerStates = {};
+	inline static Storage<Microsoft::WRL::ComPtr<ID3D11DepthStencilState>> DepthStencilStates = {};
 };
