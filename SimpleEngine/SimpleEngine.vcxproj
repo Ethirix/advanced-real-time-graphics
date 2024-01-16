@@ -141,9 +141,11 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="RasterizerStateConfig.cpp" />
+    <ClCompile Include="SceneGraphsConfig.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -157,9 +159,11 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="DataStore.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="LightData.h" />
     <ClInclude Include="RasterizerStateConfig.h" />
+    <ClInclude Include="SceneGraphsConfig.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="ShaderComponent.h" />
     <ClInclude Include="ShaderData.h" />
@@ -169,6 +173,7 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Configuration\RasterizerStateConfig.json" />
+    <None Include="Assets\Configuration\SceneGraphs.json" />
     <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli" />
     <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli" />
     <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli" />

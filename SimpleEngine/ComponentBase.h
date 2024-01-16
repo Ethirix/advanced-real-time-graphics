@@ -2,6 +2,6 @@
 
 class ComponentBase
 {
-public:
-	//virtual ~ComponentBase() = 0;
+	virtual void Update();
+	virtual void FixedUpdate();
 };
