@@ -38,11 +38,11 @@
     <Filter Include="Header Files\Configuration">
       <UniqueIdentifier>{aa4e6d0d-b049-43e0-bc7f-6ddfaf5fa7da}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Configuration\Files">
-      <UniqueIdentifier>{78d112bc-9870-45a4-9122-1e748f33479f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Configuration">
       <UniqueIdentifier>{b77c26ae-784a-4538-8811-5fe632fe860c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Configuration">
+      <UniqueIdentifier>{78d112bc-9870-45a4-9122-1e748f33479f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +56,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RasterizerStateConfig.cpp">
+      <Filter>Source Files\Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraphsConfig.cpp">
       <Filter>Source Files\Configuration</Filter>
     </ClCompile>
   </ItemGroup>
@@ -117,6 +123,12 @@
     <ClInclude Include="BufferPair.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraphsConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
@@ -169,7 +181,10 @@
     </None>
     <None Include="packages.config" />
     <None Include="Assets\Configuration\RasterizerStateConfig.json">
-      <Filter>Header Files\Configuration\Files</Filter>
+      <Filter>Resource Files\Configuration</Filter>
+    </None>
+    <None Include="Assets\Configuration\SceneGraphs.json">
+      <Filter>Resource Files\Configuration</Filter>
     </None>
   </ItemGroup>
 </Project>

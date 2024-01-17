@@ -1,5 +1,4 @@
 #pragma once
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -12,21 +11,49 @@ public:
 	void Update();
 
 	template <typename T>
-	std::optional<std::weak_ptr<T>> TryGetComponent()
+	T* GetComponent()
 	{
-		if (!std::is_base_of<ComponentBase, T>())
+		if (!std::is_base_of<ComponentBase, T>() || _components.size() == 0)
+			return nullptr;
+
+		for (std::unique_ptr<ComponentBase> component : _components)
+		{
+			if (T* derivedComponent = dynamic_cast<T*>(component.get()); derivedComponent)
+				return derivedComponent;
+		}
+
+		return nullptr;
+	}
+
+	template <typename T>
+	std::optional<T*> TryGetComponent()
+	{
+		if (!std::is_base_of<ComponentBase, T>() || _components.size() == 0)
 			return {};
 
-		std::for_each(_components.cbegin(), _components.cend(), 
-			[](std::unique_ptr<ComponentBase> component) -> void	
-			{
-				T* derivedComponent = dynamic_cast<T*>(*component);
+		for (std::unique_ptr<ComponentBase> component : _components)
+		{
+			if (T* derivedComponent = dynamic_cast<T*>(component.get()); derivedComponent)
+				return derivedComponent;
+		}
 
-				if (derivedComponent)
-				{
-					
-				}
-			});
+		return {};
+	}
+
+	template <typename T>
+	std::vector<T*> GetComponents()
+	{
+		if (!std::is_base_of<ComponentBase, T>() || _components.size() == 0)
+			return {};
+
+		std::vector<T*> components;
+		for (std::unique_ptr<ComponentBase> component : _components)
+		{
+			if (T* derivedComponent = dynamic_cast<T*>(component.get()); derivedComponent)
+				components.emplace_back(derivedComponent);
+		}
+
+		return components;
 	}
 
 	template <typename T>
