@@ -147,6 +147,7 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="RasterizerStateConfig.cpp" />
+    <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SceneGraphsConfig.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
@@ -174,6 +175,7 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
     <ClInclude Include="MeshType.h" />
     <ClInclude Include="RasterizerStateConfig.h" />
     <ClInclude Include="SafePointerArray.h" />
+    <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="SceneGraphsConfig.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Shaders.h" />

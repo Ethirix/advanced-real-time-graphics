@@ -2,12 +2,14 @@
 #include <d3d11_4.h>
 #include <d3dcompiler.h>
 #include <filesystem>
+#include <fstream>
 #include <nlohmann/json.hpp>
 
 #include "Buffers.h"
 #include "CBObjectCameraData.h"
 #include "Configuration.h"
 #include "DataStore.h"
+#include "GameObject.h"
 
 LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)  
 {
@@ -230,7 +232,6 @@ HRESULT SimpleEngine::InitializeShaders()
 		if (directoryEntry.is_directory() || directoryEntry.path().extension() != ".hlsl")
 			continue;
 
-		//TODO: Shader Compilation
 		const std::filesystem::path& fsPath = directoryEntry.path();
 
 		if (std::string filePath = fsPath.filename().string(); filePath.find("VS_") != std::string::npos)
@@ -283,7 +284,30 @@ HRESULT SimpleEngine::InitializePipeline()
 
 HRESULT SimpleEngine::InitializeRunTimeData()
 {
-	std::ifstream fileStream("Assets/Configuration/SceneGraph.json")
+	std::ifstream fileStream("Assets/Configuration/SceneGraph.json");
+	nlohmann::json json = nlohmann::json::parse(fileStream);
+
+	for (auto gameObjectConfig : json)
+	{
+		GameObject obj = GameObject(gameObjectConfig["Name"]);
+		nlohmann::json position = json["Position"];
+		obj.Transform->SetPosition(position["X"], position["Y"], position["Z"]);
+		nlohmann::json scale = json["Scale"];
+		obj.Transform->SetScale(scale["X"], scale["Y"], scale["Z"]);
+		nlohmann::json rotation = json["Rotation"];
+		obj.Transform->SetRotation(rotation["X"], rotation["Y"], rotation["Z"]);
+
+		for(auto child : json["Children"])
+		{
+			GameObject childGameObject = GameObject(child["Name"], obj.Transform.get());
+			position = child["Position"];
+			childGameObject.Transform->SetPosition(position["X"], position["Y"], position["Z"]);
+			scale = child["Scale"];
+			childGameObject.Transform->SetScale(scale["X"], scale["Y"], scale["Z"]);
+			rotation = child["Rotation"];
+			childGameObject.Transform->SetRotation(rotation["X"], rotation["Y"], rotation["Z"]);
+		}
+	}
 
 	return S_OK;
 }

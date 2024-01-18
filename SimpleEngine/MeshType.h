@@ -2,7 +2,6 @@
 
 enum MeshType
 {
-	None,
 	LeftHand,
 	RightHand
 };
