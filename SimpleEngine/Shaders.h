@@ -1,8 +1,7 @@
 ﻿#pragma once
-#include "ComponentBase.h"
 #include "ShaderData.h"
 
-class ShaderComponent : public ComponentBase
+class Shaders
 {
 public:
 	ShaderData<ID3D11PixelShader> PixelShader = {nullptr, Pixel, 0 };

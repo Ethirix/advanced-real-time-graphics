@@ -1,15 +1,22 @@
 #pragma once
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "ComponentBase.h"
+#include "TransformComponent.h"
 
 class GameObject
 {
 public:
+	explicit GameObject(const std::string& name = "DefaultName", TransformComponent* parent = nullptr);
 	void Update();
 
+	std::string Name;
+	std::unique_ptr<TransformComponent> Transform;
+
+#pragma region Component Functions
 	template <typename T>
 	T* GetComponent()
 	{
@@ -61,6 +68,7 @@ public:
 	{
 		_components.emplace_back(component);
 	}
+#pragma endregion
 protected:
 	std::vector<std::unique_ptr<ComponentBase>> _components = {};
 };

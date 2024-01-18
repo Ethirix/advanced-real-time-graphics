@@ -5,5 +5,4 @@ class Configuration
 {
 public:
 	static inline RasterizerStateConfig RasterizerStateConfig = {};
-
 };

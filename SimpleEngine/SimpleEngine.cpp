@@ -2,6 +2,7 @@
 #include <d3d11_4.h>
 #include <d3dcompiler.h>
 #include <filesystem>
+#include <nlohmann/json.hpp>
 
 #include "Buffers.h"
 #include "CBObjectCameraData.h"
@@ -282,7 +283,7 @@ HRESULT SimpleEngine::InitializePipeline()
 
 HRESULT SimpleEngine::InitializeRunTimeData()
 {
-	//TODO: Load objects and other data from file.
+	std::ifstream fileStream("Assets/Configuration/SceneGraph.json")
 
 	return S_OK;
 }

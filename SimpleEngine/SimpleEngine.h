@@ -9,7 +9,7 @@
 #include <wrl.h>
 
 #include "Screen.h"
-#include "ShaderComponent.h"
+#include "Shaders.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -59,7 +59,7 @@ private:
 
 	std::chrono::time_point<std::chrono::steady_clock> _lastFrameTime = std::chrono::high_resolution_clock::now();
 	double _timeSinceLastFixedUpdate = 0;
-	std::map<std::string, ShaderComponent> _shaders = {};
+	std::map<std::string, Shaders> _shaders = {};
 	std::unique_ptr<Screen> _screen = std::make_unique<Screen>(800, 600);
 };
 

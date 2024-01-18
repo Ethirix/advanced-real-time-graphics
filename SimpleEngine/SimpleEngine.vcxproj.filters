@@ -44,6 +44,21 @@
     <Filter Include="Resource Files\Configuration">
       <UniqueIdentifier>{78d112bc-9870-45a4-9122-1e748f33479f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{4aaf9d0f-dc07-4f32-a430-1284cfd04cee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Creation">
+      <UniqueIdentifier>{d2f3e6e1-a940-47cd-b852-82ab38d7b660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Enums">
+      <UniqueIdentifier>{977bedc1-9f8e-48c3-bfcc-927de829fea9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Meshes">
+      <UniqueIdentifier>{4ff43be6-c4fb-4dbe-b32c-4977b197733b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Materials">
+      <UniqueIdentifier>{499d651c-397a-4a4c-917a-70fcf0aebeb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -64,6 +79,15 @@
     <ClCompile Include="SceneGraphsConfig.cpp">
       <Filter>Source Files\Configuration</Filter>
     </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Factory.cpp">
+      <Filter>Data Creation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SimpleEngine.h">
@@ -73,15 +97,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShaderData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
@@ -128,6 +143,48 @@
     </ClInclude>
     <ClInclude Include="SceneGraphsConfig.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentBase.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SafePointerArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Factory.h">
+      <Filter>Data Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshType.h">
+      <Filter>Header Files\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderType.h">
+      <Filter>Header Files\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CreatedMeshes.h">
+      <Filter>Data Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshComponentConfig.h">
+      <Filter>Header Files\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponentConfig.h">
+      <Filter>Header Files\Configuration</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -183,8 +240,16 @@
     <None Include="Assets\Configuration\RasterizerStateConfig.json">
       <Filter>Resource Files\Configuration</Filter>
     </None>
-    <None Include="Assets\Configuration\SceneGraphs.json">
+    <None Include="Assets\Configuration\SceneGraph.json">
       <Filter>Resource Files\Configuration</Filter>
     </None>
+    <None Include="Assets\Materials\suzanne.mtl">
+      <Filter>Resource Files\Materials</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Assets\Meshes\suzanne.obj">
+      <Filter>Resource Files\Meshes</Filter>
+    </Object>
   </ItemGroup>
 </Project>

@@ -141,12 +141,15 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Factory.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SceneGraphsConfig.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
+    <ClCompile Include="TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferPair.h" />
@@ -158,22 +161,34 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="CreatedMeshes.h" />
     <ClInclude Include="DataStore.h" />
+    <ClInclude Include="Factory.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="LightData.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshComponent.h" />
+    <ClInclude Include="MeshComponentConfig.h" />
+    <ClInclude Include="MeshType.h" />
     <ClInclude Include="RasterizerStateConfig.h" />
+    <ClInclude Include="SafePointerArray.h" />
     <ClInclude Include="SceneGraphsConfig.h" />
     <ClInclude Include="Screen.h" />
-    <ClInclude Include="ShaderComponent.h" />
+    <ClInclude Include="Shaders.h" />
     <ClInclude Include="ShaderData.h" />
     <ClInclude Include="ShaderType.h" />
     <ClInclude Include="SimpleEngine.h" />
     <ClInclude Include="Storage.h" />
+    <ClInclude Include="TransformComponent.h" />
+    <ClInclude Include="TransformComponentConfig.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Configuration\RasterizerStateConfig.json" />
-    <None Include="Assets\Configuration\SceneGraphs.json" />
+    <None Include="Assets\Configuration\SceneGraph.json" />
+    <None Include="Assets\Materials\suzanne.mtl" />
     <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli" />
     <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli" />
     <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli" />
@@ -197,6 +212,9 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli" />
     <None Include="Assets\Shaders\Functions\Lighting.hlsli" />
     <None Include="Assets\Shaders\Structs\Texture.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Assets\Meshes\suzanne.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
