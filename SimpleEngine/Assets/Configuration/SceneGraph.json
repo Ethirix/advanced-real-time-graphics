@@ -46,14 +46,15 @@
       "Y": 0,
       "Z": 0
     },
-    "Components": {
-      "MeshComponent": {
+    "Components": [
+      {
+        "Type": "MeshComponent",
         "MeshPath": "Assets/Meshes/suzanne.obj",
         "MaterialPath": "Assets/Materials/suzanne.mtl",
         "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
         "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
         "MeshType": 1
-      }
-    }
+      },
+    ]
   }
 }

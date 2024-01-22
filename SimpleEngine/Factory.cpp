@@ -89,18 +89,19 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		{
 			stringStream >> mesh->SmoothShaded;
 		}
-		else if (objToken == "mtllib")
-		{
-			std::string name;
-			stringStream >> name;
+		//TODO: update .mtl loading to use direct path to file instead of reading it from the .obj
+		//else if (objToken == "mtllib")
+		//{
+		//	std::string name;
+		//	stringStream >> name;
 
-			std::string matPath = "Materials/" + name;
-			std::optional<std::shared_ptr<::Material>> material = Material::MaterialFromPath(matPath);
-			if (!material.has_value())
-				mesh->Material = {};
+		//	std::string matPath = "Materials/" + name;
+		//	std::optional<std::shared_ptr<::Material>> material = Material::MaterialFromPath(matPath);
+		//	if (!material.has_value())
+		//		mesh->Material = {};
 
-			mesh->Material = material.value();
-		}
+		//	mesh->Material = material.value();
+		//}
 		else if (objToken == "f")
 		{
 			std::vector<UINT> data;
