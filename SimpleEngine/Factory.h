@@ -17,13 +17,11 @@
 #define OPTIONAL_SHARED_PTR_MESH std::optional<SHARED_PTR_MESH>
 #define OPTIONAL_BUFFER std::optional<BUFFER>
 
-#define OPTIONAL_SHARED_MATERIAL
-
 class Factory
 {
 #pragma region Mesh Functions
 public:
-	static OPTIONAL_SHARED_PTR_MESH CreateMesh(PATH_STR path, DEVICE device, MeshType type);
+	static OPTIONAL_SHARED_PTR_MESH CreateMesh(PATH_STR meshPath, DEVICE device, MeshType type);
 private:
 	static OPTIONAL_SHARED_PTR_MESH DoesMeshExist(PATH_STR path);
 
@@ -38,6 +36,13 @@ private:
 
 #pragma region Material Functions
 public:
-	 
+	static Material CreateMaterial(PATH_STR materialPath);
+private:
+
+#pragma endregion
+
+#pragma region Shader Functions
+public:
+	static 
 #pragma endregion
 };

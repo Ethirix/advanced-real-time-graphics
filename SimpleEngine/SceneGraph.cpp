@@ -16,7 +16,7 @@ void SceneGraph::InitializeSceneGraph(nlohmann::json json, TransformComponent* p
 {
 	for (auto objs : json)
 	{
-		GameObject obj = GameObject(objs["Name"], parent);
+		auto obj = GameObject(objs["Name"], parent);
 		nlohmann::json position = json["Position"];
 		obj.Transform->SetPosition(position["X"], position["Y"], position["Z"]);
 		nlohmann::json scale = json["Scale"];
@@ -26,14 +26,22 @@ void SceneGraph::InitializeSceneGraph(nlohmann::json json, TransformComponent* p
 
 		for (auto component : json["Components"])
 		{
-			std::string type = component["Type"];
-
-			if (type == "MeshComponent")
+			if (std::string type = component["Type"]; type == "MeshComponent")
 			{
-				MeshComponent meshComponent = MeshComponent();
+				auto meshComponent = MeshComponent(
+					&obj,
+					component["MeshPath"],
+					component["MaterialPath"],
+					component["VertexShaderPath"],
+					component["PixelShaderPath"],
+					component["MeshType"]
+				);
 				obj.AddComponent(meshComponent);
 			}
-			
+			else if (type == "PhysicsComponent")
+			{
+				//TODO: Add physics component
+			}
 		}
 	}
 }
