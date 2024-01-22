@@ -10,6 +10,7 @@
 #include "Configuration.h"
 #include "DataStore.h"
 #include "GameObject.h"
+#include "SceneGraph.h"
 
 LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)  
 {
@@ -284,30 +285,8 @@ HRESULT SimpleEngine::InitializePipeline()
 
 HRESULT SimpleEngine::InitializeRunTimeData()
 {
-	std::ifstream fileStream("Assets/Configuration/SceneGraph.json");
-	nlohmann::json json = nlohmann::json::parse(fileStream);
-
-	for (auto gameObjectConfig : json)
-	{
-		GameObject obj = GameObject(gameObjectConfig["Name"]);
-		nlohmann::json position = json["Position"];
-		obj.Transform->SetPosition(position["X"], position["Y"], position["Z"]);
-		nlohmann::json scale = json["Scale"];
-		obj.Transform->SetScale(scale["X"], scale["Y"], scale["Z"]);
-		nlohmann::json rotation = json["Rotation"];
-		obj.Transform->SetRotation(rotation["X"], rotation["Y"], rotation["Z"]);
-
-		for(auto child : json["Children"])
-		{
-			GameObject childGameObject = GameObject(child["Name"], obj.Transform.get());
-			position = child["Position"];
-			childGameObject.Transform->SetPosition(position["X"], position["Y"], position["Z"]);
-			scale = child["Scale"];
-			childGameObject.Transform->SetScale(scale["X"], scale["Y"], scale["Z"]);
-			rotation = child["Rotation"];
-			childGameObject.Transform->SetRotation(rotation["X"], rotation["Y"], rotation["Z"]);
-		}
-	}
+	_sceneGraph = std::make_unique<SceneGraph>(
+		"Assets/Configuration/SceneGraph.json", _device);
 
 	return S_OK;
 }

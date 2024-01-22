@@ -3,10 +3,10 @@
 #pragma region Scale
 DirectX::XMFLOAT3& TransformComponent::GetScale(const bool recursiveBlock)
 {
-	if (!Parent || recursiveBlock)
+	if (Parent.expired() || recursiveBlock)
 		return _scale;
 
-	const DirectX::XMFLOAT3 parentScale = Parent->GetScale(true);
+	const DirectX::XMFLOAT3 parentScale = Parent.lock()->GetScale(true);
 	DirectX::XMFLOAT3 realScale =
 	{
 		_scale.x / parentScale.x,
@@ -46,10 +46,10 @@ DirectX::XMFLOAT3& TransformComponent::GetWorldPosition()
 
 DirectX::XMFLOAT3& TransformComponent::GetPosition()
 {
-	if (!Parent)
+	if (Parent.expired())
 		return _localPosition;
 
-	const DirectX::XMFLOAT3 parentScale = Parent->GetScale(true);
+	const DirectX::XMFLOAT3 parentScale = Parent.lock()->GetScale(true);
 
 	DirectX::XMFLOAT3 realPosition =
 	{

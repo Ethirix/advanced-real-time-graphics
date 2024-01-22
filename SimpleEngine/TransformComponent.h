@@ -1,5 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
+#include <memory>
 #include <vector>
 class GameObject;
 
@@ -8,8 +9,8 @@ class TransformComponent final:
     public ComponentBase
 {
 public:
-	TransformComponent* Parent;
-	std::vector<TransformComponent*> Children;
+	std::weak_ptr<TransformComponent> Parent;
+	std::vector <std::weak_ptr<TransformComponent>> Children;
 	DirectX::XMFLOAT4X4 WorldMatrix;
 
 private:
@@ -18,7 +19,7 @@ private:
 	DirectX::XMFLOAT3 _rotation = { 0, 0, 0 };
 
 public:
-	explicit TransformComponent(class GameObject* owningGameObject, TransformComponent* parent = nullptr) : ComponentBase(owningGameObject)
+	explicit TransformComponent(std::weak_ptr<::GameObject> owningGameObject, const std::weak_ptr<TransformComponent>& parent = {}) : ComponentBase(owningGameObject)
 	{
 		WorldMatrix = {};
 		Parent = parent;

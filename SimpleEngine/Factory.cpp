@@ -5,7 +5,11 @@
 #include <sstream>
 #include <vector>
 
-OPTIONAL_SHARED_PTR_MESH Factory::CreateMesh(PATH_STR path, DEVICE device)
+#include "DataStore.h"
+
+#pragma region Mesh Functions
+
+OPTIONAL_SHARED_PTR_MESH Factory::CreateMesh(PATH_STR path, MeshType type, DEVICE device)
 {
 	OPTIONAL_SHARED_PTR_MESH mesh = DoesMeshExist(path);
 	if (mesh.has_value())
@@ -26,7 +30,7 @@ OPTIONAL_SHARED_PTR_MESH Factory::DoesMeshExist(PATH_STR path)
 	for (LOADED_MESHES::iterator i = _createdMeshes.Meshes.begin();
 			i != _createdMeshes.Meshes.end(); ++i)
 	{
-		for (i->first == path)
+		if (i->first == path)
 			return i->second;
 	}
 
@@ -89,19 +93,6 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		{
 			stringStream >> mesh->SmoothShaded;
 		}
-		//TODO: update .mtl loading to use direct path to file instead of reading it from the .obj
-		//else if (objToken == "mtllib")
-		//{
-		//	std::string name;
-		//	stringStream >> name;
-
-		//	std::string matPath = "Materials/" + name;
-		//	std::optional<std::shared_ptr<::Material>> material = Material::MaterialFromPath(matPath);
-		//	if (!material.has_value())
-		//		mesh->Material = {};
-
-		//	mesh->Material = material.value();
-		//}
 		else if (objToken == "f")
 		{
 			std::vector<UINT> data;
@@ -162,3 +153,139 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 
 	return mesh;
 }
+
+OPTIONAL_BUFFER Factory::InitializeVertexBuffer(PATH_STR path, const SHARED_PTR_MESH& mesh, DEVICE device)
+{
+	BUFFER buffer = BUFFER();
+
+	D3D11_BUFFER_DESC vertexBufferDesc = {};
+	vertexBufferDesc.ByteWidth = sizeof(class Vertex) * mesh->Vertices.Length;
+	vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA subresourceVertexData = { mesh->Vertices.Elements };
+
+	HRESULT hr = device->CreateBuffer(&vertexBufferDesc, &subresourceVertexData, &buffer);
+	if (FAILED(hr))
+		return {};
+
+	_createdMeshes.VertexBuffers.emplace_back(path, buffer);
+
+	return buffer;
+}
+
+OPTIONAL_BUFFER Factory::InitializeIndexBuffer(PATH_STR path, const SHARED_PTR_MESH& mesh, DEVICE device)
+{
+	BUFFER buffer = BUFFER();
+
+	D3D11_BUFFER_DESC indexBufferDesc = {};
+	indexBufferDesc.ByteWidth = sizeof(*mesh->VertexIndices.Elements) * mesh->VertexIndices.Length; //size of the index data
+	indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA subresourceIndexData = { mesh->VertexIndices.Elements };
+
+	HRESULT hr = device->CreateBuffer(&indexBufferDesc, &subresourceIndexData, &buffer);
+	if (FAILED(hr))
+		return {};
+
+	_createdMeshes.IndexBuffers.emplace_back(path, buffer);
+
+	return buffer;
+}
+
+#pragma endregion
+
+#pragma region Material Functions
+
+OPTIONAL_SHARED_PTR_MTL Factory::CreateMaterial(PATH_STR path)
+{
+	if (OPTIONAL_SHARED_PTR_MTL mtl = WavefrontMTLLoader(path); mtl.has_value())
+		return mtl;
+	return {};
+}
+
+OPTIONAL_SHARED_PTR_MTL Factory::WavefrontMTLLoader(PATH_STR path)
+{
+	SHARED_PTR_MTL material = SHARED_PTR_MTL();
+
+	std::ifstream fileStream;
+	std::string currentLine;
+
+	fileStream.open(path);
+	if (!fileStream.is_open())
+		return {};
+
+	while (std::getline(fileStream, currentLine))
+	{
+		std::istringstream stringStream(currentLine);
+		std::string objToken;
+		stringStream >> objToken;
+
+		if (objToken == "Ka")
+		{
+			DirectX::XMFLOAT4 v4;
+			stringStream >> v4.x;
+			stringStream >> v4.y;
+			stringStream >> v4.z;
+
+			material->Ambient = v4;
+		}
+		else if (objToken == "Kd")
+		{
+			DirectX::XMFLOAT4 v4;
+			stringStream >> v4.x;
+			stringStream >> v4.y;
+			stringStream >> v4.z;
+
+			material->Diffuse = v4;
+		}
+		else if (objToken == "Ks")
+		{
+			DirectX::XMFLOAT4 v4;
+			stringStream >> v4.x;
+			stringStream >> v4.y;
+			stringStream >> v4.z;
+
+			material->Specular = v4;
+		}
+		else if (objToken == "Ns")
+		{
+			stringStream >> material->SpecularExponent;
+		}
+		else if (objToken == "newmtl")
+		{
+			stringStream >> material->Name;
+		}
+		else if (objToken == "d")
+		{
+			stringStream >> material->Transparency;
+		}
+	}
+
+	return material;
+}
+
+#pragma endregion
+
+#pragma region Shader Functions
+
+bool Factory::LoadVertexShader(PATH_STR path, SHARED_PTR_MTL material)
+{
+	OPTIONAL_SHADER_DATA_VERTEX vertex = DataStore::VertexShaders.Retrieve(path);
+	if (vertex.has_value())
+		material->Shader.VertexShader = vertex.value();
+
+	return vertex.has_value();
+}
+
+bool Factory::LoadPixelShader(PATH_STR path, SHARED_PTR_MTL material)
+{
+	OPTIONAL_SHADER_DATA_PIXEL pixel = DataStore::PixelShaders.Retrieve(path);
+	if (pixel.has_value())
+		material->Shader.PixelShader = pixel.value();
+
+	return pixel.has_value();
+}
+
+#pragma endregion

@@ -10,11 +10,11 @@
 class GameObject
 {
 public:
-	explicit GameObject(const std::string& name = "DefaultName", TransformComponent* parent = nullptr);
+	explicit GameObject(const std::string& name = "DefaultName", std::weak_ptr<TransformComponent> parent = {});
 	void Update();
 
 	std::string Name;
-	std::unique_ptr<TransformComponent> Transform;
+	std::shared_ptr<TransformComponent> Transform;
 
 #pragma region Component Functions
 	template <typename T>
@@ -23,7 +23,7 @@ public:
 		if (!std::is_base_of<ComponentBase, T>() || _components.size() == 0)
 			return nullptr;
 
-		for (std::unique_ptr<ComponentBase> component : _components)
+		for (std::shared_ptr<ComponentBase> component : _components)
 		{
 			if (T* derivedComponent = dynamic_cast<T*>(component.get()); derivedComponent)
 				return derivedComponent;
@@ -38,7 +38,7 @@ public:
 		if (!std::is_base_of<ComponentBase, T>() || _components.size() == 0)
 			return {};
 
-		for (std::unique_ptr<ComponentBase> component : _components)
+		for (std::shared_ptr<ComponentBase> component : _components)
 		{
 			if (T* derivedComponent = dynamic_cast<T*>(component.get()); derivedComponent)
 				return derivedComponent;
@@ -54,7 +54,7 @@ public:
 			return {};
 
 		std::vector<T*> components;
-		for (std::unique_ptr<ComponentBase> component : _components)
+		for (std::shared_ptr<ComponentBase> component : _components)
 		{
 			if (T* derivedComponent = dynamic_cast<T*>(component.get()); derivedComponent)
 				components.emplace_back(derivedComponent);
@@ -70,6 +70,6 @@ public:
 	}
 #pragma endregion
 protected:
-	std::vector<std::unique_ptr<ComponentBase>> _components = {};
+	std::vector<std::shared_ptr<ComponentBase>> _components = {};
 };
 

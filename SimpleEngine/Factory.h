@@ -10,18 +10,20 @@
 #include "MeshType.h"
 
 #define PATH_STR const std::string&
+#define MTL Material
 #define DEVICE const Microsoft::WRL::ComPtr<ID3D11Device>&
 #define BUFFER Microsoft::WRL::ComPtr<ID3D11Buffer>
 #define SHARED_PTR_MESH std::shared_ptr<Mesh>
+#define SHARED_PTR_MTL std::shared_ptr<MTL>
 #define OPTIONAL_SHARED_PTR_MESH std::optional<SHARED_PTR_MESH>
-#define OPTIONAL_SHARED_PTR_MESH std::optional<SHARED_PTR_MESH>
+#define OPTIONAL_SHARED_PTR_MTL std::optional<SHARED_PTR_MTL>
 #define OPTIONAL_BUFFER std::optional<BUFFER>
 
 class Factory
 {
 #pragma region Mesh Functions
 public:
-	static OPTIONAL_SHARED_PTR_MESH CreateMesh(PATH_STR meshPath, DEVICE device, MeshType type);
+	static OPTIONAL_SHARED_PTR_MESH CreateMesh(PATH_STR path, MeshType type, DEVICE device);
 private:
 	static OPTIONAL_SHARED_PTR_MESH DoesMeshExist(PATH_STR path);
 
@@ -36,13 +38,15 @@ private:
 
 #pragma region Material Functions
 public:
-	static Material CreateMaterial(PATH_STR materialPath);
+	static OPTIONAL_SHARED_PTR_MTL CreateMaterial(PATH_STR path);
 private:
-
+	static OPTIONAL_SHARED_PTR_MTL WavefrontMTLLoader(PATH_STR path);
 #pragma endregion
 
 #pragma region Shader Functions
 public:
-	static 
+	static bool LoadVertexShader(PATH_STR path, SHARED_PTR_MTL material);
+
+	static bool LoadPixelShader(PATH_STR path, SHARED_PTR_MTL material);
 #pragma endregion
 };

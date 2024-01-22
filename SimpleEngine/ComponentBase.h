@@ -11,5 +11,5 @@ public:
 	virtual void Update();
 	virtual void FixedUpdate();
 
-	GameObject* GameObject;
+	std::weak_ptr<GameObject> GameObject;
 };
