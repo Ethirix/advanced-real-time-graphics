@@ -10,10 +10,10 @@
 class MeshComponent final : public ComponentBase
 {
 public:
-	explicit MeshComponent(class GameObject* owningGameObject, const Microsoft::WRL::ComPtr<ID3D11Device>& device, PATH meshPath, PATH materialPath, PATH vertexShaderPath, PATH pixelShaderPath, MeshType meshType);
+	explicit MeshComponent(const std::weak_ptr<::GameObject>& owningGameObject, const Microsoft::WRL::ComPtr<ID3D11Device>& device, PATH meshPath, PATH materialPath, PATH vertexShaderPath, PATH pixelShaderPath, MeshType meshType);
 
-	void FixedUpdate() override;
-	void Update() override;
+	void FixedUpdate() override {};
+	void Update() override {};
 
 	std::shared_ptr<Mesh> Mesh;
 	std::shared_ptr<Material> Material{};

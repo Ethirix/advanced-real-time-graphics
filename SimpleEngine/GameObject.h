@@ -7,11 +7,13 @@
 #include "ComponentBase.h"
 #include "TransformComponent.h"
 
-class GameObject
+class GameObject : std::enable_shared_from_this<GameObject>
 {
 public:
-	explicit GameObject(const std::string& name = "DefaultName", std::weak_ptr<TransformComponent> parent = {});
-	void Update();
+	static std::shared_ptr<GameObject> Create(const std::string& name = "DefaultName", std::weak_ptr<TransformComponent> parent = {});
+	void Update() {};
+
+	std::shared_ptr<GameObject> This() { return shared_from_this(); }
 
 	std::string Name;
 	std::shared_ptr<TransformComponent> Transform;
@@ -71,5 +73,7 @@ public:
 #pragma endregion
 protected:
 	std::vector<std::shared_ptr<ComponentBase>> _components = {};
+
+	//explicit GameObject(const std::string& name = "DefaultName", std::weak_ptr<TransformComponent> parent = {});
 };
 

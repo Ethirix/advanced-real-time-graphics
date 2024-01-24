@@ -21,15 +21,16 @@
             "Y": 0,
             "Z": 0
           },
-          "Components": {
-            "MeshComponent": {
+          "Components": [
+            {
+              "Type": "MeshComponent", 
               "MeshPath": "Assets/Meshes/Icosphere3.obj",
               "MaterialPath": "Assets/Materials/Icosphere3.mtl",
               "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
               "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
-              "MeshType": 1
+              "MeshType": 1   
             }
-          }
+          ]
         }
       ],
       "Position": {

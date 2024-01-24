@@ -25,9 +25,9 @@ void SceneGraph::InitializeSceneGraph(const nlohmann::json& json,
 std::shared_ptr<GameObject> SceneGraph::RunInitializationRecursive(
 	nlohmann::json json,
 	const Microsoft::WRL::ComPtr<ID3D11Device>& device,
-	std::weak_ptr<TransformComponent> parent)
+	const std::weak_ptr<TransformComponent>& parent)
 {
-	auto obj = std::make_shared<GameObject>(json["Name"], parent);
+	auto obj = GameObject::Create(json["Name"], parent);
 	nlohmann::json position = json["Position"];
 	obj->Transform->SetPosition(position["X"], position["Y"], position["Z"]);
 	nlohmann::json scale = json["Scale"];
@@ -39,8 +39,8 @@ std::shared_ptr<GameObject> SceneGraph::RunInitializationRecursive(
 	{
 		if (std::string type = component["Type"]; type == "MeshComponent")
 		{
-			auto meshComponent = MeshComponent(
-				obj.get(),
+			auto meshComponent = std::make_shared<MeshComponent>(
+				obj,
 				device,
 				component["MeshPath"],
 				component["MaterialPath"],

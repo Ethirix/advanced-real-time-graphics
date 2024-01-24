@@ -207,7 +207,7 @@ OPTIONAL_SHARED_PTR_MTL Factory::CreateMaterial(PATH_STR path)
 
 OPTIONAL_SHARED_PTR_MTL Factory::WavefrontMTLLoader(PATH_STR path)
 {
-	SHARED_PTR_MTL material = SHARED_PTR_MTL();
+	SHARED_PTR_MTL material = std::make_shared<Material>();
 
 	std::ifstream fileStream;
 	std::string currentLine;

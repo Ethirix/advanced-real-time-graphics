@@ -88,6 +88,9 @@
     <ClCompile Include="Factory.cpp">
       <Filter>Data Creation</Filter>
     </ClCompile>
+    <ClCompile Include="SceneGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SimpleEngine.h">
@@ -186,6 +189,9 @@
     <ClInclude Include="TransformComponentConfig.h">
       <Filter>Header Files\Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="SceneGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
@@ -246,10 +252,8 @@
     <None Include="Assets\Materials\suzanne.mtl">
       <Filter>Resource Files\Materials</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Assets\Meshes\suzanne.obj">
+    <None Include="Assets\Meshes\suzanne.obj">
       <Filter>Resource Files\Meshes</Filter>
-    </Object>
+    </None>
   </ItemGroup>
 </Project>

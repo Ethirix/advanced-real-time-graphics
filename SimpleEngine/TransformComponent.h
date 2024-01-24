@@ -2,7 +2,6 @@
 #include <DirectXMath.h>
 #include <memory>
 #include <vector>
-class GameObject;
 
 #include "ComponentBase.h"
 class TransformComponent final:
@@ -19,14 +18,17 @@ private:
 	DirectX::XMFLOAT3 _rotation = { 0, 0, 0 };
 
 public:
-	explicit TransformComponent(std::weak_ptr<::GameObject> owningGameObject, const std::weak_ptr<TransformComponent>& parent = {}) : ComponentBase(owningGameObject)
+	explicit TransformComponent(
+		const std::weak_ptr<::GameObject>& owningGameObject, 
+		const std::weak_ptr<TransformComponent>& parent = {})
+	: ComponentBase(owningGameObject)
 	{
 		WorldMatrix = {};
 		Parent = parent;
 	}
 
-    void Update() override;
-    void FixedUpdate() override;
+    void Update() override {};
+    void FixedUpdate() override {};
 
 	void SetPosition(DirectX::XMFLOAT3 pos);
 	void SetPosition(float x, float y, float z);

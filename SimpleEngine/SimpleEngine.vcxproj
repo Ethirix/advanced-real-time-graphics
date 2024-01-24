@@ -216,7 +216,13 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
     <None Include="Assets\Shaders\Structs\Texture.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="Assets\Meshes\suzanne.obj" />
+    <None Include="Assets\Meshes\suzanne.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,15 +1,14 @@
 ﻿#pragma once
-class GameObject;
 
+class GameObject;
 class ComponentBase
 {
 public:
-	explicit ComponentBase(GameObject* owningGameObject);
+	explicit ComponentBase(const std::weak_ptr<GameObject>& owningGameObject)
+	: GameObject(owningGameObject) { }
 
-	virtual ~ComponentBase();
+	virtual void Update() = 0;
+	virtual void FixedUpdate() = 0;
 
-	virtual void Update();
-	virtual void FixedUpdate();
-
-	std::weak_ptr<GameObject> GameObject;
+	std::weak_ptr<GameObject> GameObject = {};
 };

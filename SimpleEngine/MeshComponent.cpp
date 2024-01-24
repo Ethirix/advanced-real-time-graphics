@@ -2,7 +2,7 @@
 
 #include "Factory.h"
 
-MeshComponent::MeshComponent(class GameObject* owningGameObject, const Microsoft::WRL::ComPtr<ID3D11Device>& device,
+MeshComponent::MeshComponent(const std::weak_ptr<class GameObject>& owningGameObject, const Microsoft::WRL::ComPtr<ID3D11Device>& device,
                              PATH meshPath, PATH materialPath,
                              PATH vertexShaderPath, PATH pixelShaderPath, 
                              MeshType meshType) : ComponentBase(owningGameObject)

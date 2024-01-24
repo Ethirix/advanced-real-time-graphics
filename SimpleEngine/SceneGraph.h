@@ -18,5 +18,5 @@ private:
 
 	void InitializeSceneGraph(const nlohmann::json& json, const Microsoft::WRL::ComPtr<ID3D11Device>& device);
 
-	std::shared_ptr<GameObject> RunInitializationRecursive(nlohmann::json json, const Microsoft::WRL::ComPtr<ID3D11Device>& device, std::weak_ptr<TransformComponent> parent = {});
+	std::shared_ptr<GameObject> RunInitializationRecursive(nlohmann::json json, const Microsoft::WRL::ComPtr<ID3D11Device>& device, const std::weak_ptr<TransformComponent>& parent = {});
 };
