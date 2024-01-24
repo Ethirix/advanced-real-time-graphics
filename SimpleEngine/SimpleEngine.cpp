@@ -54,7 +54,7 @@ LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wPara
 	return 0;
 }
 
-HRESULT SimpleEngine::Initialize(HINSTANCE hInstance, int nShowCmd)
+HRESULT SimpleEngine::Initialise(HINSTANCE hInstance, int nShowCmd)
 {
 	HRESULT hr = S_OK;
 
@@ -70,7 +70,7 @@ HRESULT SimpleEngine::Initialize(HINSTANCE hInstance, int nShowCmd)
 	hr = CreateFrameBuffer();
 	if (FAILED(hr)) return E_FAIL;
 
-	hr = InitializeShaders();
+	hr = InitialiseShaders();
 	if (FAILED(hr)) return E_FAIL;
 
 	hr = InitializePipeline();
@@ -221,7 +221,7 @@ HRESULT SimpleEngine::CreateFrameBuffer()
 	return hr;
 }
 
-HRESULT SimpleEngine::InitializeShaders()
+HRESULT SimpleEngine::InitialiseShaders()
 {
 	std::string path = "Assets/Shaders";
 
@@ -258,7 +258,7 @@ HRESULT SimpleEngine::InitializeShaders()
 	return S_OK;
 }
 
-HRESULT SimpleEngine::InitializePipeline()
+HRESULT SimpleEngine::InitialisePipeline()
 {
 	HRESULT hr = S_OK;
 
@@ -283,7 +283,7 @@ HRESULT SimpleEngine::InitializePipeline()
 	return hr;
 }
 
-HRESULT SimpleEngine::InitializeRunTimeData()
+HRESULT SimpleEngine::InitialiseRunTimeData()
 {
 	_sceneGraph = std::make_unique<SceneGraph>(
 		"Assets/Configuration/SceneGraph.json", _device);
@@ -291,7 +291,7 @@ HRESULT SimpleEngine::InitializeRunTimeData()
 	return S_OK;
 }
 
-HRESULT SimpleEngine::InitializeVertexShaderLayout(ID3DBlob* vsBlob)
+HRESULT SimpleEngine::InitialiseVertexShaderLayout(ID3DBlob* vsBlob)
 {
 	D3D11_INPUT_ELEMENT_DESC vsInputLayout[] =
 	{
@@ -424,7 +424,7 @@ ComPtr<ID3D11PixelShader> SimpleEngine::CompilePixelShader(LPCWSTR path)
 	return ps;
 }
 
-HRESULT SimpleEngine::InitializeRasterizerStates()
+HRESULT SimpleEngine::InitialiseRasterizerStates()
 {
 	HRESULT hr = S_OK;
 
@@ -447,7 +447,7 @@ HRESULT SimpleEngine::InitializeRasterizerStates()
 	return hr;
 }
 
-HRESULT SimpleEngine::InitializeBuffers()
+HRESULT SimpleEngine::InitialiseBuffers()
 {
 	HRESULT hr = S_OK;
 
@@ -495,7 +495,7 @@ HRESULT SimpleEngine::InitializeBuffers()
 	return hr;
 }
 
-HRESULT SimpleEngine::InitializeSamplers()
+HRESULT SimpleEngine::InitialiseSamplers()
 {
 	HRESULT hr = S_OK;
 
@@ -516,7 +516,7 @@ HRESULT SimpleEngine::InitializeSamplers()
 	return hr;
 }
 
-HRESULT SimpleEngine::InitializeDepthStencils()
+HRESULT SimpleEngine::InitialiseDepthStencils()
 {
 	HRESULT hr = S_OK;
 
@@ -617,9 +617,9 @@ void SimpleEngine::Update()
 
 void SimpleEngine::Draw()
 {
-	float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
+	float backgroundColour[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
-	_context->ClearRenderTargetView(_frameBufferView.Get(), backgroundColor);
+	_context->ClearRenderTargetView(_frameBufferView.Get(), backgroundColour);
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 
 	_swapChain->Present(0, 0);

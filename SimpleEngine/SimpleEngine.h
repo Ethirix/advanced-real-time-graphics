@@ -19,7 +19,7 @@ class SimpleEngine
 public:
 	SimpleEngine() = default;
 
-	HRESULT Initialize(HINSTANCE hInstance, int nShowCmd);
+	HRESULT Initialise(HINSTANCE hInstance, int nShowCmd);
 
 	void Update();
 	void FixedUpdate(double fixedDeltaTime) {}
@@ -33,17 +33,17 @@ private:
 	HRESULT CreateD3DDevice();
 	HRESULT CreateSwapChain();
 	HRESULT CreateFrameBuffer();
-	HRESULT InitializeShaders();
-	HRESULT InitializePipeline();
-	HRESULT InitializeRunTimeData();
+	HRESULT InitialiseShaders();
+	HRESULT InitialisePipeline();
+	HRESULT InitialiseRunTimeData();
 
-	HRESULT InitializeVertexShaderLayout(ID3DBlob* vsBlob);
+	HRESULT InitialiseVertexShaderLayout(ID3DBlob* vsBlob);
 	ComPtr<ID3D11VertexShader> CompileVertexShader(LPCWSTR path);
 	ComPtr<ID3D11PixelShader> CompilePixelShader(LPCWSTR path);
-	HRESULT InitializeRasterizerStates();
-	HRESULT InitializeBuffers();
-	HRESULT InitializeSamplers();
-	HRESULT InitializeDepthStencils();
+	HRESULT InitialiseRasterizerStates();
+	HRESULT InitialiseBuffers();
+	HRESULT InitialiseSamplers();
+	HRESULT InitialiseDepthStencils();
 
 	HWND _hwnd;
 

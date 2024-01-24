@@ -9,20 +9,20 @@ SceneGraph::SceneGraph(const std::string& path, const Microsoft::WRL::ComPtr<ID3
 	nlohmann::json json = nlohmann::json::parse(fileStream);
 	fileStream.close();
 
-	InitializeSceneGraph(json, device);
+	InitialiseSceneGraph(json, device);
 }
 
-void SceneGraph::InitializeSceneGraph(const nlohmann::json& json, 
+void SceneGraph::InitialiseSceneGraph(const nlohmann::json& json, 
 	const Microsoft::WRL::ComPtr<ID3D11Device>& device)
 {
 	for (auto& objs : json["GameObjects"])
 	{
-		auto obj = RunInitializationRecursive(objs, device);
+		auto obj = RunInitialisationRecursive(objs, device);
 		_sceneGraph.emplace_back(std::move(obj));
 	}
 }
 
-std::shared_ptr<GameObject> SceneGraph::RunInitializationRecursive(
+std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	nlohmann::json json,
 	const Microsoft::WRL::ComPtr<ID3D11Device>& device,
 	const std::weak_ptr<TransformComponent>& parent)
@@ -59,7 +59,8 @@ std::shared_ptr<GameObject> SceneGraph::RunInitializationRecursive(
 
 	for (auto children : json["Children"])
 	{
-		auto child = RunInitializationRecursive(children, device, obj->Transform);
+		auto child = RunInitialisationRecursive(children, device, obj->Transform);
+		obj->Transform->Children.emplace_back(child->Transform);
 		_sceneGraph.emplace_back(std::move(child));
 	}
 
