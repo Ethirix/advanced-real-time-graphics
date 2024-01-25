@@ -1,6 +1,45 @@
 {
   "GameObjects": [
     {
+      "Name": "MainCamera",
+      "Children": [],
+      "Position": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Scale": {
+        "X": 1,
+        "Y": 1,
+        "Z": 1
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "CameraComponent",
+          "FieldOfView": 90.0,
+          "At": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "Up": {
+            "X": 0,
+            "Y": 1,
+            "Z": 0
+          },
+          "NearPlane": 0.01,
+          "FarPlane": 100000.0,
+          "MovementSpeed": 5.0,
+          "RotationSpeed": 5.0
+        }
+      ]
+    },
+    {
       "Name": "Suzanne",
       "Children": [
         {
@@ -23,12 +62,18 @@
           },
           "Components": [
             {
-              "Type": "MeshComponent", 
+              "Type": "MeshComponent",
               "MeshPath": "Assets/Meshes/Icosphere3.obj",
               "MaterialPath": "Assets/Materials/Icosphere3.mtl",
               "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
               "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
-              "MeshType": 1   
+              "MeshType": 1,
+              "TexturePaths": {
+                "Diffuse": "",
+                "Displacement": "",
+                "Normal": "",
+                "Specular": ""
+              }
             }
           ]
         }
@@ -36,7 +81,7 @@
       "Position": {
         "X": 0,
         "Y": 0,
-        "Z": 0
+        "Z": 20
       },
       "Scale": {
         "X": 1,
@@ -55,7 +100,13 @@
           "MaterialPath": "Assets/Materials/suzanne.mtl",
           "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
           "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
-          "MeshType": 1
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": "",
+            "Displacement": "",
+            "Normal": "",
+            "Specular": ""
+          }
         }
       ]
     }

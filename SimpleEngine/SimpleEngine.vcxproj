@@ -141,6 +141,8 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="Factory.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Helpers.cpp" />
@@ -155,6 +157,7 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
   <ItemGroup>
     <ClInclude Include="BufferPair.h" />
     <ClInclude Include="Buffers.h" />
+    <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CBLighting.h" />
     <ClInclude Include="CBMaterial.h" />
     <ClInclude Include="CBObjectCameraData.h" />
@@ -164,6 +167,7 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
     <ClInclude Include="Constants.h" />
     <ClInclude Include="CreatedMeshes.h" />
     <ClInclude Include="DataStore.h" />
+    <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="Factory.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Helpers.h" />

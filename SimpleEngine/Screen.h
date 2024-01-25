@@ -2,9 +2,6 @@
 
 struct Screen
 {
-	Screen(int width, int height, bool fullscreen = false)
-		: Width(width), Height(height), Fullscreen(fullscreen) {}
-
-	int Width, Height;
-	bool Fullscreen;
+	static int Width, Height;
+	static bool Fullscreen;
 };

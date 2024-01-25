@@ -91,35 +91,44 @@ void TransformComponent::AddToPosition(float x, float y, float z)
 #pragma region Rotation
 void TransformComponent::SetRotation(const DirectX::XMFLOAT3 rot)
 {
-	_rotation = rot;
+	XMStoreFloat4(&_quaternion, 
+		DirectX::XMQuaternionRotationRollPitchYawFromVector(
+			XMLoadFloat3(&rot)));
 }
 
 void TransformComponent::SetRotation(float x, float y, float z)
 {
-	_rotation = { x, y, z };
+	XMStoreFloat4(&_quaternion,
+		DirectX::XMQuaternionRotationRollPitchYaw(x, y, z));
 }
 
 void TransformComponent::AddToRotation(DirectX::XMFLOAT3 rot)
 {
-	_rotation = {
-		_rotation.x + rot.x,
-		_rotation.y + rot.y,
-		_rotation.z + rot.z
-	};
+	XMStoreFloat4(&_quaternion, DirectX::XMQuaternionMultiply(XMLoadFloat4(&_quaternion), 
+		DirectX::XMQuaternionRotationRollPitchYawFromVector(
+		XMLoadFloat3(&rot))));
 }
 
 void TransformComponent::AddToRotation(float x, float y, float z)
 {
-	_rotation = {
-		_rotation.x + x,
-		_rotation.y + y,
-		_rotation.z + z
-	};
+	XMStoreFloat4(&_quaternion, DirectX::XMQuaternionMultiply(XMLoadFloat4(&_quaternion),
+		DirectX::XMQuaternionRotationRollPitchYaw(x, y, z)));
 }
 
-
-DirectX::XMFLOAT3& TransformComponent::GetRotation()
+DirectX::XMFLOAT4& TransformComponent::GetRotation()
 {
-	return _rotation;
+	return _quaternion;
 }
 #pragma endregion
+
+void TransformComponent::Update(double deltaTime)
+{
+	DirectX::XMMATRIX matrix = DirectX::XMMatrixScaling(_scale.x, _scale.y, _scale.z)
+		* DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&_quaternion))
+		* DirectX::XMMatrixTranslation(_localPosition.x, _localPosition.y, _localPosition.z);
+
+	if (!Parent.expired())
+		matrix *= XMLoadFloat4x4(&Parent.lock()->WorldMatrix);
+
+	XMStoreFloat4x4(&WorldMatrix, matrix);
+}

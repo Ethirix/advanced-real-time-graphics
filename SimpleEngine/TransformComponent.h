@@ -15,7 +15,7 @@ public:
 private:
 	DirectX::XMFLOAT3 _localPosition = { 0, 0, 0 };
 	DirectX::XMFLOAT3 _scale = { 1, 1, 1 };
-	DirectX::XMFLOAT3 _rotation = { 0, 0, 0 };
+	DirectX::XMFLOAT4 _quaternion = {};
 
 public:
 	explicit TransformComponent(
@@ -27,8 +27,9 @@ public:
 		Parent = parent;
 	}
 
-    void Update() override {};
-    void FixedUpdate() override {};
+    void Update(double deltaTime) override;
+    void FixedUpdate(double fixedDeltaTime) override {};
+	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override {};
 
 	void SetPosition(DirectX::XMFLOAT3 pos);
 	void SetPosition(float x, float y, float z);
@@ -46,7 +47,7 @@ public:
 	[[nodiscard]] DirectX::XMFLOAT3& GetPosition();
 	[[nodiscard]] DirectX::XMFLOAT3& GetScale(bool recursiveBlock = false);
 
-	[[nodiscard]] DirectX::XMFLOAT3& GetRotation();
+	[[nodiscard]] DirectX::XMFLOAT4& GetRotation();
 	[[nodiscard]] DirectX::XMFLOAT3& GetWorldPosition();
 };
 

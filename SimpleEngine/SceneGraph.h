@@ -13,6 +13,8 @@ public:
 	GameObject* operator[](std::size_t index) { return _sceneGraph[index].get(); }
 	const GameObject* operator[](std::size_t index) const { return _sceneGraph[index].get(); }
 
+	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context);
+
 private:
 	std::vector<std::shared_ptr<GameObject>> _sceneGraph {};
 

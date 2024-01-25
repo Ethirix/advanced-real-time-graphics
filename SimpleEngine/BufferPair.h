@@ -6,5 +6,5 @@ template <typename T>
 struct BufferPair
 {
 	T BufferData;
-	ComPtr<ID3D11Buffer> Buffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> Buffer;
 };

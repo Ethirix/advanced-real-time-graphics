@@ -5,7 +5,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 {
 	SimpleEngine simpleEngine = SimpleEngine();
 
-	if (FAILED(simpleEngine.Initialize(hInstance, nShowCmd)))
+	if (FAILED(simpleEngine.Initialise(hInstance, nShowCmd)))
 		return -1;
 
 	MSG msg = {nullptr, 0, WPARAM(), LPARAM(), DWORD(), POINT() };

@@ -1,6 +1,7 @@
 ﻿#include "SceneGraph.h"
 #include <fstream>
 
+#include "CameraComponent.h"
 #include "MeshComponent.h"
 
 SceneGraph::SceneGraph(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device)
@@ -55,6 +56,27 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 		{
 			//TODO: Add physics component
 		}
+		else if (type == "CameraComponent")
+		{
+			auto cameraComponent = std::make_shared<CameraComponent>(
+				obj,
+				component["FieldOfView"],
+				DirectX::XMFLOAT3(
+					component["At"]["X"], 
+					component["At"]["Z"], 
+					component["At"]["Z"]),
+				DirectX::XMFLOAT3(
+					component["Up"]["X"], 
+					component["Up"]["Y"], 
+					component["Up"]["Z"]),
+				component["NearPlane"],
+				component["FarPlane"],
+				component["MovementSpeed"],
+				component["RotationSpeed"]
+			);
+
+			obj->AddComponent(cameraComponent);
+		}
 	}
 
 	for (auto children : json["Children"])
@@ -67,3 +89,14 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	return obj;
 }
 
+void SceneGraph::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
+{
+	for (auto object : _sceneGraph)
+	{
+		auto meshComponent = object->TryGetComponent<MeshComponent>();
+		if (!meshComponent.has_value())
+			continue;
+
+		meshComponent.value()->Draw(context);
+	}
+}

@@ -2,15 +2,14 @@
 #include <d3d11_4.h>
 #include <d3dcompiler.h>
 #include <filesystem>
-#include <fstream>
 #include <nlohmann/json.hpp>
 
 #include "Buffers.h"
 #include "CBObjectCameraData.h"
 #include "Configuration.h"
 #include "DataStore.h"
-#include "GameObject.h"
 #include "SceneGraph.h"
+#include "Screen.h"
 
 LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)  
 {
@@ -73,10 +72,10 @@ HRESULT SimpleEngine::Initialise(HINSTANCE hInstance, int nShowCmd)
 	hr = InitialiseShaders();
 	if (FAILED(hr)) return E_FAIL;
 
-	hr = InitializePipeline();
+	hr = InitialisePipeline();
 	if (FAILED(hr)) return E_FAIL;
 
-	hr = InitializeRunTimeData();
+	hr = InitialiseRunTimeData();
 	if (FAILED(hr)) return E_FAIL;
 
 	return hr;
@@ -101,7 +100,7 @@ HRESULT SimpleEngine::CreateWindowHandle(HINSTANCE hInstance)
 	RegisterClassW(&wndClass);
 
 	_hwnd = CreateWindowExW(0, windowName, windowName, WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 
-        _screen->Width, _screen->Height, nullptr, nullptr, hInstance, nullptr);
+		Screen::Width, Screen::Height, nullptr, nullptr, hInstance, nullptr);
 
     SetWindowLongPtrA(_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
@@ -242,7 +241,9 @@ HRESULT SimpleEngine::InitialiseShaders()
 				return E_FAIL;
 
 			ShaderData vsData = { vs, Vertex };
-			DataStore::VertexShaders.Store(fsPath.string(), vsData);
+			std::string vsPath = fsPath.string();
+			std::ranges::replace(vsPath, '\\', '/');
+			DataStore::VertexShaders.Store(vsPath, vsData);
 		}
 		else if (filePath.find("PS_") != std::string::npos)
 		{
@@ -251,7 +252,9 @@ HRESULT SimpleEngine::InitialiseShaders()
 				return E_FAIL;
 
 			ShaderData psData = { ps, Pixel };
-			DataStore::PixelShaders.Store(fsPath.string(), psData);
+			std::string psPath = fsPath.string();
+			std::ranges::replace(psPath, '\\', '/');
+			DataStore::PixelShaders.Store(psPath, psData);
 		}
 	}
 
@@ -265,19 +268,22 @@ HRESULT SimpleEngine::InitialisePipeline()
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_context->IASetInputLayout(_inputLayout.Get());
 
-	hr = InitializeRasterizerStates();
+	hr = InitialiseRasterizerStates();
 	if (FAILED(hr)) return hr;
 
-	_viewport = { 0.0f, 0.0f, static_cast<float>(_screen->Width), static_cast<float>(_screen->Height), 0.0f, 1.0f};
+	_viewport = { 0.0f, 0.0f,
+		static_cast<float>(Screen::Width),
+		static_cast<float>(Screen::Height),
+		0.0f, 1.0f};
 	_context->RSSetViewports(1, &_viewport);
 
-	hr = InitializeBuffers();
+	hr = InitialiseBuffers();
 	if (FAILED(hr)) return hr;
 
-	hr = InitializeSamplers();
+	hr = InitialiseSamplers();
 	if (FAILED(hr)) return hr;
 
-	hr = InitializeDepthStencils();
+	hr = InitialiseDepthStencils();
 	if (FAILED(hr)) return hr;
 
 	return hr;
@@ -359,7 +365,7 @@ ComPtr<ID3D11VertexShader> SimpleEngine::CompileVertexShader(LPCWSTR path)
 
 	if (_inputLayout == nullptr)
 	{
-		hr = InitializeVertexShaderLayout(vsBlob);
+		hr = InitialiseVertexShaderLayout(vsBlob);
 		if (FAILED(hr)) return {};
 	}
 
@@ -535,14 +541,14 @@ HRESULT SimpleEngine::InitialiseDepthStencils()
 
 void SimpleEngine::OnWindowSizeChanged(WPARAM resizeType, UINT width, UINT height)
 {
-	_screen->Width = static_cast<int>(width);
-	_screen->Height = static_cast<int>(height);
+	Screen::Width = static_cast<int>(width);
+	Screen::Height = static_cast<int>(height);
 
 	BOOL fsState;
 	HRESULT hr = _swapChain->GetFullscreenState(&fsState, nullptr);
 
-	if (resizeType == SIZE_MAXIMIZED || fsState != _screen->Fullscreen)
-	    _screen->Fullscreen = fsState;
+	if (resizeType == SIZE_MAXIMIZED || fsState != Screen::Fullscreen)
+		Screen::Fullscreen = fsState;
 }
 
 void SimpleEngine::OnWindowSizeChangeComplete()
@@ -553,18 +559,18 @@ void SimpleEngine::OnWindowSizeChangeComplete()
 	_depthStencilBuffer->Release();
 
 	DXGI_MODE_DESC dxgiModeDesc {};
-	dxgiModeDesc.Width = _screen->Width;
-	dxgiModeDesc.Height = _screen->Height;
+	dxgiModeDesc.Width = Screen::Width;
+	dxgiModeDesc.Height = Screen::Height;
 	HRESULT hr = _swapChain->ResizeTarget(&dxgiModeDesc);
-	hr = _swapChain->ResizeBuffers(0, _screen->Width, _screen->Height, DXGI_FORMAT_UNKNOWN, 0);
-	ComPtr<ID3D11Texture2D> buffer;
-	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(buffer.GetAddressOf()));
+	hr = _swapChain->ResizeBuffers(0, Screen::Width, Screen::Height, DXGI_FORMAT_UNKNOWN, 0);
+	ID3D11Texture2D* buffer;
+	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&buffer));
 
 	D3D11_RENDER_TARGET_VIEW_DESC bufferDesc = {};
 	bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     bufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
-	hr = _device->CreateRenderTargetView(buffer.Get(), &bufferDesc, _frameBufferView.GetAddressOf());
+	hr = _device->CreateRenderTargetView(buffer, &bufferDesc, _frameBufferView.GetAddressOf());
 
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
 	buffer->GetDesc(&depthBufferDesc);
@@ -574,10 +580,12 @@ void SimpleEngine::OnWindowSizeChangeComplete()
 	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf());
 	hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), nullptr, _depthStencilView.GetAddressOf());
 
+	buffer->Release();
+
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 
-	_viewport.Width = static_cast<float>(_screen->Width);
-	_viewport.Height = static_cast<float>(_screen->Height);
+	_viewport.Width = static_cast<float>(Screen::Width);
+	_viewport.Height = static_cast<float>(Screen::Height);
     _viewport.MinDepth = 0.0f;
     _viewport.MaxDepth = 1.0f;
     _viewport.TopLeftX = 0;
@@ -621,6 +629,12 @@ void SimpleEngine::Draw()
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 	_context->ClearRenderTargetView(_frameBufferView.Get(), backgroundColour);
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+
+	Buffers::CBObjectCameraData.BufferData.CameraPosition = {};
+	Buffers::CBObjectCameraData.BufferData.View = {};
+	Buffers::CBObjectCameraData.BufferData.Projection = {};
+
+	_sceneGraph->Draw(_context);
 
 	_swapChain->Present(0, 0);
 }
