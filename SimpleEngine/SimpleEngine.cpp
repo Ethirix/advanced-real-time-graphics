@@ -625,10 +625,23 @@ void SimpleEngine::Update()
 
 void SimpleEngine::Draw()
 {
+	
+	if (_camera.expired())
+	{
+		float errorColour[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
+		_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
+		_context->ClearRenderTargetView(_frameBufferView.Get(), errorColour);
+		_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+
+		_swapChain->Present(0,0);
+		return;
+	}
+
 	float backgroundColour[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 	_context->ClearRenderTargetView(_frameBufferView.Get(), backgroundColour);
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+
 
 	Buffers::CBObjectCameraData.BufferData.CameraPosition = {};
 	Buffers::CBObjectCameraData.BufferData.View = {};

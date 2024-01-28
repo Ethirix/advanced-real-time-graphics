@@ -63,11 +63,11 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 				component["FieldOfView"],
 				DirectX::XMFLOAT3(
 					component["At"]["X"], 
-					component["At"]["Z"], 
+					component["At"]["Y"], 
 					component["At"]["Z"]),
 				DirectX::XMFLOAT3(
 					component["Up"]["X"], 
-					component["Up"]["Y"], 
+					component["Up"]["Y"],
 					component["Up"]["Z"]),
 				component["NearPlane"],
 				component["FarPlane"],
@@ -89,7 +89,7 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	return obj;
 }
 
-void SceneGraph::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
+void SceneGraph::Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context)
 {
 	for (auto object : _sceneGraph)
 	{

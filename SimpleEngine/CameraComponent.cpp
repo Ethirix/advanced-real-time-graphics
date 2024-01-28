@@ -6,16 +6,24 @@ CameraComponent::CameraComponent(WP_GAMEOBJECT owningGameObject,
                                  float fov, DirectX::XMFLOAT3 at, DirectX::XMFLOAT3 up, 
 								 float nearPlane, float farPlane,
                                  float movementSpeed, float rotationSpeed)
-: ComponentBase(owningGameObject), _at(at), _up(up),
-	_nearDepth(nearPlane), _farDepth(farPlane), _fieldOfView(fov)
+: ComponentBase(owningGameObject)
 {
+	_at = at;
+	_up = up;
+	_nearDepth = nearPlane;
+	_farDepth = farPlane;
+	_fieldOfView = fov;
+
+	ZeroCheck();
 	_eye = GameObject.lock().get()->Transform->GetPosition();
 
+	_view = {};
 	XMStoreFloat4x4(&_view, DirectX::XMMatrixLookAtLH(
 		                XMLoadFloat3(&_eye),
 		                XMLoadFloat3(&_at),
 		                XMLoadFloat3(&_up)));
 
+	_projection = {};
 	XMStoreFloat4x4(&_projection, 
 		DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(_fieldOfView),
 		static_cast<float>(Screen::Width) / static_cast<float>(Screen::Height),
@@ -24,6 +32,12 @@ CameraComponent::CameraComponent(WP_GAMEOBJECT owningGameObject,
 
 void CameraComponent::Update(double deltaTime)
 {
-	
+	ZeroCheck();
 }
 
+void CameraComponent::ZeroCheck()
+{
+	auto t = GameObject.lock().get()->Transform;
+	if (t->GetPosition().x == 0, t->GetPosition().y, t->GetPosition().z)
+		t->SetPosition(FLT_EPSILON, 0, 0);
+}

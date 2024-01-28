@@ -2,6 +2,7 @@
 
 struct Screen
 {
-	static int Width, Height;
-	static bool Fullscreen;
+	inline static int Width = 800;
+	inline static int Height = 600;
+	inline static bool Fullscreen = false;
 };

@@ -31,6 +31,8 @@ public:
 	void SetUp(const DirectX::XMFLOAT3 up) { _up = up; }
 
 private:
+	void ZeroCheck();
+
 	DirectX::XMFLOAT3 _eye, _at, _up;
 	DirectX::XMFLOAT4X4 _view, _projection;
 

@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <wrl.h>
 
+#include "CameraComponent.h"
 #include "SceneGraph.h"
 #include "Shaders.h"
 
@@ -61,5 +62,6 @@ private:
 	double _timeSinceLastFixedUpdate = 0;
 	std::map<std::string, Shaders> _shaders = {};
 	std::unique_ptr<SceneGraph> _sceneGraph = nullptr;
+	std::weak_ptr<CameraComponent> _camera = {};
 };
 
