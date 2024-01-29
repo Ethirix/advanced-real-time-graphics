@@ -1,5 +1,7 @@
 #include "TransformComponent.h"
 
+#include "Buffers.h"
+
 #pragma region Scale
 DirectX::XMFLOAT3& TransformComponent::GetScale(const bool recursiveBlock)
 {
@@ -125,10 +127,11 @@ void TransformComponent::Update(double deltaTime)
 {
 	DirectX::XMMATRIX matrix = DirectX::XMMatrixScaling(_scale.x, _scale.y, _scale.z)
 		* DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&_quaternion))
-		* DirectX::XMMatrixTranslation(_localPosition.x, _localPosition.y, _localPosition.z);
+		* DirectX::XMMatrixTranslation(GetPosition().x, GetPosition().y, GetPosition().z);
 
 	if (!Parent.expired())
 		matrix *= XMLoadFloat4x4(&Parent.lock()->WorldMatrix);
 
 	XMStoreFloat4x4(&WorldMatrix, matrix);
+	Buffers::CBObjectCameraData.BufferData.World = XMMatrixTranspose(matrix);
 }

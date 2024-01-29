@@ -163,8 +163,8 @@ HRESULT SimpleEngine::CreateD3DDevice()
 HRESULT SimpleEngine::CreateSwapChain()
 {
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc;
-	swapChainDesc.Width = 0; // Defer to WindowWidth
-    swapChainDesc.Height = 0; // Defer to WindowHeight
+	swapChainDesc.Width = Screen::Width; // Defer to WindowWidth
+    swapChainDesc.Height = Screen::Height; // Defer to WindowHeight
     swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //FLIP* modes don't support sRGB back buffer
     swapChainDesc.Stereo = FALSE;
     swapChainDesc.SampleDesc.Count = 1;
@@ -619,13 +619,22 @@ void SimpleEngine::Update()
 		FixedUpdate(PHYSICS_TIMESTEP);
 		_timeSinceLastFixedUpdate -= PHYSICS_TIMESTEP;
 	}
-
 #pragma endregion
+
+	if (auto cameraComponent = _sceneGraph->TryGetComponentFromObjects<CameraComponent>();
+		cameraComponent.has_value())
+		_camera = cameraComponent.value();
+
+	_sceneGraph->Update(deltaTime);
+}
+
+void SimpleEngine::FixedUpdate(double fixedDeltaTime)
+{
+	_sceneGraph->FixedUpdate(fixedDeltaTime);
 }
 
 void SimpleEngine::Draw()
 {
-	
 	if (_camera.expired())
 	{
 		float errorColour[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
@@ -637,15 +646,12 @@ void SimpleEngine::Draw()
 		return;
 	}
 
+	std::shared_ptr<CameraComponent> camera = _camera.lock();
+
 	float backgroundColour[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 	_context->ClearRenderTargetView(_frameBufferView.Get(), backgroundColour);
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
-
-
-	Buffers::CBObjectCameraData.BufferData.CameraPosition = {};
-	Buffers::CBObjectCameraData.BufferData.View = {};
-	Buffers::CBObjectCameraData.BufferData.Projection = {};
 
 	_sceneGraph->Draw(_context);
 

@@ -82,7 +82,7 @@ LightingOut CalculatePointLight(
 
     if (textures.Diffuse.HasTexture == true)
     {
-        float4 textureColor = textures.Diffuse.Texture.Sample(BilinearSampler, textureCoordinates);
+        float4 textureColor = textures.Diffuse.Texture.Sample(S0_BilinearSampler, textureCoordinates);
         lighting.AmbientOut *= textureColor;
         lighting.DiffuseOut *= textureColor;
     }
@@ -94,7 +94,7 @@ LightingOut CalculatePointLight(
 
     if (textures.Specular.HasTexture == true)
     {
-        lighting.SpecularOut *= textures.Specular.Texture.Sample(BilinearSampler, textureCoordinates);
+        lighting.SpecularOut *= textures.Specular.Texture.Sample(S0_BilinearSampler, textureCoordinates);
     }
     else
     {

@@ -11,7 +11,8 @@ class GameObject : std::enable_shared_from_this<GameObject>
 {
 public:
 	static std::shared_ptr<GameObject> Create(const std::string& name = "DefaultName", std::weak_ptr<TransformComponent> parent = {});
-	void Update() {};
+	void Update(double deltaTime);
+	void FixedUpdate(double fixedDeltaTime);
 
 	std::shared_ptr<GameObject> This() { return shared_from_this(); }
 
@@ -20,14 +21,14 @@ public:
 
 #pragma region Component Functions
 	template <typename T>
-	T* GetComponent()
+	std::weak_ptr<T> GetComponent()
 	{
 		if (!std::is_base_of<ComponentBase, T>() || _components.size() == 0)
 			return nullptr;
 
 		for (std::shared_ptr<ComponentBase> component : _components)
 		{
-			if (T* derivedComponent = dynamic_cast<T*>(component.get()); derivedComponent)
+			if (std::shared_ptr<T> derivedComponent = std::dynamic_pointer_cast<T>(component); derivedComponent)
 				return derivedComponent;
 		}
 
@@ -35,14 +36,14 @@ public:
 	}
 
 	template <typename T>
-	std::optional<T*> TryGetComponent()
+	std::optional<std::weak_ptr<T>> TryGetComponent()
 	{
 		if (!std::is_base_of<ComponentBase, T>() || _components.size() == 0)
 			return {};
 
 		for (std::shared_ptr<ComponentBase> component : _components)
 		{
-			if (T* derivedComponent = dynamic_cast<T*>(component.get()); derivedComponent)
+			if (std::shared_ptr<T> derivedComponent = std::dynamic_pointer_cast<T>(component); derivedComponent)
 				return derivedComponent;
 		}
 
@@ -50,15 +51,15 @@ public:
 	}
 
 	template <typename T>
-	std::vector<T*> GetComponents()
+	std::vector<std::weak_ptr<T>> GetComponents()
 	{
 		if (!std::is_base_of<ComponentBase, T>() || _components.size() == 0)
 			return {};
 
-		std::vector<T*> components;
+		std::vector<std::weak_ptr<T>> components;
 		for (std::shared_ptr<ComponentBase> component : _components)
 		{
-			if (T* derivedComponent = dynamic_cast<T*>(component.get()); derivedComponent)
+			if (std::shared_ptr<T> derivedComponent = std::dynamic_pointer_cast<T>(component); derivedComponent)
 				components.emplace_back(derivedComponent);
 		}
 
@@ -73,7 +74,5 @@ public:
 #pragma endregion
 protected:
 	std::vector<std::shared_ptr<ComponentBase>> _components = {};
-
-	//explicit GameObject(const std::string& name = "DefaultName", std::weak_ptr<TransformComponent> parent = {});
 };
 

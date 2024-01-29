@@ -5,6 +5,7 @@
 #include <memory>
 
 #define WP_GAMEOBJECT const std::weak_ptr<::GameObject>&
+#define SP_GAMEOBJECT const std::shared_ptr<::GameObject>&
 
 class GameObject;
 class ComponentBase

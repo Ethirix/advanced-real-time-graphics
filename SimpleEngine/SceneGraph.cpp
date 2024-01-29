@@ -97,6 +97,18 @@ void SceneGraph::Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context
 		if (!meshComponent.has_value())
 			continue;
 
-		meshComponent.value()->Draw(context);
+		meshComponent.value().lock()->Draw(context);
 	}
+}
+
+void SceneGraph::Update(double deltaTime)
+{
+	for (std::shared_ptr<GameObject> gameObject : _sceneGraph)
+		gameObject->Update(deltaTime);
+}
+
+void SceneGraph::FixedUpdate(double fixedDeltaTime)
+{
+	for (std::shared_ptr<GameObject> gameObject : _sceneGraph)
+		gameObject->FixedUpdate(fixedDeltaTime);
 }

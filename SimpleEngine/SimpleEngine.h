@@ -22,7 +22,7 @@ public:
 	HRESULT Initialise(HINSTANCE hInstance, int nShowCmd);
 
 	void Update();
-	void FixedUpdate(double fixedDeltaTime) {}
+	void FixedUpdate(double fixedDeltaTime);
 	void Draw();
 
 	void OnWindowSizeChanged(WPARAM resizeType, UINT width, UINT height);

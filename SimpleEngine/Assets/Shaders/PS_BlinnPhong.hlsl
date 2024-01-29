@@ -15,7 +15,7 @@ float4 PS_Main(VS_BaseOut input) : SV_TARGET
     float4 ambient = float4(0, 0, 0, 0);
     float4 diffuse = float4(0, 0, 0, 0);
     float4 specular = float4(0, 0, 0, 0);
-    Textures textures = CreateTexturesFromTextures(DiffuseTexture, HasDiffuseTexture, SpecularTexture,
+    Textures textures = CreateTexturesFromTextures(T0_DiffuseTexture, HasDiffuseTexture, T1_SpecularTexture,
                                                    HasSpecularTexture);
     Material material = CreateMaterial(DiffuseMaterial, AmbientMaterial, SpecularMaterial, SpecularExponent);
 
@@ -36,7 +36,7 @@ float4 PS_Main(VS_BaseOut input) : SV_TARGET
         specular += float4(light.SpecularOut, 0);
     }
 
-	float4 color = float4(0, 0, 0, 0);
+	float4 color = float4(1, 0, 0, 0);
 	color += ambient;
 	color += diffuse;
 	color += specular;

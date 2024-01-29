@@ -112,10 +112,14 @@
       <AdditionalDependencies>user32.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
       <Command>MKDIR "$(OutputPath)Assets\"
 
-ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&amp; %ERRORLEVEL% LEQ 1 EXIT 0</Command>
-    </PostBuildEvent>
+(ROBOCOPY "$(ProjectDir)Assets" "$(OutputPath)Assets" /E /MIR /DCOPY:DA /COPY:DAT) ^&amp; IF %ERRORLEVEL% LEQ 1 EXIT 0</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -135,10 +139,14 @@ ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&am
       <AdditionalDependencies>user32.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
       <Command>MKDIR "$(OutputPath)Assets\"
 
-ROBOCOPY "$(ProjectDir)Assets\\" "$(OutputPath)Assets\\" /E /IS /IT /IM /MT ^&amp; %ERRORLEVEL% LEQ 1 EXIT 0</Command>
-    </PostBuildEvent>
+(ROBOCOPY "$(ProjectDir)Assets" "$(OutputPath)Assets" /E /MIR /DCOPY:DA /COPY:DAT) ^&amp; IF %ERRORLEVEL% LEQ 1 EXIT 0</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CameraComponent.cpp" />

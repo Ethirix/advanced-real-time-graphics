@@ -3,7 +3,7 @@
 
 #include "Structs/LightData.hlsli"
 
-cbuffer LightBuffer : register(b3)
+cbuffer CB3_Lighting : register(b3)
 {
     LightData PointLights[32];
 	uint ActiveLightCount;

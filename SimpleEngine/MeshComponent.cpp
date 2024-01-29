@@ -60,14 +60,11 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
         Buffers::CBMaterial.BufferData.Specular = {};
         Buffers::CBMaterial.BufferData.SpecularExponent = {};
     }
-    
 
     D3D11_MAPPED_SUBRESOURCE objectCameraData, materialData, texturesData, lightingData;
 
     context->Map(Buffers::CBObjectCameraData.Buffer.Get(), 
         0, D3D11_MAP_WRITE_DISCARD, 0, &objectCameraData);
-    Buffers::CBObjectCameraData.BufferData.World = XMMatrixTranspose(
-	    XMLoadFloat4x4(&GameObject.lock().get()->Transform->WorldMatrix));
     memcpy(objectCameraData.pData, &Buffers::CBObjectCameraData.BufferData,
            sizeof(Buffers::CBObjectCameraData.BufferData));
     context->Unmap(Buffers::CBObjectCameraData.Buffer.Get(), 0);
