@@ -36,8 +36,8 @@ public:
 
 		for (std::shared_ptr<GameObject> obj : _sceneGraph)
 		{
-			if (auto component = obj->TryGetComponent<T>(); component.has_value())
-				components.emplace_back(component);
+			if (std::optional<std::weak_ptr<T>> component = obj->TryGetComponent<T>(); component.has_value())
+				components.emplace_back(component.value());
 		}
 
 		return components;

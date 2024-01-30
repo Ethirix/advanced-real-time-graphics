@@ -8,11 +8,11 @@
 class Mesh
 {
 public:
-	std::string Name;
-	SafePointerArray<class Vertex> Vertices{};
+	std::string Name = "";
+	SafePointerArray<struct Vertex> Vertices{};
 	SafePointerArray<UINT> VertexIndices{};
-	bool SmoothShaded;
+	bool SmoothShaded = true;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer> VertexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> IndexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> VertexBuffer = {};
+	Microsoft::WRL::ComPtr<ID3D11Buffer> IndexBuffer = {};
 };

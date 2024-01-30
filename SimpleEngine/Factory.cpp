@@ -1,11 +1,14 @@
 ﻿#include "Factory.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <vector>
 
 #include "DataStore.h"
+#include "DDSTextureLoader.h"
+#include "Helpers.h"
 
 #pragma region Mesh Functions
 
@@ -64,7 +67,7 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		}
 		else if (objToken == "v")
 		{
-			DirectX::XMFLOAT3 v3;
+			DirectX::XMFLOAT3 v3{};
 			stringStream >> v3.x;
 			stringStream >> v3.y;
 			stringStream >> v3.z;
@@ -72,7 +75,7 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		}
 		else if (objToken == "vn")
 		{
-			DirectX::XMFLOAT3 v3;
+			DirectX::XMFLOAT3 v3{};
 			stringStream >> v3.x;
 			stringStream >> v3.y;
 			stringStream >> v3.z;
@@ -80,7 +83,7 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		}
 		else if (objToken == "vt")
 		{
-			DirectX::XMFLOAT2 v2;
+			DirectX::XMFLOAT2 v2{};
 			stringStream >> v2.x;
 			stringStream >> v2.y;
 
@@ -125,7 +128,7 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		}
 	}
 
-	mesh->Vertices.Elements = new class Vertex[positionIndices.size()];
+	mesh->Vertices.Elements = new struct Vertex[positionIndices.size()];
 	mesh->Vertices.Length = positionIndices.size();
 	for (int i = 0; i < positionIndices.size(); i++)
 	{
@@ -136,10 +139,8 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 
 	mesh->VertexIndices.Elements = new UINT[mesh->Vertices.Length];
 	mesh->VertexIndices.Length = mesh->Vertices.Length;
-	for (int i = 0; i < mesh->Vertices.Length; i++)
+	for (unsigned i = 0; i < mesh->Vertices.Length; i++)
 		mesh->VertexIndices.Elements[i] = i;
-
-
 
 	OPTIONAL_BUFFER vertexBuffer = InitializeVertexBuffer(path, mesh, device);
 	if (!vertexBuffer.has_value())
@@ -159,7 +160,7 @@ OPTIONAL_BUFFER Factory::InitializeVertexBuffer(PATH_STR path, const SHARED_PTR_
 	BUFFER buffer = BUFFER();
 
 	D3D11_BUFFER_DESC vertexBufferDesc = {};
-	vertexBufferDesc.ByteWidth = sizeof(class Vertex) * mesh->Vertices.Length;
+	vertexBufferDesc.ByteWidth = sizeof(struct Vertex) * mesh->Vertices.Length;
 	vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
@@ -224,28 +225,31 @@ OPTIONAL_SHARED_PTR_MTL Factory::WavefrontMTLLoader(PATH_STR path)
 
 		if (objToken == "Ka")
 		{
-			DirectX::XMFLOAT4 v4;
+			DirectX::XMFLOAT4 v4{};
 			stringStream >> v4.x;
 			stringStream >> v4.y;
 			stringStream >> v4.z;
+			v4.w = 1;
 
 			material->Ambient = v4;
 		}
 		else if (objToken == "Kd")
 		{
-			DirectX::XMFLOAT4 v4;
+			DirectX::XMFLOAT4 v4{};
 			stringStream >> v4.x;
 			stringStream >> v4.y;
 			stringStream >> v4.z;
+			v4.w = 1;
 
 			material->Diffuse = v4;
 		}
 		else if (objToken == "Ks")
 		{
-			DirectX::XMFLOAT4 v4;
+			DirectX::XMFLOAT4 v4{};
 			stringStream >> v4.x;
 			stringStream >> v4.y;
 			stringStream >> v4.z;
+			v4.w = 1;
 
 			material->Specular = v4;
 		}
@@ -287,5 +291,41 @@ bool Factory::LoadPixelShader(PATH_STR path, SHARED_PTR_MTL material)
 
 	return pixel.has_value();
 }
+
+#pragma endregion
+
+#pragma region Texture Functions
+
+std::optional<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> Factory::CreateTexture(PATH_STR path, DEVICE device)
+{
+	if (auto resource = DoesTextureExist(path); resource.has_value())
+		return resource;
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> resource = {};
+	auto wPath = Helpers::StringToWideString(path);
+
+	if (std::filesystem::path fsPath { wPath }; exists(fsPath))
+	{
+		HRESULT hr = DirectX::CreateDDSTextureFromFile(device.Get(), wPath, 
+				nullptr, resource.GetAddressOf());
+
+		if (FAILED(hr))
+			return {};
+	}
+	else
+		return {};
+
+	DataStore::Resources.Store(path, resource);
+	return resource;
+}
+
+std::optional<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> Factory::DoesTextureExist(const std::string& path)
+{
+	if (auto resource = DataStore::Resources.Retrieve(path); resource.has_value())
+		return resource;
+
+	return {};
+}
+
 
 #pragma endregion

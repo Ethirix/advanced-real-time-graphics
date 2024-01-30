@@ -14,4 +14,5 @@ struct DataStore
 	inline static Storage<Microsoft::WRL::ComPtr<ID3D11RasterizerState>> RasterizerStates = {};
 	inline static Storage<Microsoft::WRL::ComPtr<ID3D11SamplerState>> SamplerStates = {};
 	inline static Storage<Microsoft::WRL::ComPtr<ID3D11DepthStencilState>> DepthStencilStates = {};
+	inline static Storage<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> Resources = {};
 };

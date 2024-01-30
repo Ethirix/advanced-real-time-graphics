@@ -62,6 +62,21 @@
     <Filter Include="Resource Files\Textures">
       <UniqueIdentifier>{115fe4a4-7d8b-4b45-8df9-14af980f1856}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Structs">
+      <UniqueIdentifier>{79503efd-df4d-4e3e-b93a-3cfb8827955f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Camera">
+      <UniqueIdentifier>{e1f3b000-97ae-492a-9925-43f32ad6a06f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Light">
+      <UniqueIdentifier>{361a3d7f-8166-4140-8fe3-320f93b489f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Mesh">
+      <UniqueIdentifier>{813648cf-28e8-451f-9353-1564e6e50a4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Transform">
+      <UniqueIdentifier>{c76b2bfa-fb8d-44c8-892c-3b6e90ece844}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -79,15 +94,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SceneGraphsConfig.cpp">
-      <Filter>Source Files\Configuration</Filter>
-    </ClCompile>
-    <ClCompile Include="TransformComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="Factory.cpp">
       <Filter>Data Creation</Filter>
     </ClCompile>
@@ -98,17 +104,20 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
-      <Filter>Components</Filter>
+      <Filter>Components\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="LightComponent.cpp">
+      <Filter>Components\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshComponent.cpp">
+      <Filter>Components\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>Components\Transform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SimpleEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Screen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
@@ -126,19 +135,10 @@
     <ClInclude Include="CBLighting.h">
       <Filter>Header Files\Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="LightData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Buffers.h">
       <Filter>Header Files\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="Helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Storage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DataStore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Configuration.h">
@@ -147,35 +147,11 @@
     <ClInclude Include="RasterizerStateConfig.h">
       <Filter>Header Files\Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="BufferPair.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneGraphsConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ComponentBase.h">
       <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="TransformComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="SafePointerArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Factory.h">
       <Filter>Data Creation</Filter>
@@ -185,9 +161,6 @@
     </ClInclude>
     <ClInclude Include="ShaderType.h">
       <Filter>Header Files\Enums</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CreatedMeshes.h">
       <Filter>Data Creation</Filter>
@@ -204,8 +177,56 @@
     <ClInclude Include="DDSTextureLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BufferPair.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="DataStore.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderData.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="SafePointerArray.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="LightData.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
     <ClInclude Include="CameraComponent.h">
-      <Filter>Components</Filter>
+      <Filter>Components\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="LightComponent.h">
+      <Filter>Components\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshComponent.h">
+      <Filter>Components\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>Components\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures.h">
+      <Filter>Header Files\Structs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +289,18 @@
       <Filter>Resource Files\Materials</Filter>
     </None>
     <None Include="Assets\Meshes\suzanne.obj">
+      <Filter>Resource Files\Meshes</Filter>
+    </None>
+    <None Include="Assets\Materials\cube2.mtl">
+      <Filter>Resource Files\Materials</Filter>
+    </None>
+    <None Include="Assets\Materials\Icosphere3.mtl">
+      <Filter>Resource Files\Materials</Filter>
+    </None>
+    <None Include="Assets\Meshes\cube2.obj">
+      <Filter>Resource Files\Meshes</Filter>
+    </None>
+    <None Include="Assets\Meshes\Icosphere3.obj">
       <Filter>Resource Files\Meshes</Filter>
     </None>
   </ItemGroup>

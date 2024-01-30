@@ -7,7 +7,9 @@
 #include "Buffers.h"
 #include "CBObjectCameraData.h"
 #include "Configuration.h"
+#include "Constants.h"
 #include "DataStore.h"
+#include "LightComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
 
@@ -85,7 +87,7 @@ HRESULT SimpleEngine::CreateWindowHandle(HINSTANCE hInstance)
 {
 	const wchar_t* windowName = L"SimpleEngine";
 
-	WNDCLASSW wndClass;
+	WNDCLASSW wndClass {};
 	wndClass.style = 0;
 	wndClass.lpfnWndProc = WndProc;
 	wndClass.cbClsExtra = 0;
@@ -162,7 +164,7 @@ HRESULT SimpleEngine::CreateD3DDevice()
 
 HRESULT SimpleEngine::CreateSwapChain()
 {
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc;
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc {};
 	swapChainDesc.Width = Screen::Width; // Defer to WindowWidth
     swapChainDesc.Height = Screen::Height; // Defer to WindowHeight
     swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //FLIP* modes don't support sRGB back buffer
@@ -214,8 +216,8 @@ HRESULT SimpleEngine::CreateFrameBuffer()
 
     frameBuffer->Release();
 
-	//hr = _dxgiFactory->MakeWindowAssociation(_windowHandle, DXGI_MWA_NO_ALT_ENTER);
-    //if (FAILED(hr)) return hr;
+	hr = _dxgiFactory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_ALT_ENTER);
+    if (FAILED(hr)) return hr;
 
 	return hr;
 }
@@ -548,7 +550,10 @@ void SimpleEngine::OnWindowSizeChanged(WPARAM resizeType, UINT width, UINT heigh
 	HRESULT hr = _swapChain->GetFullscreenState(&fsState, nullptr);
 
 	if (resizeType == SIZE_MAXIMIZED || fsState != Screen::Fullscreen)
+	{
 		Screen::Fullscreen = fsState;
+		return OnWindowSizeChangeComplete();
+	}
 }
 
 void SimpleEngine::OnWindowSizeChangeComplete()
@@ -563,7 +568,7 @@ void SimpleEngine::OnWindowSizeChangeComplete()
 	dxgiModeDesc.Height = Screen::Height;
 	HRESULT hr = _swapChain->ResizeTarget(&dxgiModeDesc);
 	hr = _swapChain->ResizeBuffers(0, Screen::Width, Screen::Height, DXGI_FORMAT_UNKNOWN, 0);
-	ID3D11Texture2D* buffer;
+	ID3D11Texture2D* buffer {};
 	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&buffer));
 
 	D3D11_RENDER_TARGET_VIEW_DESC bufferDesc = {};
@@ -595,17 +600,18 @@ void SimpleEngine::OnWindowSizeChangeComplete()
 
 	float aspect = _viewport.Width / _viewport.Height;
 
-  //  for (auto camera : _manager.FindObjectsOfType<Camera>())
-  //  {
-	 //   XMMATRIX perspective = XMMatrixPerspectiveFovLH(XMConvertToRadians(ConfigManager::GetConfig()->CameraConfig.FieldOfView), 
-  //          aspect, _camera.lock()->GetNearDepth(),camera->GetFarDepth());
-		//XMStoreFloat4x4(&camera->GetProjection(), perspective);
-  //  }
+    for (std::weak_ptr<CameraComponent> camera : _sceneGraph->GetComponentsFromObjects<CameraComponent>())
+    {
+	    DirectX::XMMATRIX perspective = DirectX::XMMatrixPerspectiveFovLH(
+		    DirectX::XMConvertToRadians(camera.lock()->GetFieldOfView()), aspect, 
+			_camera.lock()->GetNearDepth(), camera.lock()->GetFarDepth());
+		XMStoreFloat4x4(&camera.lock()->GetProjection(), perspective);
+    }
 }
 
 void SimpleEngine::Update()
 {
-#pragma region DeltaTime
+	#pragma region DeltaTime
 	auto timePoint = std::chrono::high_resolution_clock::now();
 	double deltaTime = std::chrono::duration_cast
 		<std::chrono::nanoseconds>(timePoint - _lastFrameTime).count()
@@ -619,11 +625,18 @@ void SimpleEngine::Update()
 		FixedUpdate(PHYSICS_TIMESTEP);
 		_timeSinceLastFixedUpdate -= PHYSICS_TIMESTEP;
 	}
-#pragma endregion
+	#pragma endregion
 
 	if (auto cameraComponent = _sceneGraph->TryGetComponentFromObjects<CameraComponent>();
 		cameraComponent.has_value())
 		_camera = cameraComponent.value();
+
+	auto lightComponents = _sceneGraph->GetComponentsFromObjects<LightComponent>();
+	Buffers::CBLighting.BufferData.ActiveLightCount = lightComponents.size();
+	for (int i = 0; i < lightComponents.size() && i < MAX_LIGHTS; i++)
+	{
+		Buffers::CBLighting.BufferData.PointLights[i] = lightComponents[i].lock()->Light;
+	}
 
 	_sceneGraph->Update(deltaTime);
 }

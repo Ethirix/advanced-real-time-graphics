@@ -30,7 +30,7 @@ LightingOut CalculatePointLight(
     if (light.DiffusePower <= 0)
         return lighting;
 
-    if (light.LightRadius <= 0 && light.LinearAttenuation <= 0 && light.QuadraticAttenuation <= 00)
+    if (light.LightRadius <= 0 && light.LinearAttenuation <= 0 && light.QuadraticAttenuation <= 0)
     {
         float3 rayDirection = normalize(reflect(normalize(light.Position), normal));
 

@@ -7,7 +7,8 @@
 MeshComponent::MeshComponent(const std::weak_ptr<class GameObject>& owningGameObject, const Microsoft::WRL::ComPtr<ID3D11Device>& device,
                              PATH meshPath, PATH materialPath,
                              PATH vertexShaderPath, PATH pixelShaderPath, 
-                             MeshType meshType) : ComponentBase(owningGameObject)
+                             MeshType meshType, PATH diffusePath, PATH displacementPath, 
+                             PATH normalPath, PATH specularPath) : ComponentBase(owningGameObject)
 {
     if (auto mesh = Factory::CreateMesh(meshPath, meshType, device); mesh.has_value())
         Mesh = mesh.value();
@@ -24,6 +25,16 @@ MeshComponent::MeshComponent(const std::weak_ptr<class GameObject>& owningGameOb
         Factory::LoadVertexShader(vertexShaderPath, Material);
         Factory::LoadPixelShader(pixelShaderPath, Material);
     }
+
+    Textures = std::make_shared<struct Textures>();
+    if (auto diffuse = Factory::CreateTexture(diffusePath, device); diffuse.has_value())
+        Textures->Diffuse = {diffusePath, diffuse.value()};
+    if (auto displacement = Factory::CreateTexture(displacementPath, device); displacement.has_value())
+        Textures->Displacement = {displacementPath, displacement.value()};
+    if (auto normal = Factory::CreateTexture(normalPath, device); normal.has_value())
+        Textures->Normal = {normalPath, normal.value()};
+    if (auto specular = Factory::CreateTexture(specularPath, device); specular.has_value())
+        Textures->Specular = {specularPath, specular.value()};
 }
 
 void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
@@ -31,7 +42,7 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 	if (!Mesh)
         return;
 
-    UINT stride = { sizeof(class Vertex) };
+    UINT stride = { sizeof(struct Vertex) };
     UINT offset = 0;
 
     context->IASetVertexBuffers(0, 1, Mesh->VertexBuffer.GetAddressOf(), &stride, &offset);
@@ -41,28 +52,21 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
         nullptr, 0);
     context->PSSetShader(Material->Shader.PixelShader.Shader.Get(),
         nullptr, 0);
-    
-    //temporary
-    Buffers::CBTextures.BufferData.HasDiffuseTexture = false;
-    Buffers::CBTextures.BufferData.HasSpecularTexture = false;
 
-    if(Material)
-    {
-        Buffers::CBMaterial.BufferData.Ambient = Material->Ambient;
-        Buffers::CBMaterial.BufferData.Diffuse = Material->Diffuse;
-        Buffers::CBMaterial.BufferData.Specular = Material->Specular;
-        Buffers::CBMaterial.BufferData.SpecularExponent = Material->SpecularExponent;
-    }
-    else
-    {
-        Buffers::CBMaterial.BufferData.Ambient = {};
-        Buffers::CBMaterial.BufferData.Diffuse = {};
-        Buffers::CBMaterial.BufferData.Specular = {};
-        Buffers::CBMaterial.BufferData.SpecularExponent = {};
-    }
+	Buffers::CBTextures.BufferData.HasDiffuseTexture = Textures->Diffuse.Resource ? true : false;
+    Buffers::CBTextures.BufferData.HasSpecularTexture = Textures->Specular.Resource ? true : false;
+
+    context->PSSetShaderResources(0, 1, Textures->Diffuse.Resource.GetAddressOf());
+    context->PSSetShaderResources(1, 1, Textures->Specular.Resource.GetAddressOf());
+
+    Buffers::CBMaterial.BufferData.Ambient = Material ? Material->Ambient : DirectX::XMFLOAT4{};
+    Buffers::CBMaterial.BufferData.Diffuse = Material ? Material->Diffuse : DirectX::XMFLOAT4{};
+    Buffers::CBMaterial.BufferData.Specular = Material ? Material->Specular : DirectX::XMFLOAT4{};
+    Buffers::CBMaterial.BufferData.SpecularExponent = Material ? Material->SpecularExponent : 0;
 
     D3D11_MAPPED_SUBRESOURCE objectCameraData, materialData, texturesData, lightingData;
 
+	Buffers::CBObjectCameraData.BufferData.World = XMMatrixTranspose(XMLoadFloat4x4(&GameObject.lock()->Transform->WorldMatrix));
     context->Map(Buffers::CBObjectCameraData.Buffer.Get(), 
         0, D3D11_MAP_WRITE_DISCARD, 0, &objectCameraData);
     memcpy(objectCameraData.pData, &Buffers::CBObjectCameraData.BufferData,

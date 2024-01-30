@@ -2,6 +2,7 @@
 #include <fstream>
 
 #include "CameraComponent.h"
+#include "LightComponent.h"
 #include "MeshComponent.h"
 
 SceneGraph::SceneGraph(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device)
@@ -36,10 +37,11 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	nlohmann::json rotation = json["Rotation"];
 	obj->Transform->SetRotation(rotation["X"], rotation["Y"], rotation["Z"]);
 
-	for (auto component : json["Components"])
+	for (nlohmann::json component : json["Components"])
 	{
 		if (std::string type = component["Type"]; type == "MeshComponent")
 		{
+			nlohmann::json textures = component["TexturePaths"];
 			auto meshComponent = std::make_shared<MeshComponent>(
 				obj,
 				device,
@@ -47,7 +49,11 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 				component["MaterialPath"],
 				component["VertexShaderPath"],
 				component["PixelShaderPath"],
-				component["MeshType"]
+				component["MeshType"],
+				textures["Diffuse"],
+				textures["Displacement"],
+				textures["Normal"],
+				textures["Specular"]
 			);
 			
 			obj->AddComponent(meshComponent);
@@ -77,9 +83,33 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 
 			obj->AddComponent(cameraComponent);
 		}
+		else if (type == "LightComponent")
+		{
+			nlohmann::json diffuseColour = component["DiffuseColour"];
+			nlohmann::json specularColour = component["SpecularColour"];
+			nlohmann::json ambientColour = component["AmbientColour"];
+			DirectX::XMFLOAT3 pos = obj->Transform->GetPosition();
+			auto lightComponent = std::make_shared<LightComponent>(
+				obj,
+				LightData(
+					DirectX::XMFLOAT4(pos.x, pos.y, pos.z, 1),
+					DirectX::XMFLOAT3(diffuseColour["R"], diffuseColour["G"], diffuseColour["B"]),
+					component["DiffusePower"],
+					DirectX::XMFLOAT3(specularColour["R"], specularColour["G"], specularColour["B"]),
+					component["SpecularPower"],
+					DirectX::XMFLOAT3(ambientColour["R"], ambientColour["G"], ambientColour["B"]),
+					component["ConstantAttenuation"],
+					component["LinearAttenuation"],
+					component["QuadraticAttenuation"],
+					component["LightRadius"]
+				)
+			);
+
+			obj->AddComponent(lightComponent);
+		}
 	}
 
-	for (auto children : json["Children"])
+	for (nlohmann::json children : json["Children"])
 	{
 		auto child = RunInitialisationRecursive(children, device, obj->Transform);
 		obj->Transform->Children.emplace_back(child->Transform);
@@ -91,7 +121,7 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 
 void SceneGraph::Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context)
 {
-	for (auto object : _sceneGraph)
+	for (std::shared_ptr<GameObject> object : _sceneGraph)
 	{
 		auto meshComponent = object->TryGetComponent<MeshComponent>();
 		if (!meshComponent.has_value())

@@ -36,7 +36,7 @@ float4 PS_Main(VS_BaseOut input) : SV_TARGET
         specular += float4(light.SpecularOut, 0);
     }
 
-	float4 color = float4(1, 0, 0, 0);
+	float4 color = float4(0, 0, 0, 0);
 	color += ambient;
 	color += diffuse;
 	color += specular;

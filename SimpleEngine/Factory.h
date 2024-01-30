@@ -15,8 +15,10 @@
 #define BUFFER Microsoft::WRL::ComPtr<ID3D11Buffer>
 #define SHARED_PTR_MESH std::shared_ptr<Mesh>
 #define SHARED_PTR_MTL std::shared_ptr<MTL>
+#define SHARED_PTR_RESOURCE Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
 #define OPTIONAL_SHARED_PTR_MESH std::optional<SHARED_PTR_MESH>
 #define OPTIONAL_SHARED_PTR_MTL std::optional<SHARED_PTR_MTL>
+#define OPTIONAL_SHARED_PTR_RESOURCE std::optional<SHARED_PTR_RESOURCE>
 #define OPTIONAL_BUFFER std::optional<BUFFER>
 
 class Factory
@@ -48,5 +50,13 @@ public:
 	static bool LoadVertexShader(PATH_STR path, SHARED_PTR_MTL material);
 
 	static bool LoadPixelShader(PATH_STR path, SHARED_PTR_MTL material);
+private:
+#pragma endregion
+
+#pragma region Texture Functions
+public:
+	static OPTIONAL_SHARED_PTR_RESOURCE CreateTexture(PATH_STR path, DEVICE device);
+private:
+	static OPTIONAL_SHARED_PTR_RESOURCE DoesTextureExist(PATH_STR path);
 #pragma endregion
 };

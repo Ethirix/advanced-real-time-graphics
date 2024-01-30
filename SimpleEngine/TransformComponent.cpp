@@ -125,7 +125,7 @@ DirectX::XMFLOAT4& TransformComponent::GetRotation()
 
 void TransformComponent::Update(double deltaTime)
 {
-	DirectX::XMMATRIX matrix = DirectX::XMMatrixScaling(_scale.x, _scale.y, _scale.z)
+	DirectX::XMMATRIX matrix = DirectX::XMMatrixScaling(GetScale().x, GetScale().y, GetScale().z)
 		* DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&_quaternion))
 		* DirectX::XMMatrixTranslation(GetPosition().x, GetPosition().y, GetPosition().z);
 
@@ -133,5 +133,4 @@ void TransformComponent::Update(double deltaTime)
 		matrix *= XMLoadFloat4x4(&Parent.lock()->WorldMatrix);
 
 	XMStoreFloat4x4(&WorldMatrix, matrix);
-	Buffers::CBObjectCameraData.BufferData.World = XMMatrixTranspose(matrix);
 }

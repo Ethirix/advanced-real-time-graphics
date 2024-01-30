@@ -35,5 +35,6 @@ private:
 	DirectX::XMFLOAT4X4 _view, _projection;
 
 	float _nearDepth, _farDepth, _fieldOfView;
+	float _movementSpeed, _rotationSpeed;
 	std::shared_ptr<Screen> _screen;
 };

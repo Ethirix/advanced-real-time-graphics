@@ -154,11 +154,11 @@
     <ClCompile Include="Factory.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Helpers.cpp" />
+    <ClCompile Include="LightComponent.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
-    <ClCompile Include="SceneGraphsConfig.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
   </ItemGroup>
@@ -179,6 +179,7 @@
     <ClInclude Include="Factory.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="LightComponent.h" />
     <ClInclude Include="LightData.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
@@ -188,13 +189,14 @@
     <ClInclude Include="RasterizerStateConfig.h" />
     <ClInclude Include="SafePointerArray.h" />
     <ClInclude Include="SceneGraph.h" />
-    <ClInclude Include="SceneGraphsConfig.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="ShaderData.h" />
     <ClInclude Include="ShaderType.h" />
     <ClInclude Include="SimpleEngine.h" />
     <ClInclude Include="Storage.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="Textures.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformComponentConfig.h" />
     <ClInclude Include="Vertex.h" />
@@ -202,6 +204,8 @@
   <ItemGroup>
     <None Include="Assets\Configuration\RasterizerStateConfig.json" />
     <None Include="Assets\Configuration\SceneGraph.json" />
+    <None Include="Assets\Materials\cube2.mtl" />
+    <None Include="Assets\Materials\Icosphere3.mtl" />
     <None Include="Assets\Materials\suzanne.mtl" />
     <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli" />
     <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli" />
@@ -233,6 +237,14 @@
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Meshes\cube2.obj">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Assets\Meshes\Icosphere3.obj">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
