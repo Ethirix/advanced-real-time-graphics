@@ -1,7 +1,0 @@
-{
-	"FieldOfView": 90.0,
-	"MovementMultiplier": 50.0,
-	"RotationMultiplier": 4.0,
-	"NearPlane": 0.01,
-	"FarPlane":  100000.0
-}
