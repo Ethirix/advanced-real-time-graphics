@@ -42,6 +42,10 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 		if (std::string type = component["Type"]; type == "MeshComponent")
 		{
 			nlohmann::json textures = component["TexturePaths"];
+			nlohmann::json diffuse = textures["Diffuse"];
+			nlohmann::json specular = textures["Specular"];
+			nlohmann::json displacement = textures["Displacement"];
+			nlohmann::json normal = textures["Normal"];
 			auto meshComponent = std::make_shared<MeshComponent>(
 				obj,
 				device,
@@ -50,12 +54,13 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 				component["VertexShaderPath"],
 				component["PixelShaderPath"],
 				component["MeshType"],
-				textures["Diffuse"],
-				textures["Displacement"],
-				textures["Normal"],
-				textures["Specular"]
+				std::pair(static_cast<std::string>(diffuse["Path"]), diffuse["Slot"]),
+				std::pair(static_cast<std::string>(specular["Path"]), specular["Slot"]),
+				std::pair(static_cast<std::string>(normal["Path"]), normal["Slot"]),
+				std::pair(static_cast<std::string>(diffuse["Path"]), displacement["Slot"]),
+				component["Stencil"]
 			);
-			
+
 			obj->AddComponent(meshComponent);
 		}
 		else if (type == "PhysicsComponent")

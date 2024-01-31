@@ -3,9 +3,9 @@
 
 cbuffer CB2_Textures : register(b2)
 {
-    bool HasDiffuseTexture;
-    bool HasSpecularTexture;
-    int2 ___CB2Pad0;
+    uint HasDiffuseTexture;
+    uint HasSpecularTexture;
+    float2 ___CB2Pad0;
 }
 
 #endif

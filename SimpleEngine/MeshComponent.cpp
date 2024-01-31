@@ -1,14 +1,16 @@
 #include "MeshComponent.h"
 
 #include "Buffers.h"
+#include "DataStore.h"
 #include "Factory.h"
 #include "GameObject.h"
 
 MeshComponent::MeshComponent(const std::weak_ptr<class GameObject>& owningGameObject, const Microsoft::WRL::ComPtr<ID3D11Device>& device,
-                             PATH meshPath, PATH materialPath,
-                             PATH vertexShaderPath, PATH pixelShaderPath, 
-                             MeshType meshType, PATH diffusePath, PATH displacementPath, 
-                             PATH normalPath, PATH specularPath) : ComponentBase(owningGameObject)
+                             STR meshPath, STR materialPath,
+                             STR vertexShaderPath, STR pixelShaderPath, 
+                             MeshType meshType, std::pair<STR, int> diffuse, std::pair<STR, int> specular, 
+							 std::pair<STR, int> normal, std::pair<STR, int> displacement, STR stencil)
+							 : ComponentBase(owningGameObject)
 {
     if (auto mesh = Factory::CreateMesh(meshPath, meshType, device); mesh.has_value())
         Mesh = mesh.value();
@@ -18,23 +20,23 @@ MeshComponent::MeshComponent(const std::weak_ptr<class GameObject>& owningGameOb
     if (auto material = Factory::CreateMaterial(materialPath); material.has_value())
         Material = material.value();
     else
-        Material = nullptr;
-        
-    if (Material)
-    {
-        Factory::LoadVertexShader(vertexShaderPath, Material);
-        Factory::LoadPixelShader(pixelShaderPath, Material);
-    }
+        Material = std::make_shared<class Material>();
+
+	Factory::LoadVertexShader(vertexShaderPath, Material);
+	Factory::LoadPixelShader(pixelShaderPath, Material);
 
     Textures = std::make_shared<struct Textures>();
-    if (auto diffuse = Factory::CreateTexture(diffusePath, device); diffuse.has_value())
-        Textures->Diffuse = {diffusePath, diffuse.value()};
-    if (auto displacement = Factory::CreateTexture(displacementPath, device); displacement.has_value())
-        Textures->Displacement = {displacementPath, displacement.value()};
-    if (auto normal = Factory::CreateTexture(normalPath, device); normal.has_value())
-        Textures->Normal = {normalPath, normal.value()};
-    if (auto specular = Factory::CreateTexture(specularPath, device); specular.has_value())
-        Textures->Specular = {specularPath, specular.value()};
+    if (auto diffuseResource = Factory::CreateTexture(diffuse.first, device); diffuseResource.has_value())
+        Textures->Diffuse = {diffuse.first, diffuseResource.value(), diffuse.second};
+    if (auto specularResource = Factory::CreateTexture(specular.first, device); specularResource.has_value())
+        Textures->Specular = {specular.first, specularResource.value(), specular.second};
+    if (auto displacementResource = Factory::CreateTexture(displacement.first, device); displacementResource.has_value())
+        Textures->Displacement = {displacement.first, displacementResource.value(), displacement.second};
+    if (auto normalResource = Factory::CreateTexture(normal.first, device); normalResource.has_value())
+        Textures->Normal = {normal.first, normalResource.value(), normal.second};
+
+	if (auto state = DataStore::DepthStencilStates.Retrieve(stencil); state.has_value())
+        DepthStencil = state.value();
 }
 
 void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
@@ -56,16 +58,23 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 	Buffers::CBTextures.BufferData.HasDiffuseTexture = Textures->Diffuse.Resource ? true : false;
     Buffers::CBTextures.BufferData.HasSpecularTexture = Textures->Specular.Resource ? true : false;
 
-    context->PSSetShaderResources(0, 1, Textures->Diffuse.Resource.GetAddressOf());
-    context->PSSetShaderResources(1, 1, Textures->Specular.Resource.GetAddressOf());
+    if (Textures->Diffuse.Slot != -1)
+		context->PSSetShaderResources(Textures->Diffuse.Slot, 1, Textures->Diffuse.Resource.GetAddressOf());
+    if (Textures->Specular.Slot != -1)
+		context->PSSetShaderResources(Textures->Specular.Slot, 1, Textures->Specular.Resource.GetAddressOf());
 
     Buffers::CBMaterial.BufferData.Ambient = Material ? Material->Ambient : DirectX::XMFLOAT4{};
     Buffers::CBMaterial.BufferData.Diffuse = Material ? Material->Diffuse : DirectX::XMFLOAT4{};
     Buffers::CBMaterial.BufferData.Specular = Material ? Material->Specular : DirectX::XMFLOAT4{};
     Buffers::CBMaterial.BufferData.SpecularExponent = Material ? Material->SpecularExponent : 0;
 
-    D3D11_MAPPED_SUBRESOURCE objectCameraData, materialData, texturesData, lightingData;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState = nullptr;
+    context->OMGetDepthStencilState(depthStencilState.GetAddressOf(), nullptr);
+    if (depthStencilState != DepthStencil)
+        context->OMSetDepthStencilState(DepthStencil.Get(), 0);
 
+
+    D3D11_MAPPED_SUBRESOURCE objectCameraData, materialData, texturesData, lightingData;
 	Buffers::CBObjectCameraData.BufferData.World = XMMatrixTranspose(XMLoadFloat4x4(&GameObject.lock()->Transform->WorldMatrix));
     context->Map(Buffers::CBObjectCameraData.Buffer.Get(), 
         0, D3D11_MAP_WRITE_DISCARD, 0, &objectCameraData);

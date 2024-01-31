@@ -165,8 +165,8 @@ HRESULT SimpleEngine::CreateD3DDevice()
 HRESULT SimpleEngine::CreateSwapChain()
 {
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc {};
-	swapChainDesc.Width = Screen::Width; // Defer to WindowWidth
-    swapChainDesc.Height = Screen::Height; // Defer to WindowHeight
+	swapChainDesc.Width = 0; // Defer to WindowWidth
+    swapChainDesc.Height = 0; // Defer to WindowHeight
     swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //FLIP* modes don't support sRGB back buffer
     swapChainDesc.Stereo = FALSE;
     swapChainDesc.SampleDesc.Count = 1;
@@ -295,6 +295,12 @@ HRESULT SimpleEngine::InitialiseRunTimeData()
 {
 	_sceneGraph = std::make_unique<SceneGraph>(
 		"Assets/Configuration/SceneGraph.json", _device);
+
+	if (auto cameraComponent = _sceneGraph->TryGetComponentFromObjects<CameraComponent>();
+		cameraComponent.has_value())
+		_camera = cameraComponent.value();
+
+	OnWindowSizeChangeComplete();
 
 	return S_OK;
 }
@@ -627,9 +633,11 @@ void SimpleEngine::Update()
 	}
 	#pragma endregion
 
-	if (auto cameraComponent = _sceneGraph->TryGetComponentFromObjects<CameraComponent>();
-		cameraComponent.has_value())
-		_camera = cameraComponent.value();
+	if (_camera.expired())
+	{
+		if (auto cameraComponent = _sceneGraph->TryGetComponentFromObjects<CameraComponent>(); cameraComponent.has_value())
+			_camera = cameraComponent.value();
+	}
 
 	auto lightComponents = _sceneGraph->GetComponentsFromObjects<LightComponent>();
 	Buffers::CBLighting.BufferData.ActiveLightCount = lightComponents.size();

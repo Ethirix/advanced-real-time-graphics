@@ -1,17 +1,11 @@
 #ifndef __LIGHTING_HLSLI__
 #define __LIGHTING_HLSLI__
 
-#include "Structs/Textures.hlsli"
-#include "Structs/Material.hlsli"
-#include "Structs/LightData.hlsli"
 #include "Samplers/S0_BilinearSampler.hlsli"
-
-struct LightingOut
-{
-    float3 AmbientOut;
-    float3 DiffuseOut;
-    float3 SpecularOut;
-};
+#include "Structs/LightData.hlsli"
+#include "Structs/LightingOut.hlsli"
+#include "Structs/Material.hlsli"
+#include "Structs/Textures.hlsli"
 
 LightingOut CalculatePointLight(
 	LightData light,
@@ -80,7 +74,7 @@ LightingOut CalculatePointLight(
   
     }
 
-    if (textures.Diffuse.HasTexture == true)
+    if (textures.Diffuse.HasTexture)
     {
         float4 textureColor = textures.Diffuse.Texture.Sample(S0_BilinearSampler, textureCoordinates);
         lighting.AmbientOut *= textureColor;
@@ -92,7 +86,7 @@ LightingOut CalculatePointLight(
         lighting.DiffuseOut *= material.Diffuse;
     }
 
-    if (textures.Specular.HasTexture == true)
+    if (textures.Specular.HasTexture)
     {
         lighting.SpecularOut *= textures.Specular.Texture.Sample(S0_BilinearSampler, textureCoordinates);
     }

@@ -6,17 +6,18 @@
 #include "MeshType.h"
 #include "Textures.h"
 
-#define PATH const std::string&
+#define STR const std::string&
 
 class MeshComponent final : public ComponentBase
 {
 public:
 	explicit MeshComponent(WP_GAMEOBJECT owningGameObject, 
 		const Microsoft::WRL::ComPtr<ID3D11Device>& device, 
-		PATH meshPath, PATH materialPath, PATH vertexShaderPath, 
-		PATH pixelShaderPath, MeshType meshType,
-		PATH diffusePath, PATH displacementPath,
-		PATH normalPath, PATH specularPath);
+		STR meshPath, STR materialPath, STR vertexShaderPath, 
+		STR pixelShaderPath, MeshType meshType, 
+		std::pair<STR, int> diffuse, std::pair<STR, int> specular, 
+		std::pair<STR, int> normal, std::pair<STR, int> displacement,
+		STR stencil);
 
 	void FixedUpdate(double fixedDeltaTime) override {};
 	void Update(double deltaTime) override {};
@@ -25,4 +26,5 @@ public:
 	std::shared_ptr<Mesh> Mesh;
 	std::shared_ptr<Material> Material{};
 	std::shared_ptr<Textures> Textures{};
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> DepthStencil = nullptr;
 };
