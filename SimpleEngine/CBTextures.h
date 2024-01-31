@@ -3,7 +3,7 @@
 
 struct CBTextures
 {
-	bool HasDiffuseTexture;
-	bool HasSpecularTexture;
-	DirectX::XMFLOAT3 ___CB2Pad0;
+	unsigned HasDiffuseTexture;
+	unsigned HasSpecularTexture;
+	DirectX::XMFLOAT2 ___CB2Pad0;
 };

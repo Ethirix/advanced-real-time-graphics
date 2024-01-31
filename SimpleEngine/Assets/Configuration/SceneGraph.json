@@ -32,7 +32,7 @@
             "Z": 0
           },
           "NearPlane": 0.01,
-          "FarPlane": 1000.0,
+          "FarPlane": 100000.0,
           "MovementSpeed": 8.0,
           "RotationSpeed": 2.0
         }
@@ -59,10 +59,10 @@
       "Components": [
         {
           "Type": "MeshComponent",
-          "MeshPath": "Assets/Meshes/InvertedCube2.obj",
-          "MaterialPath": "",
-          "VertexShaderPath": "Assets/Shaders/VS_Skybox.hlsl",
-          "PixelShaderPath": "Assets/Shaders/PS_Skybox.hlsl",
+          "MeshPath": "Assets/Meshes/suzanne.obj",
+          "MaterialPath": "Assets/Materials/suzanne.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
             "Diffuse": {
@@ -81,21 +81,8 @@
               "Path": "",
               "Slot": -1
             }
-          }
-        }
-        {
-          "Type": "MeshComponent",
-          "MeshPath": "Assets/Meshes/suzanne.obj",
-          "MaterialPath": "Assets/Materials/suzanne.mtl",
-          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
-          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
-          "MeshType": 1,
-          "TexturePaths": {
-            "Diffuse": "",
-            "Displacement": "",
-            "Normal": "",
-            "Specular": ""
-          }
+          },
+          "Stencil": ""
         }
       ],
       "Children": [
@@ -141,7 +128,8 @@
                   "Path": "Assets/Textures/Cone/Crate_NORMAL.dds",
                   "Slot": -1
                 }
-              }
+              },
+              "Stencil": ""
             }
           ],
           "Children": [
@@ -187,7 +175,8 @@
                       "Path": "",
                       "Slot": -1
                     }
-                  }
+                  },
+                  "Stencil": ""
                 }
               ],
               "Children": []
@@ -238,7 +227,8 @@
               "Path": "",
               "Slot": -1
             }
-          }
+          },
+          "Stencil": "DSSkybox"
         }
       ],
       "Children": []
@@ -269,11 +259,24 @@
           "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
-            "Diffuse": "Assets/Textures/Plane/Plane_DIFFUSE.dds",
-            "Displacement": "",
-            "Normal": "",
-            "Specular": "Assets/Textures/Plane/Plane_SPECULAR.dds"
-          }
+            "Diffuse": {
+              "Path": "Assets/Textures/Plane/Plane_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "Assets/Textures/Plane/Plane_SPECULAR.dds",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
         }
       ],
       "Children": []
@@ -373,11 +376,24 @@
           "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
-            "Diffuse": "Assets/Textures/Light/Light_DIFFUSE.dds",
-            "Displacement": "",
-            "Normal": "",
-            "Specular": ""
-          }
+            "Diffuse": {
+              "Path": "Assets/Textures/Light/Light_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
         }
       ],
       "Children": []
@@ -432,11 +448,24 @@
           "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
-            "Diffuse": "Assets/Textures/Light/Light_DIFFUSE.dds",
-            "Displacement": "",
-            "Normal": "",
-            "Specular": ""
-          }
+            "Diffuse": {
+              "Path": "Assets/Textures/Light/Light_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
         }
       ],
       "Children": []
@@ -491,11 +520,24 @@
           "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
-            "Diffuse": "Assets/Textures/Light/Light_DIFFUSE.dds",
-            "Displacement": "",
-            "Normal": "",
-            "Specular": ""
-          }
+            "Diffuse": {
+              "Path": "Assets/Textures/Light/Light_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
         }
       ],
       "Children": []
@@ -550,11 +592,24 @@
           "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
-            "Diffuse": "Assets/Textures/Light/Light_DIFFUSE.dds",
-            "Displacement": "",
-            "Normal": "",
-            "Specular": ""
-          }
+            "Diffuse": {
+              "Path": "Assets/Textures/Light/Light_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
         }
       ],
       "Children": []

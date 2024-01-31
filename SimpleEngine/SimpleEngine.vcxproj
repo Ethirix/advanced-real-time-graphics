@@ -160,7 +160,6 @@
     <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
-    <ClCompile Include="SkyboxComponent.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -195,7 +194,6 @@
     <ClInclude Include="ShaderData.h" />
     <ClInclude Include="ShaderType.h" />
     <ClInclude Include="SimpleEngine.h" />
-    <ClInclude Include="SkyboxComponent.h" />
     <ClInclude Include="Storage.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Textures.h" />

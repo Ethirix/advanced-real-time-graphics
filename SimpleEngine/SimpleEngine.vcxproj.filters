@@ -77,9 +77,6 @@
     <Filter Include="Components\Transform">
       <UniqueIdentifier>{c76b2bfa-fb8d-44c8-892c-3b6e90ece844}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Components\Skybox">
-      <UniqueIdentifier>{a82c4fc2-b769-490c-9865-3a2f30f02df0}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -117,9 +114,6 @@
     </ClCompile>
     <ClCompile Include="TransformComponent.cpp">
       <Filter>Components\Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyboxComponent.cpp">
-      <Filter>Components\Skybox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -233,9 +227,6 @@
     </ClInclude>
     <ClInclude Include="Textures.h">
       <Filter>Header Files\Structs</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyboxComponent.h">
-      <Filter>Components\Skybox</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
