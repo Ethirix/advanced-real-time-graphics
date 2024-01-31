@@ -1,17 +1,11 @@
 #ifndef __LIGHTING_HLSLI__
 #define __LIGHTING_HLSLI__
 
-#include "Structs/Textures.hlsli"
-#include "Structs/Material.hlsli"
-#include "Structs/LightData.hlsli"
 #include "Samplers/S0_BilinearSampler.hlsli"
-
-struct LightingOut
-{
-    float3 AmbientOut;
-    float3 DiffuseOut;
-    float3 SpecularOut;
-};
+#include "Structs/LightData.hlsli"
+#include "Structs/LightingOut.hlsli"
+#include "Structs/Material.hlsli"
+#include "Structs/Textures.hlsli"
 
 LightingOut CalculatePointLight(
 	LightData light,
@@ -30,7 +24,7 @@ LightingOut CalculatePointLight(
     if (light.DiffusePower <= 0)
         return lighting;
 
-    if (light.LightRadius <= 0 && light.LinearAttenuation <= 0 && light.QuadraticAttenuation <= 0)
+    if (light.LightRadius <= 0 && light.LinearAttenuation <= 0 && light.QuadraticAttenuation <= 00)
     {
         float3 rayDirection = normalize(reflect(normalize(light.Position), normal));
 

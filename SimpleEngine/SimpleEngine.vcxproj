@@ -160,6 +160,7 @@
     <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
+    <ClCompile Include="SkyboxComponent.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -194,6 +195,7 @@
     <ClInclude Include="ShaderData.h" />
     <ClInclude Include="ShaderType.h" />
     <ClInclude Include="SimpleEngine.h" />
+    <ClInclude Include="SkyboxComponent.h" />
     <ClInclude Include="Storage.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Textures.h" />
@@ -225,6 +227,8 @@
       <FileType>Document</FileType>
     </None>
     <None Include="packages.config" />
+    <None Include="Assets\Shaders\Structured Resources\T2_SkyboxTexture.hlsli" />
+    <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli" />
@@ -245,6 +249,14 @@
       <FileType>Document</FileType>
     </None>
     <None Include="Assets\Meshes\Icosphere3.obj">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\PS_Skybox.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Assets\Shaders\VS_Skybox.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

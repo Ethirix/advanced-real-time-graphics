@@ -6,4 +6,5 @@ struct Texture
 {
 	std::string Name = "";
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Resource {};
+	int Slot = -1;
 };

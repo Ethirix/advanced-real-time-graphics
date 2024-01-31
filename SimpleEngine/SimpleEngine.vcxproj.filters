@@ -77,6 +77,9 @@
     <Filter Include="Components\Transform">
       <UniqueIdentifier>{c76b2bfa-fb8d-44c8-892c-3b6e90ece844}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Skybox">
+      <UniqueIdentifier>{a82c4fc2-b769-490c-9865-3a2f30f02df0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -114,6 +117,9 @@
     </ClCompile>
     <ClCompile Include="TransformComponent.cpp">
       <Filter>Components\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxComponent.cpp">
+      <Filter>Components\Skybox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -228,6 +234,9 @@
     <ClInclude Include="Textures.h">
       <Filter>Header Files\Structs</Filter>
     </ClInclude>
+    <ClInclude Include="SkyboxComponent.h">
+      <Filter>Components\Skybox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
@@ -278,7 +287,6 @@
     <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli">
       <Filter>Resource Files\Shaders\Buffers</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="Assets\Configuration\RasterizerStateConfig.json">
       <Filter>Resource Files\Configuration</Filter>
     </None>
@@ -302,6 +310,19 @@
     </None>
     <None Include="Assets\Meshes\Icosphere3.obj">
       <Filter>Resource Files\Meshes</Filter>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T2_SkyboxTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -55,7 +55,7 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 				textures["Normal"],
 				textures["Specular"]
 			);
-			
+
 			obj->AddComponent(meshComponent);
 		}
 		else if (type == "PhysicsComponent")

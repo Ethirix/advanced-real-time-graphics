@@ -18,13 +18,10 @@ MeshComponent::MeshComponent(const std::weak_ptr<class GameObject>& owningGameOb
     if (auto material = Factory::CreateMaterial(materialPath); material.has_value())
         Material = material.value();
     else
-        Material = nullptr;
-        
-    if (Material)
-    {
-        Factory::LoadVertexShader(vertexShaderPath, Material);
-        Factory::LoadPixelShader(pixelShaderPath, Material);
-    }
+        Material = std::make_shared<class Material>();
+
+	Factory::LoadVertexShader(vertexShaderPath, Material);
+	Factory::LoadPixelShader(pixelShaderPath, Material);
 
     Textures = std::make_shared<struct Textures>();
     if (auto diffuse = Factory::CreateTexture(diffusePath, device); diffuse.has_value())

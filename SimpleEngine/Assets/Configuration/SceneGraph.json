@@ -2,7 +2,6 @@
   "GameObjects": [
     {
       "Name": "MainCamera",
-      "Children": [],
       "Position": {
         "X": 0,
         "Y": 0,
@@ -34,26 +33,83 @@
           },
           "NearPlane": 0.01,
           "FarPlane": 1000.0,
-          "MovementSpeed": 4.0,
+          "MovementSpeed": 8.0,
           "RotationSpeed": 2.0
         }
-      ]
+      ],
+      "Children": []
     },
     {
       "Name": "Suzanne",
+      "Position": {
+        "X": 0,
+        "Y": 5,
+        "Z": 0
+      },
+      "Scale": {
+        "X": 5,
+        "Y": 5,
+        "Z": 5
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/InvertedCube2.obj",
+          "MaterialPath": "",
+          "VertexShaderPath": "Assets/Shaders/VS_Skybox.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_Skybox.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          }
+        }
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/suzanne.obj",
+          "MaterialPath": "Assets/Materials/suzanne.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": "",
+            "Displacement": "",
+            "Normal": "",
+            "Specular": ""
+          }
+        }
+      ],
       "Children": [
         {
-          "Name": "Icosphere",
-          "Children": {},
+          "Name": "Cube",
           "Position": {
-            "X": 0,
+            "X": 15,
             "Y": 0,
-            "Z": 10
+            "Z": 0
           },
           "Scale": {
-            "X": 1,
-            "Y": 1,
-            "Z": 1
+            "X": 2,
+            "Y": 2,
+            "Z": 2
           },
           "Rotation": {
             "X": 0,
@@ -63,21 +119,85 @@
           "Components": [
             {
               "Type": "MeshComponent",
-              "MeshPath": "Assets/Meshes/Icosphere3.obj",
-              "MaterialPath": "Assets/Materials/Icosphere3.mtl",
+              "MeshPath": "Assets/Meshes/cube2.obj",
+              "MaterialPath": "Assets/Materials/cube2.mtl",
               "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
               "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
               "MeshType": 1,
               "TexturePaths": {
-                "Diffuse": "",
-                "Displacement": "",
-                "Normal": "",
-                "Specular": ""
+                "Diffuse": {
+                  "Path": "Assets/Textures/Cone/Crate_DIFFUSE.dds",
+                  "Slot": 0
+                },
+                "Specular": {
+                  "Path": "Assets/Textures/Cone/Crate_SPECULAR.dds",
+                  "Slot": 1
+                },
+                "Displacement": {
+                  "Path": "",
+                  "Slot": -1
+                },
+                "Normal": {
+                  "Path": "Assets/Textures/Cone/Crate_NORMAL.dds",
+                  "Slot": -1
+                }
               }
+            }
+          ],
+          "Children": [
+            {
+              "Name": "Cone",
+              "Position": {
+                "X": 15,
+                "Y": 0,
+                "Z": 0
+              },
+              "Scale": {
+                "X": 2,
+                "Y": 2,
+                "Z": 2
+              },
+              "Rotation": {
+                "X": 0,
+                "Y": 0,
+                "Z": 0
+              },
+              "Components": [
+                {
+                  "Type": "MeshComponent",
+                  "MeshPath": "Assets/Meshes/cone.obj",
+                  "MaterialPath": "Assets/Materials/cone.mtl",
+                  "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+                  "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+                  "MeshType": 1,
+                  "TexturePaths": {
+                    "Diffuse": {
+                      "Path": "Assets/Textures/Cone/Cone_DIFFUSE.dds",
+                      "Slot": 0
+                    },
+                    "Specular": {
+                      "Path": "Assets/Textures/Cone/Cone_SPECULAR.dds",
+                      "Slot": 1
+                    },
+                    "Displacement": {
+                      "Path": "",
+                      "Slot": -1
+                    },
+                    "Normal": {
+                      "Path": "",
+                      "Slot": -1
+                    }
+                  }
+                }
+              ],
+              "Children": []
             }
           ]
         }
-      ],
+      ]
+    },
+    {
+      "Name": "Skybox",
       "Position": {
         "X": 0,
         "Y": 0,
@@ -96,27 +216,74 @@
       "Components": [
         {
           "Type": "MeshComponent",
-          "MeshPath": "Assets/Meshes/suzanne.obj",
-          "MaterialPath": "Assets/Materials/suzanne.mtl",
+          "MeshPath": "Assets/Meshes/InvertedCube2.obj",
+          "MaterialPath": "",
+          "VertexShaderPath": "Assets/Shaders/VS_Skybox.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_Skybox.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Skybox/Skybox_DIFFUSE.dds",
+              "Slot": 2
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          }
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "Plane",
+      "Position": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Scale": {
+        "X": 10,
+        "Y": 10,
+        "Z": 10
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/plane.obj",
+          "MaterialPath": "Assets/Materials/plane.mtl",
           "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
           "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
-            "Diffuse": "Assets/Textures/Crate/Crate_DIFFUSE.dds",
+            "Diffuse": "Assets/Textures/Plane/Plane_DIFFUSE.dds",
             "Displacement": "",
-            "Normal": "Assets/Textures/Crate/Crate_NORMAL.dds",
-            "Specular": "Assets/Textures/Crate/Crate_SPECULAR.dds"
+            "Normal": "",
+            "Specular": "Assets/Textures/Plane/Plane_SPECULAR.dds"
           }
         }
-      ]
+      ],
+      "Children": []
     },
     {
       "Name": "GlobalLight",
-      "Children": [],
       "Position": {
-        "X": 0,
-        "Y": 0,
-        "Z": 10
+        "X": -20,
+        "Y": -20,
+        "Z": -20
       },
       "Scale": {
         "X": 1,
@@ -153,15 +320,74 @@
           "QuadraticAttenuation": 0,
           "LightRadius": 0
         }
-      ]
+      ],
+      "Children": []
+    },
+    {
+      "Name": "PointLightGreen",
+      "Position": {
+        "X": 10,
+        "Y": 15,
+        "Z": 0
+      },
+      "Scale": {
+        "X": 0.05,
+        "Y": 0.05,
+        "Z": 0.05
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "LightComponent",
+          "DiffuseColour": {
+            "R": 0,
+            "G": 1,
+            "B": 0
+          },
+          "DiffusePower": 5,
+          "SpecularColour": {
+            "R": 0,
+            "G": 1,
+            "B": 0
+          },
+          "SpecularPower": 4,
+          "AmbientColour": {
+            "R": 0,
+            "G": 0,
+            "B": 0
+          },
+          "ConstantAttenuation": 1,
+          "LinearAttenuation": 0,
+          "QuadraticAttenuation": 0.1,
+          "LightRadius": 32
+        },
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cube2.obj",
+          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": "Assets/Textures/Light/Light_DIFFUSE.dds",
+            "Displacement": "",
+            "Normal": "",
+            "Specular": ""
+          }
+        }
+      ],
+      "Children": []
     },
     {
       "Name": "PointLightRed",
-      "Children": [],
       "Position": {
-        "X": 0,
+        "X": 50,
         "Y": 10,
-        "Z": 15
+        "Z": 10
       },
       "Scale": {
         "X": 0.05,
@@ -181,13 +407,13 @@
             "G": 0,
             "B": 0
           },
-          "DiffusePower": 1,
+          "DiffusePower": 4,
           "SpecularColour": {
             "R": 1,
             "G": 0,
             "B": 0
           },
-          "SpecularPower": 0.8,
+          "SpecularPower": 3.2,
           "AmbientColour": {
             "R": 0,
             "G": 0,
@@ -212,7 +438,126 @@
             "Specular": ""
           }
         }
-      ]
+      ],
+      "Children": []
+    },
+    {
+      "Name": "PointLightOrange",
+      "Position": {
+        "X": -50,
+        "Y": 10,
+        "Z": 50
+      },
+      "Scale": {
+        "X": 0.05,
+        "Y": 0.05,
+        "Z": 0.05
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "LightComponent",
+          "DiffuseColour": {
+            "R": 1,
+            "G": 0.45,
+            "B": 0
+          },
+          "DiffusePower": 2,
+          "SpecularColour": {
+            "R": 1,
+            "G": 0.45,
+            "B": 0
+          },
+          "SpecularPower": 1.6,
+          "AmbientColour": {
+            "R": 0,
+            "G": 0,
+            "B": 0
+          },
+          "ConstantAttenuation": 1,
+          "LinearAttenuation": 0,
+          "QuadraticAttenuation": 0.1,
+          "LightRadius": 128
+        },
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cube2.obj",
+          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": "Assets/Textures/Light/Light_DIFFUSE.dds",
+            "Displacement": "",
+            "Normal": "",
+            "Specular": ""
+          }
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "PointLightCyan",
+      "Position": {
+        "X": 100,
+        "Y": 10,
+        "Z": 0
+      },
+      "Scale": {
+        "X": 0.05,
+        "Y": 0.05,
+        "Z": 0.05
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "LightComponent",
+          "DiffuseColour": {
+            "R": 0,
+            "G": 1,
+            "B": 1
+          },
+          "DiffusePower": 5,
+          "SpecularColour": {
+            "R": 0,
+            "G": 1,
+            "B": 1
+          },
+          "SpecularPower": 4,
+          "AmbientColour": {
+            "R": 0,
+            "G": 0,
+            "B": 0
+          },
+          "ConstantAttenuation": 1,
+          "LinearAttenuation": 0.1,
+          "QuadraticAttenuation": 0.1,
+          "LightRadius": 128
+        },
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cube2.obj",
+          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": "Assets/Textures/Light/Light_DIFFUSE.dds",
+            "Displacement": "",
+            "Normal": "",
+            "Specular": ""
+          }
+        }
+      ],
+      "Children": []
     }
   ]    
 }
