@@ -4,6 +4,7 @@
 #include "CameraComponent.h"
 #include "LightComponent.h"
 #include "MeshComponent.h"
+#include "PhysicsComponent.h"
 
 SceneGraph::SceneGraph(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device)
 {
@@ -65,7 +66,14 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 		}
 		else if (type == "PhysicsComponent")
 		{
-			//TODO: Add physics component
+			nlohmann::json velocity = component["Velocity"];
+			nlohmann::json acceleration = component["Acceleration"];
+			auto physicsComponent = std::make_shared<PhysicsComponent>(
+				obj,
+				DirectX::XMFLOAT3(velocity["X"], velocity["Y"], velocity["Z"]),
+				DirectX::XMFLOAT3(acceleration["X"], acceleration["Y"], acceleration["Z"])
+			);
+			obj->AddComponent(physicsComponent);
 		}
 		else if (type == "CameraComponent")
 		{

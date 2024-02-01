@@ -157,6 +157,7 @@
     <ClCompile Include="LightComponent.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="PhysicsComponent.cpp" />
     <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="MeshComponentConfig.h" />
     <ClInclude Include="MeshType.h" />
+    <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="RasterizerStateConfig.h" />
     <ClInclude Include="SafePointerArray.h" />
     <ClInclude Include="SceneGraph.h" />
