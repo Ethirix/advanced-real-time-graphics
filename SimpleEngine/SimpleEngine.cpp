@@ -10,6 +10,7 @@
 #include "Constants.h"
 #include "DataStore.h"
 #include "LightComponent.h"
+#include "PhysicsComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
 
@@ -646,6 +647,9 @@ void SimpleEngine::Update()
 		Buffers::CBLighting.BufferData.PointLights[i] = lightComponents[i].lock()->Light;
 	}
 
+	//BIG HACK NEED TO GET A CONCRETE WAY TO GET THE SKYBOX!
+	_sceneGraph->operator[](4)->Transform->SetPosition(_camera.lock()->GameObject.lock()->Transform->GetPosition());
+	
 	_sceneGraph->Update(deltaTime);
 }
 

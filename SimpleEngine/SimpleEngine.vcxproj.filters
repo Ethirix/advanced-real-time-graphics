@@ -83,6 +83,9 @@
     <Filter Include="Components\Physics">
       <UniqueIdentifier>{00cfca7c-4a8c-4ecd-bb79-c13c478b9644}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Physics\ParticleComponent">
+      <UniqueIdentifier>{9a6174ed-b4f3-42b6-bfc1-6d2ebed744c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -123,6 +126,12 @@
     </ClCompile>
     <ClCompile Include="PhysicsComponent.cpp">
       <Filter>Components\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleComponent.cpp">
+      <Filter>Components\Physics\ParticleComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -242,6 +251,12 @@
     </ClInclude>
     <ClInclude Include="PhysicsComponent.h">
       <Filter>Components\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleComponent.h">
+      <Filter>Components\Physics\ParticleComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

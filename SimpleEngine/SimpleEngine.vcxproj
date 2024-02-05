@@ -157,11 +157,13 @@
     <ClCompile Include="LightComponent.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="ParticleComponent.cpp" />
     <ClCompile Include="PhysicsComponent.cpp" />
     <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
+    <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferPair.h" />
@@ -188,6 +190,7 @@
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="MeshComponentConfig.h" />
     <ClInclude Include="MeshType.h" />
+    <ClInclude Include="ParticleComponent.h" />
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="RasterizerStateConfig.h" />
     <ClInclude Include="SafePointerArray.h" />
@@ -202,6 +205,7 @@
     <ClInclude Include="Textures.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformComponentConfig.h" />
+    <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>

@@ -66,12 +66,9 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 		}
 		else if (type == "PhysicsComponent")
 		{
-			nlohmann::json velocity = component["Velocity"];
-			nlohmann::json acceleration = component["Acceleration"];
 			auto physicsComponent = std::make_shared<PhysicsComponent>(
 				obj,
-				DirectX::XMFLOAT3(velocity["X"], velocity["Y"], velocity["Z"]),
-				DirectX::XMFLOAT3(acceleration["X"], acceleration["Y"], acceleration["Z"])
+				component["Mass"]
 			);
 			obj->AddComponent(physicsComponent);
 		}

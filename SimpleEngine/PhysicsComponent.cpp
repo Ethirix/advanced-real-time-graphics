@@ -1,56 +1,52 @@
 ﻿#include "PhysicsComponent.h"
 
 #include "GameObject.h"
+#include "Vector3.h"
 
-PhysicsComponent::PhysicsComponent(WP_GAMEOBJECT owningGameObject, DirectX::XMFLOAT3 initialVelocity, 
-		DirectX::XMFLOAT3 initialAcceleration) : ComponentBase(owningGameObject)
+PhysicsComponent::PhysicsComponent(WP_GAMEOBJECT owningGameObject, float mass) : ComponentBase(owningGameObject)
 {
-	_velocity = initialVelocity;
-	_acceleration = initialAcceleration;
+	_mass = mass;
 }
 
 void PhysicsComponent::FixedUpdate(double fixedDeltaTime)
 {
 	auto transform = GameObject.lock()->Transform;
-	DirectX::XMFLOAT3 deltaPosition = transform->GetPosition();
+	Vector3 deltaPosition = transform->GetPosition();
 
-	_velocity.x += _acceleration.x * fixedDeltaTime;
-	_velocity.y += _acceleration.y * fixedDeltaTime;
-	_velocity.z += _acceleration.z * fixedDeltaTime;
+	_acceleration += _netForce / _mass;
 
-	deltaPosition.x += _velocity.x * fixedDeltaTime;
-	deltaPosition.y += _velocity.y * fixedDeltaTime;
-	deltaPosition.z += _velocity.z * fixedDeltaTime;
+	_velocity.X += _acceleration.X * fixedDeltaTime;
+	_velocity.Y += _acceleration.Y * fixedDeltaTime;
+	_velocity.Z += _acceleration.Z * fixedDeltaTime;
 
-	transform->SetPosition(deltaPosition);
+	deltaPosition.X += _velocity.X * fixedDeltaTime;
+	deltaPosition.Y += _velocity.Y * fixedDeltaTime;
+	deltaPosition.Z += _velocity.Z * fixedDeltaTime;
+
+	_netForce = Vector3::Zero;
+	_acceleration = Vector3::Zero;
+
+	transform->SetPosition(deltaPosition.ToDXFloat3());
 }
 
-void PhysicsComponent::SetVelocity(DirectX::XMFLOAT3 velocity)
-{
-	_velocity = velocity;
-}
-
-void PhysicsComponent::SetVelocity(float x, float y, float z)
-{
-	_velocity = {x, y, z};
-}
-
-DirectX::XMFLOAT3 PhysicsComponent::GetVelocity()
+Vector3 PhysicsComponent::GetVelocity()
 {
 	return _velocity;
 }
 
-void PhysicsComponent::SetAcceleration(DirectX::XMFLOAT3 acceleration)
+void PhysicsComponent::AddForce(Vector3 force)
 {
-	_acceleration = acceleration;
+	_netForce += force;
 }
 
-void PhysicsComponent::SetAcceleration(float x, float y, float z)
+void PhysicsComponent::AddForce(float x, float y, float z)
 {
-	_acceleration = {x, y, z};
+	_netForce.X += x;
+	_netForce.Y += y;
+	_netForce.Z += z;
 }
 
-DirectX::XMFLOAT3 PhysicsComponent::GetAcceleration()
+Vector3 PhysicsComponent::GetNetForce()
 {
-	return _acceleration;
+	return _netForce;
 }
