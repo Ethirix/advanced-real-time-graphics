@@ -2,6 +2,7 @@
 #include <DirectXMath.h>
 #include <memory>
 #include <vector>
+#include <nlohmann/json.hpp>
 
 #include "ComponentBase.h"
 class TransformComponent final:

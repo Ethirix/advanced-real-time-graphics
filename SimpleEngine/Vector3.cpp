@@ -180,4 +180,20 @@ Vector3& Vector3::operator-=(Vector3 rhs)
 	return *this;
 }
 
+Vector3& Vector3::operator*=(float scalar)
+{
+	X *= scalar;
+	Y *= scalar;
+	Z *= scalar;
+	return *this;
+}
+
+Vector3& Vector3::operator/=(float scalar)
+{
+	X /= scalar;
+	Y /= scalar;
+	Z /= scalar;
+	return *this;
+}
+
 #pragma endregion

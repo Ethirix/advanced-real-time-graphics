@@ -23,6 +23,8 @@ public:
 	Vector3& operator+=(DirectX::XMFLOAT3 rhs);
 	Vector3& operator-=(Vector3 rhs);
 	Vector3& operator-=(DirectX::XMFLOAT3 rhs);
+	Vector3& operator*=(float scalar);
+	Vector3& operator/=(float scalar);
 
 	[[nodiscard]] float Dot(Vector3 rhs);
 	[[nodiscard]] float Angle(Vector3 rhs);

@@ -42,78 +42,29 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	{
 		if (std::string type = component["Type"]; type == "MeshComponent")
 		{
-			nlohmann::json textures = component["TexturePaths"];
-			nlohmann::json diffuse = textures["Diffuse"];
-			nlohmann::json specular = textures["Specular"];
-			nlohmann::json displacement = textures["Displacement"];
-			nlohmann::json normal = textures["Normal"];
+			
 			auto meshComponent = std::make_shared<MeshComponent>(
-				obj,
-				device,
-				component["MeshPath"],
-				component["MaterialPath"],
-				component["VertexShaderPath"],
-				component["PixelShaderPath"],
-				component["MeshType"],
-				std::pair(static_cast<std::string>(diffuse["Path"]), diffuse["Slot"]),
-				std::pair(static_cast<std::string>(specular["Path"]), specular["Slot"]),
-				std::pair(static_cast<std::string>(normal["Path"]), normal["Slot"]),
-				std::pair(static_cast<std::string>(diffuse["Path"]), displacement["Slot"]),
-				component["Stencil"]
-			);
+				obj, component, device);
 
 			obj->AddComponent(meshComponent);
 		}
 		else if (type == "PhysicsComponent")
 		{
 			auto physicsComponent = std::make_shared<PhysicsComponent>(
-				obj,
-				component["Mass"]
-			);
+				obj, component);
 			obj->AddComponent(physicsComponent);
 		}
 		else if (type == "CameraComponent")
 		{
 			auto cameraComponent = std::make_shared<CameraComponent>(
-				obj,
-				component["FieldOfView"],
-				DirectX::XMFLOAT3(
-					component["At"]["X"], 
-					component["At"]["Y"], 
-					component["At"]["Z"]),
-				DirectX::XMFLOAT3(
-					component["Up"]["X"], 
-					component["Up"]["Y"],
-					component["Up"]["Z"]),
-				component["NearPlane"],
-				component["FarPlane"],
-				component["MovementSpeed"],
-				component["RotationSpeed"]
-			);
+				obj, component);
 
 			obj->AddComponent(cameraComponent);
 		}
 		else if (type == "LightComponent")
 		{
-			nlohmann::json diffuseColour = component["DiffuseColour"];
-			nlohmann::json specularColour = component["SpecularColour"];
-			nlohmann::json ambientColour = component["AmbientColour"];
-			DirectX::XMFLOAT3 pos = obj->Transform->GetPosition();
 			auto lightComponent = std::make_shared<LightComponent>(
-				obj,
-				LightData(
-					DirectX::XMFLOAT4(pos.x, pos.y, pos.z, 1),
-					DirectX::XMFLOAT3(diffuseColour["R"], diffuseColour["G"], diffuseColour["B"]),
-					component["DiffusePower"],
-					DirectX::XMFLOAT3(specularColour["R"], specularColour["G"], specularColour["B"]),
-					component["SpecularPower"],
-					DirectX::XMFLOAT3(ambientColour["R"], ambientColour["G"], ambientColour["B"]),
-					component["ConstantAttenuation"],
-					component["LinearAttenuation"],
-					component["QuadraticAttenuation"],
-					component["LightRadius"]
-				)
-			);
+				obj, component);
 
 			obj->AddComponent(lightComponent);
 		}

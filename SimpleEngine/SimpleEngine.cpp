@@ -671,8 +671,6 @@ void SimpleEngine::Draw()
 		return;
 	}
 
-	std::shared_ptr<CameraComponent> camera = _camera.lock();
-
 	float backgroundColour[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 	_context->ClearRenderTargetView(_frameBufferView.Get(), backgroundColour);

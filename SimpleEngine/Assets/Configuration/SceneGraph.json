@@ -4,7 +4,7 @@
       "Name": "MainCamera",
       "Position": {
         "X": 0,
-        "Y": 0,
+        "Y": 100,
         "Z": -1
       },
       "Scale": {
@@ -33,7 +33,7 @@
           },
           "NearPlane": 0.01,
           "FarPlane": 100000.0,
-          "MovementSpeed": 8.0,
+          "MovementSpeed": 500.0,
           "RotationSpeed": 2.0
         }
       ],
@@ -43,7 +43,7 @@
       "Name": "Suzanne",
       "Position": {
         "X": 0,
-        "Y": 5,
+        "Y": 100,
         "Z": 0
       },
       "Scale": {
@@ -86,7 +86,9 @@
         },
         {
           "Type": "PhysicsComponent",
-          "Mass": 10
+          "Mass": 10,
+          "DragCoefficient": 1,
+          "Gravity": true
         }
       ],
       "Children": [
@@ -618,5 +620,5 @@
       ],
       "Children": []
     }
-  ]    
+  ]
 }
