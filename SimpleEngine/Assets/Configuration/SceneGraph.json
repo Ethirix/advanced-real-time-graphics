@@ -4,7 +4,7 @@
       "Name": "MainCamera",
       "Position": {
         "X": 0,
-        "Y": 100,
+        "Y": 0,
         "Z": -1
       },
       "Scale": {
@@ -91,7 +91,7 @@
           "FrictionCoefficient": 0.3,
           "UseGravity": true,
           "UseDrag": true,
-          "UseFriction": true
+          "UseFriction": false
         }
       ],
       "Children": [

@@ -13,11 +13,15 @@ public:
     Vector3    V;     // vector part: v.x, v.y, v.z
 
     Quaternion(void);
+    Quaternion(DirectX::XMFLOAT4 q);
     Quaternion(float e0, float e1, float e2, float e3);
 
     float      Magnitude(void);
     Vector3    GetVector(void);
     float      GetScalar(void);
+
+    DirectX::XMFLOAT4 ToDXFloat4();
+
     Quaternion operator+=(Quaternion q);
     Quaternion operator-=(Quaternion q);
     Quaternion operator*=(float s);
@@ -34,6 +38,14 @@ inline Quaternion::Quaternion(void)
     V.Z = 0;
 }
 
+inline Quaternion::Quaternion(DirectX::XMFLOAT4 q)
+{
+	N = q.w;
+    V.X = q.x;
+    V.Y = q.y;
+    V.Z = q.z;
+}
+
 // Constructor
 inline Quaternion::Quaternion(float e0, float e1, float e2, float e3)
 {
@@ -42,6 +54,18 @@ inline Quaternion::Quaternion(float e0, float e1, float e2, float e3)
     V.Y = e2;
     V.Z = e3;
 }
+
+inline DirectX::XMFLOAT4 Quaternion::ToDXFloat4()
+{
+    DirectX::XMFLOAT4 q;
+    q.w = N;
+    q.x = V.X;
+    q.y = V.Y;
+    q.z = V.Z;
+
+    return q;
+}
+
 
 inline float Quaternion::Magnitude(void)
 {

@@ -3,7 +3,7 @@
 constexpr double PHYSICS_TIMESTEP = 1.0f / 120.0f;
 constexpr float AIR_DENSITY = 1.204f;
 
-#define GRAVITY Vector3(0, -9.81, 0)
+#define GRAVITY Vector3(0, -1.81, 0)
 
 constexpr int MAX_LIGHTS = 32;
 

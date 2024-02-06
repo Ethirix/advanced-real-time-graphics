@@ -2,9 +2,9 @@
 #include <DirectXMath.h>
 #include <memory>
 #include <vector>
-#include <nlohmann/json.hpp>
 
 #include "ComponentBase.h"
+#include "Quaternion.h"
 class TransformComponent final:
     public ComponentBase
 {
@@ -14,9 +14,9 @@ public:
 	DirectX::XMFLOAT4X4 WorldMatrix;
 
 private:
-	DirectX::XMFLOAT3 _localPosition = { 0, 0, 0 };
-	DirectX::XMFLOAT3 _scale = { 1, 1, 1 };
-	DirectX::XMFLOAT4 _quaternion = {};
+	Vector3 _localPosition = { 0, 0, 0 };
+	Vector3 _scale = { 1, 1, 1 };
+	Quaternion _quaternion = {};
 
 public:
 	explicit TransformComponent(
@@ -45,10 +45,9 @@ public:
 	void AddToRotation(DirectX::XMFLOAT3 rot);
 	void AddToRotation(float x, float y, float z);
 
-	[[nodiscard]] DirectX::XMFLOAT3& GetPosition();
-	[[nodiscard]] DirectX::XMFLOAT3& GetScale(bool recursiveBlock = false);
+	[[nodiscard]] DirectX::XMFLOAT3 GetPosition();
+	[[nodiscard]] DirectX::XMFLOAT3 GetScale(bool recursiveBlock = false);
 
-	[[nodiscard]] DirectX::XMFLOAT4& GetRotation();
-	[[nodiscard]] DirectX::XMFLOAT3& GetWorldPosition();
+	[[nodiscard]] DirectX::XMFLOAT4 GetRotation();
+	[[nodiscard]] DirectX::XMFLOAT3 GetWorldPosition();
 };
-

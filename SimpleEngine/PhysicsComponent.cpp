@@ -26,7 +26,7 @@ void PhysicsComponent::CalculateNetForce()
 	if (UseDrag)
 		_netForce += CalculateDrag();
 
-	if (UseFriction)
+	if (UseFriction) //disabled until collision detection
 		_netForce += CalculateFriction();
 }
 
@@ -40,8 +40,7 @@ Vector3 PhysicsComponent::CalculateFriction()
 
 float PhysicsComponent::CalculateNormalForce()
 {
-	DirectX::XMFLOAT4 dxQuaternion = GameObject.lock()->Transform->GetRotation();
-	Quaternion quaternion = {dxQuaternion.w, dxQuaternion.x, dxQuaternion.y, dxQuaternion.z };
+	Quaternion quaternion =  GameObject.lock()->Transform->GetRotation();
 	Vector3 euler = MakeEulerAnglesFromQ(quaternion);
 	return GRAVITY.Magnitude() * _mass * std::cos(euler.Angle(Vector3::Up()));
 }
