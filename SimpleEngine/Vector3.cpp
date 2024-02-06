@@ -5,7 +5,49 @@ Vector3::Vector3(float x, float y, float z) : X(x), Y(y), Z(z) {}
 
 Vector3::Vector3(DirectX::XMFLOAT3 v3) : X(v3.x), Y(v3.y), Z(v3.z) {}
 
-Vector3 Vector3::Zero = {};
+#pragma region Static "Properties"
+
+Vector3 Vector3::Zero()
+{
+	return {};
+}
+
+Vector3 Vector3::One()
+{
+	return {1, 1, 1};
+}
+
+Vector3 Vector3::Up()
+{
+	return {0, 1, 0};
+}
+
+Vector3 Vector3::Down()
+{
+	return {0, -1, 0};
+}
+
+Vector3 Vector3::Forward()
+{
+	return {0, 0, 1};
+}
+
+Vector3 Vector3::Back()
+{
+	return {0, 0, -1};
+}
+
+Vector3 Vector3::Right()
+{
+	return {1, 0, 0};
+}
+
+Vector3 Vector3::Left()
+{
+	return {-1, 0, 0};
+}
+
+#pragma endregion
 
 #pragma region Functions
 
@@ -22,7 +64,7 @@ Vector3 Vector3::Normalise()
 {
 	float magnitude = Magnitude();
 	if (magnitude == 0)
-		return Zero;
+		return Zero();
 
 	float xN = X / magnitude;
 	float yN = Y / magnitude;
@@ -64,7 +106,7 @@ Vector3 Vector3::Normalise(Vector3 vector)
 {
 	float magnitude = Magnitude(vector);
 	if (magnitude == 0)
-		return Zero;
+		return Zero();
 
 	float xN = vector.X / magnitude;
 	float yN = vector.Y / magnitude;

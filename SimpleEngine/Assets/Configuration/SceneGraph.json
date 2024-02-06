@@ -33,7 +33,7 @@
           },
           "NearPlane": 0.01,
           "FarPlane": 100000.0,
-          "MovementSpeed": 500.0,
+          "MovementSpeed": 8.0,
           "RotationSpeed": 2.0
         }
       ],
@@ -87,8 +87,11 @@
         {
           "Type": "PhysicsComponent",
           "Mass": 10,
-          "DragCoefficient": 1,
-          "Gravity": true
+          "DragCoefficient": 1.4,
+          "FrictionCoefficient": 0.3,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": true
         }
       ],
       "Children": [

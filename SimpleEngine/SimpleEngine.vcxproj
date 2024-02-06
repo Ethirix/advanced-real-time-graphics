@@ -192,6 +192,7 @@
     <ClInclude Include="MeshType.h" />
     <ClInclude Include="ParticleComponent.h" />
     <ClInclude Include="PhysicsComponent.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="RasterizerStateConfig.h" />
     <ClInclude Include="SafePointerArray.h" />
     <ClInclude Include="SceneGraph.h" />

@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include "GameObject.h"
+#include "Quaternion.h"
 #include "Vector3.h"
 
 PhysicsComponent::PhysicsComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json)
@@ -10,25 +11,47 @@ PhysicsComponent::PhysicsComponent(WP_GAMEOBJECT owningGameObject, nlohmann::jso
 	_mass = json["Mass"];
 
 	DragCoefficient = json["DragCoefficient"];
-	Gravity = json["Gravity"];
+	FrictionCoefficient = json["FrictionCoefficient"];
+
+	UseGravity = json["UseGravity"];
+	UseDrag = json["UseDrag"];
+	UseFriction = json["UseFriction"];
 }
 
 void PhysicsComponent::CalculateNetForce()
 {
-	if (Gravity)
+	if (UseGravity)
 		_netForce += GRAVITY;
 
-	Vector3 vel = _velocity;
-	vel = { -vel.X, -vel.Y,-vel.Z };
-	vel = vel.Normalise();
-	vel *= Drag();
+	if (UseDrag)
+		_netForce += CalculateDrag();
 
-	_netForce += vel;
+	if (UseFriction)
+		_netForce += CalculateFriction();
 }
 
-float PhysicsComponent::Drag()
+Vector3 PhysicsComponent::CalculateFriction()
 {
-	return 0.5f * AIR_DENSITY * (_velocity.Magnitude() * _velocity.Magnitude()) * DragCoefficient * 1;
+	Vector3 velocity = _velocity;
+	velocity = Vector3::Zero() - velocity;
+	velocity = velocity.Normalise();
+	return velocity * (FrictionCoefficient * CalculateNormalForce());
+}
+
+float PhysicsComponent::CalculateNormalForce()
+{
+	DirectX::XMFLOAT4 dxQuaternion = GameObject.lock()->Transform->GetRotation();
+	Quaternion quaternion = {dxQuaternion.w, dxQuaternion.x, dxQuaternion.y, dxQuaternion.z };
+	Vector3 euler = MakeEulerAnglesFromQ(quaternion);
+	return GRAVITY.Magnitude() * _mass * std::cos(euler.Angle(Vector3::Up()));
+}
+
+Vector3 PhysicsComponent::CalculateDrag()
+{
+	Vector3 velocity = _velocity;
+	velocity = Vector3::Zero() - velocity;
+	velocity = velocity.Normalise();
+	return velocity * (0.5f * AIR_DENSITY * (_velocity.Magnitude() * _velocity.Magnitude()) * DragCoefficient * 1);
 }
 
 void PhysicsComponent::FixedUpdate(double fixedDeltaTime)
@@ -48,8 +71,8 @@ void PhysicsComponent::FixedUpdate(double fixedDeltaTime)
 	deltaPosition.Y += _velocity.Y;
 	deltaPosition.Z += _velocity.Z;
 
-	_netForce = Vector3::Zero;
-	_acceleration = Vector3::Zero;
+	_netForce = Vector3::Zero();
+	_acceleration = Vector3::Zero();
 
 	transform->SetPosition(deltaPosition.ToDXFloat3());
 }

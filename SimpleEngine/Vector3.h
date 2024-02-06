@@ -34,11 +34,18 @@ public:
 	
 
 public:
-	static float Dot(Vector3 lhs, Vector3 rhs);
-	static float Angle(Vector3 lhs, Vector3 rhs);
-	static float Magnitude(Vector3 vector);
-	static Vector3 Normalise(Vector3 vector);
-	static DirectX::XMFLOAT3 ToDXFloat3(Vector3 vector);
+	[[nodiscard]] static float Dot(Vector3 lhs, Vector3 rhs);
+	[[nodiscard]] static float Angle(Vector3 lhs, Vector3 rhs);
+	[[nodiscard]] static float Magnitude(Vector3 vector);
+	[[nodiscard]] static Vector3 Normalise(Vector3 vector);
+	[[nodiscard]] static DirectX::XMFLOAT3 ToDXFloat3(Vector3 vector);
 
-	static Vector3 Zero;
+	[[nodiscard]] static Vector3 Zero();
+	[[nodiscard]] static Vector3 One();
+	[[nodiscard]] static Vector3 Up();
+	[[nodiscard]] static Vector3 Down();
+	[[nodiscard]] static Vector3 Forward();
+	[[nodiscard]] static Vector3 Back();
+	[[nodiscard]] static Vector3 Right();
+	[[nodiscard]] static Vector3 Left();
 };

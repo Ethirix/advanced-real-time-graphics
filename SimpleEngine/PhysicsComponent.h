@@ -22,11 +22,18 @@ public:
 private:
 	void CalculateNetForce();
 
-	float Drag();
+	Vector3 CalculateDrag();
+	Vector3 CalculateFriction();
+
+	float CalculateNormalForce();
 
 public:
-	bool Gravity = true;
+	bool UseGravity = true;
+	bool UseDrag = true;
+	bool UseFriction = true;
+
 	float DragCoefficient = 1;
+	float FrictionCoefficient = 0.5f;
 
 private:
 	Vector3 _velocity{};
