@@ -86,6 +86,9 @@
     <Filter Include="Components\Physics\ParticleComponent">
       <UniqueIdentifier>{9a6174ed-b4f3-42b6-bfc1-6d2ebed744c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Physics\ColliderComponent">
+      <UniqueIdentifier>{ffafe0bd-5085-44b0-a7d4-450c7cffb161}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -132,6 +135,9 @@
     </ClCompile>
     <ClCompile Include="Vector3.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -260,6 +266,9 @@
     </ClInclude>
     <ClInclude Include="Quaternion.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
