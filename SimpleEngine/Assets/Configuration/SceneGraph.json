@@ -4,8 +4,8 @@
       "Name": "MainCamera",
       "Position": {
         "X": 0,
-        "Y": 0,
-        "Z": -1
+        "Y": 5,
+        "Z": -5
       },
       "Scale": {
         "X": 1,
@@ -92,6 +92,11 @@
           "UseGravity": true,
           "UseDrag": true,
           "UseFriction": false
+        },
+        {
+          "Type": "SphereColliderComponent",
+          "Radius": 5,
+          "Collideable": true
         }
       ],
       "Children": [
@@ -286,6 +291,11 @@
             }
           },
           "Stencil": ""
+        },
+        {
+          "Type": "SphereColliderComponent",
+          "Radius": 5,
+          "Collideable": true
         }
       ],
       "Children": []

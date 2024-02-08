@@ -5,8 +5,9 @@
 #include "LightComponent.h"
 #include "MeshComponent.h"
 #include "PhysicsComponent.h"
+#include "SphereColliderComponent.h"
 
-SceneGraph::SceneGraph(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device)
+void SceneGraph::Initialize(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device)
 {
 	std::ifstream fileStream(path);
 	nlohmann::json json = nlohmann::json::parse(fileStream);
@@ -68,6 +69,13 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 
 			obj->AddComponent(lightComponent);
 		}
+		else if (type == "SphereColliderComponent")
+		{
+			auto sphereColliderComponent = std::make_shared<SphereColliderComponent>(
+				obj, component);
+
+			obj->AddComponent(sphereColliderComponent);
+		}
 	}
 
 	for (nlohmann::json children : json["Children"])
@@ -78,6 +86,11 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	}
 
 	return obj;
+}
+
+GameObject* SceneGraph::GetObjectAtPosition(unsigned index)
+{
+	return _sceneGraph[index].get();
 }
 
 void SceneGraph::Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context)
@@ -102,4 +115,38 @@ void SceneGraph::FixedUpdate(double fixedDeltaTime)
 {
 	for (std::shared_ptr<GameObject> gameObject : _sceneGraph)
 		gameObject->FixedUpdate(fixedDeltaTime);
+}
+
+std::list<CollisionResponse> SceneGraph::CheckColliders(std::shared_ptr<ColliderComponent> collider)
+{
+	std::list<CollisionResponse> responses = {};
+	switch (collider->Type)
+	{
+	case COLLIDER_SPHERE:
+		{
+			std::shared_ptr<SphereColliderComponent> sphere =
+			std::dynamic_pointer_cast<SphereColliderComponent>(collider);
+		
+			for (std::weak_ptr<ColliderComponent> coll: GetComponentsFromObjects<ColliderComponent>())
+			{
+				if (coll.lock() == collider)
+					continue;
+
+				if (sphere->CollidesWith(coll.lock()))
+				{
+					std::weak_ptr<PhysicsComponent> physComp = {};
+					if (auto phys = sphere->GameObject.lock()->TryGetComponent<PhysicsComponent>(); phys.has_value())
+						physComp = phys.value();
+
+					responses.emplace_back(sphere,
+						sphere->GameObject.lock()->Transform, physComp);	
+				}
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
+	return responses;
 }

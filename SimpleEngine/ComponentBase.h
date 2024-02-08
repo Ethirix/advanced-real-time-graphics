@@ -8,9 +8,11 @@
 #define SP_GAMEOBJECT const std::shared_ptr<::GameObject>&
 
 class GameObject;
-class ComponentBase
+class ComponentBase : public std::enable_shared_from_this<ComponentBase>
 {
 public:
+	std::shared_ptr<ComponentBase> GetBasePtr() { return shared_from_this(); }
+
 	explicit ComponentBase(WP_GAMEOBJECT owningGameObject)
 	: GameObject(owningGameObject) { }
 

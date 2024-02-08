@@ -10,7 +10,6 @@
 #include "Constants.h"
 #include "DataStore.h"
 #include "LightComponent.h"
-#include "PhysicsComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
 
@@ -294,10 +293,10 @@ HRESULT SimpleEngine::InitialisePipeline()
 
 HRESULT SimpleEngine::InitialiseRunTimeData()
 {
-	_sceneGraph = std::make_unique<SceneGraph>(
+	SceneGraph::Initialize(
 		"Assets/Configuration/SceneGraph.json", _device);
 
-	if (auto cameraComponent = _sceneGraph->TryGetComponentFromObjects<CameraComponent>();
+	if (auto cameraComponent = SceneGraph::TryGetComponentFromObjects<CameraComponent>();
 		cameraComponent.has_value())
 		_camera = cameraComponent.value();
 
@@ -607,7 +606,7 @@ void SimpleEngine::OnWindowSizeChangeComplete()
 
 	float aspect = _viewport.Width / _viewport.Height;
 
-    for (std::weak_ptr<CameraComponent> camera : _sceneGraph->GetComponentsFromObjects<CameraComponent>())
+    for (std::weak_ptr<CameraComponent> camera : SceneGraph::GetComponentsFromObjects<CameraComponent>())
     {
 	    DirectX::XMMATRIX perspective = DirectX::XMMatrixPerspectiveFovLH(
 		    DirectX::XMConvertToRadians(camera.lock()->GetFieldOfView()), aspect, 
@@ -636,11 +635,11 @@ void SimpleEngine::Update()
 
 	if (_camera.expired())
 	{
-		if (auto cameraComponent = _sceneGraph->TryGetComponentFromObjects<CameraComponent>(); cameraComponent.has_value())
+		if (auto cameraComponent = SceneGraph::TryGetComponentFromObjects<CameraComponent>(); cameraComponent.has_value())
 			_camera = cameraComponent.value();
 	}
 
-	auto lightComponents = _sceneGraph->GetComponentsFromObjects<LightComponent>();
+	auto lightComponents = SceneGraph::GetComponentsFromObjects<LightComponent>();
 	Buffers::CBLighting.BufferData.ActiveLightCount = lightComponents.size();
 	for (int i = 0; i < lightComponents.size() && i < MAX_LIGHTS; i++)
 	{
@@ -648,14 +647,14 @@ void SimpleEngine::Update()
 	}
 
 	//BIG HACK NEED TO GET A CONCRETE WAY TO GET THE SKYBOX!
-	_sceneGraph->operator[](4)->Transform->SetPosition(_camera.lock()->GameObject.lock()->Transform->GetPosition());
+	SceneGraph::GetObjectAtPosition(4)->Transform->SetPosition(_camera.lock()->GameObject.lock()->Transform->GetPosition());
 	
-	_sceneGraph->Update(deltaTime);
+	SceneGraph::Update(deltaTime);
 }
 
 void SimpleEngine::FixedUpdate(double fixedDeltaTime)
 {
-	_sceneGraph->FixedUpdate(fixedDeltaTime);
+	SceneGraph::FixedUpdate(fixedDeltaTime);
 }
 
 void SimpleEngine::Draw()
@@ -676,7 +675,7 @@ void SimpleEngine::Draw()
 	_context->ClearRenderTargetView(_frameBufferView.Get(), backgroundColour);
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 
-	_sceneGraph->Draw(_context);
+	SceneGraph::Draw(_context);
 
 	_swapChain->Present(0, 0);
 }

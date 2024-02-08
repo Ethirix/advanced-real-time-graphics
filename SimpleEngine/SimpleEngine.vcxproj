@@ -163,6 +163,7 @@
     <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
+    <ClCompile Include="SphereColliderComponent.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
@@ -175,6 +176,8 @@
     <ClInclude Include="CBObjectCameraData.h" />
     <ClInclude Include="CBTextures.h" />
     <ClInclude Include="ColliderComponent.h" />
+    <ClInclude Include="ColliderType.h" />
+    <ClInclude Include="CollisionResponse.h" />
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="Constants.h" />
@@ -203,6 +206,7 @@
     <ClInclude Include="ShaderData.h" />
     <ClInclude Include="ShaderType.h" />
     <ClInclude Include="SimpleEngine.h" />
+    <ClInclude Include="SphereColliderComponent.h" />
     <ClInclude Include="Storage.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Textures.h" />

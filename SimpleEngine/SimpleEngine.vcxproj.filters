@@ -89,6 +89,12 @@
     <Filter Include="Components\Physics\ColliderComponent">
       <UniqueIdentifier>{ffafe0bd-5085-44b0-a7d4-450c7cffb161}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Physics\ColliderComponent\SphereCollider">
+      <UniqueIdentifier>{1088f0c6-6015-4597-b832-54cb523093d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ColliderComponent\AABBCollider">
+      <UniqueIdentifier>{f804af4e-677d-41b2-8287-4a43848ba10e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -138,6 +144,9 @@
     </ClCompile>
     <ClCompile Include="ColliderComponent.cpp">
       <Filter>Components\Physics\ColliderComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent\SphereCollider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -269,6 +278,15 @@
     </ClInclude>
     <ClInclude Include="ColliderComponent.h">
       <Filter>Components\Physics\ColliderComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent\SphereCollider</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderType.h">
+      <Filter>Components\Physics\ColliderComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionResponse.h">
+      <Filter>Header Files\Structs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

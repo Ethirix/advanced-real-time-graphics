@@ -3,22 +3,25 @@
 #include <nlohmann\json.hpp>
 #include <wrl/client.h>
 
+#include "ColliderComponent.h"
 #include "GameObject.h"
+#include "CollisionResponse.h"
 
 class SceneGraph
 {
 public:
-	explicit SceneGraph(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device);
+	static void Initialize(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device);
 
-	GameObject* operator[](std::size_t index) { return _sceneGraph[index].get(); }
-	const GameObject* operator[](std::size_t index) const { return _sceneGraph[index].get(); }
+	static GameObject* GetObjectAtPosition(unsigned index);
 
-	void Update(double deltaTime);
-	void FixedUpdate(double fixedDeltaTime);
-	void Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context);
+	static void Update(double deltaTime);
+	static void FixedUpdate(double fixedDeltaTime);
+	static void Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context);
+
+	static std::list<CollisionResponse> CheckColliders(std::shared_ptr<ColliderComponent> collider);
 
 	template <typename T>
-	std::optional<std::weak_ptr<T>> TryGetComponentFromObjects()
+	static std::optional<std::weak_ptr<T>> TryGetComponentFromObjects()
 	{
 		for (std::shared_ptr<GameObject> obj : _sceneGraph)
 		{
@@ -30,7 +33,7 @@ public:
 	}
 
 	template <typename T>
-	std::vector<std::weak_ptr<T>> GetComponentsFromObjects()
+	static std::vector<std::weak_ptr<T>> GetComponentsFromObjects()
 	{
 		std::vector<std::weak_ptr<T>> components = {};
 
@@ -44,9 +47,9 @@ public:
 	}
 
 private:
-	std::vector<std::shared_ptr<GameObject>> _sceneGraph {};
+	inline static std::vector<std::shared_ptr<GameObject>> _sceneGraph {};
 
-	void InitialiseSceneGraph(const nlohmann::json& json, const Microsoft::WRL::ComPtr<ID3D11Device>& device);
+	static void InitialiseSceneGraph(const nlohmann::json& json, const Microsoft::WRL::ComPtr<ID3D11Device>& device);
 
-	std::shared_ptr<GameObject> RunInitialisationRecursive(nlohmann::json json, const Microsoft::WRL::ComPtr<ID3D11Device>& device, const std::weak_ptr<TransformComponent>& parent = {});
+	static std::shared_ptr<GameObject> RunInitialisationRecursive(nlohmann::json json, const Microsoft::WRL::ComPtr<ID3D11Device>& device, const std::weak_ptr<TransformComponent>& parent = {});
 };
