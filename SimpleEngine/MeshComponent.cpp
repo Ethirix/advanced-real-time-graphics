@@ -112,3 +112,13 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 
 	context->DrawIndexed(Mesh->VertexIndices.Length, 0, 0);
 }
+
+Bounds MeshComponent::GetBounds()
+{
+	Bounds bounds = {};
+	bounds.Center = GameObject.lock()->Transform->GetPosition();
+	bounds.Min = Mesh->Min;
+	bounds.Max = Mesh->Max;
+
+	return bounds;
+}

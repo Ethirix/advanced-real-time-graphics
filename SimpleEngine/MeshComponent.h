@@ -2,6 +2,7 @@
 #include <memory>
 #include <nlohmann/json.hpp>
 
+#include "Bounds.h"
 #include "ComponentBase.h"
 #include "Mesh.h"
 #include "Textures.h"
@@ -18,8 +19,12 @@ public:
 	void Update(double deltaTime) override {};
 	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override;
 
+	Bounds GetBounds();
+
 	std::shared_ptr<Mesh> Mesh;
 	std::shared_ptr<Material> Material{};
 	std::shared_ptr<Textures> Textures{};
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> DepthStencil = nullptr;
+private:
+	Bounds _bounds = {};
 };

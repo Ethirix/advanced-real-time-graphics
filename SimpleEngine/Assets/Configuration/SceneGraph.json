@@ -348,7 +348,7 @@
     {
       "Name": "PointLightGreen",
       "Position": {
-        "X": 10,
+        "X": 1,
         "Y": 15,
         "Z": 0
       },
@@ -386,6 +386,20 @@
           "LinearAttenuation": 0,
           "QuadraticAttenuation": 0.1,
           "LightRadius": 32
+        },
+        {
+          "Type": "SphereColliderComponent",
+          "Radius": 5,
+          "Collideable": true
+        },
+        {
+          "Type": "PhysicsComponent",
+          "Mass": 10,
+          "DragCoefficient": 1.4,
+          "FrictionCoefficient": 0.3,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": false
         },
         {
           "Type": "MeshComponent",

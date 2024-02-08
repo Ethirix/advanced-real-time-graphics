@@ -168,6 +168,7 @@
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bounds.h" />
     <ClInclude Include="BufferPair.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="CameraComponent.h" />
