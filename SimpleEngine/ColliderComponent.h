@@ -2,6 +2,7 @@
 #include "ColliderType.h"
 #include "ComponentBase.h"
 
+class AABBColliderComponent;
 class SphereColliderComponent;
 class ColliderComponent : public ComponentBase
 {
@@ -21,4 +22,5 @@ public:
 
 protected:
 	virtual bool SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider) = 0;
+	virtual bool AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider) = 0;
 };

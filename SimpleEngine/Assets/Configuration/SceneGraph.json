@@ -94,8 +94,20 @@
           "UseFriction": false
         },
         {
-          "Type": "SphereColliderComponent",
-          "Radius": 5,
+          "Type": "AABBColliderComponent",
+          "Bounds": {
+            "Min": {
+              "X": -1,
+              "Y": -1,
+              "Z": -1
+            },
+            "Max": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
+            }
+          },
+          "UseMeshBounds": true,
           "Collideable": true
         }
       ],
