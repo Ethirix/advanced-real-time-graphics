@@ -60,6 +60,15 @@ float Vector3::Magnitude()
 	return std::sqrt(x2 + y2 + z2);
 }
 
+float Vector3::MagnitudeSqr()
+{
+	float x2 = X * X;
+	float y2 = Y * Y;
+	float z2 = Z * Z;
+
+	return x2 + y2 + z2;
+}
+
 Vector3 Vector3::Normalise()
 {
 	float magnitude = Magnitude();
@@ -141,6 +150,15 @@ float Vector3::Magnitude(Vector3 vector)
 	float z2 = vector.Z * vector.Z;
 
 	return std::sqrt(x2 + y2 + z2);
+}
+
+float Vector3::MagnitudeSqr(Vector3 vector)
+{
+	float x2 = vector.X * vector.X;
+	float y2 = vector.Y * vector.Y;
+	float z2 = vector.Z * vector.Z;
+
+	return x2 + y2 + z2;
 }
 
 DirectX::XMFLOAT3 Vector3::ToDXFloat3(Vector3 vector)

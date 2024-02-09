@@ -1,6 +1,7 @@
 ﻿#include "SceneGraph.h"
 #include <fstream>
 
+#include "AABBColliderComponent.h"
 #include "CameraComponent.h"
 #include "LightComponent.h"
 #include "MeshComponent.h"
@@ -76,6 +77,13 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 
 			obj->AddComponent(sphereColliderComponent);
 		}
+		else if (type == "AABBColliderComponent")
+		{
+			auto aabbColliderComponent = std::make_shared<AABBColliderComponent>(
+				obj, component);
+
+			obj->AddComponent(aabbColliderComponent);
+		}
 	}
 
 	for (nlohmann::json children : json["Children"])
@@ -117,7 +125,7 @@ void SceneGraph::FixedUpdate(double fixedDeltaTime)
 		gameObject->FixedUpdate(fixedDeltaTime);
 }
 
-std::list<CollisionResponse> SceneGraph::CheckColliders(std::shared_ptr<ColliderComponent> collider)
+std::list<CollisionResponse> SceneGraph::CheckColliders(const std::shared_ptr<ColliderComponent>& collider)
 {
 	std::list<CollisionResponse> responses = {};
 	switch (collider->Type)
@@ -140,6 +148,28 @@ std::list<CollisionResponse> SceneGraph::CheckColliders(std::shared_ptr<Collider
 
 					responses.emplace_back(sphere,
 						sphere->GameObject.lock()->Transform, physComp);	
+				}
+			}
+		}
+		break;
+	case COLLIDER_AABB:
+		{
+			std::shared_ptr<AABBColliderComponent> aabb =
+				std::dynamic_pointer_cast<AABBColliderComponent>(collider);
+
+			for (std::weak_ptr<ColliderComponent> coll : GetComponentsFromObjects<ColliderComponent>())
+			{
+				if (coll.lock() == collider)
+					continue;
+
+				if (aabb->CollidesWith(coll.lock()))
+				{
+					std::weak_ptr<PhysicsComponent> physComp = {};
+					if (auto phys = aabb->GameObject.lock()->TryGetComponent<PhysicsComponent>(); phys.has_value())
+						physComp = phys.value();
+
+					responses.emplace_back(aabb,
+						aabb->GameObject.lock()->Transform, physComp);
 				}
 			}
 		}

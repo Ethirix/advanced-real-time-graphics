@@ -18,7 +18,7 @@ public:
 	static void FixedUpdate(double fixedDeltaTime);
 	static void Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context);
 
-	static std::list<CollisionResponse> CheckColliders(std::shared_ptr<ColliderComponent> collider);
+	static std::list<CollisionResponse> CheckColliders(const std::shared_ptr<ColliderComponent>& collider);
 
 	template <typename T>
 	static std::optional<std::weak_ptr<T>> TryGetComponentFromObjects()

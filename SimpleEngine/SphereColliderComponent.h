@@ -2,6 +2,7 @@
 #include <nlohmann/json.hpp>
 
 #include "ColliderComponent.h"
+#include "Vector3.h"
 
 class SphereColliderComponent : public ColliderComponent
 {
@@ -13,10 +14,11 @@ public:
 	void Update(double deltaTime) override {}
 
 	[[nodiscard]] float GetRadius();
+	[[nodiscard]] bool IsPointInsideSphere(Vector3 point);
 
 protected:
 	bool SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider) override;
-
+	bool AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider) override;
 private:
 	float _radius = 0;
 };

@@ -1,15 +1,20 @@
 ﻿#include "AABBColliderComponent.h"
 
+#include "CollisionResponse.h"
 #include "GameObject.h"
+#include "Maths.h"
 #include "MeshComponent.h"
+#include "SceneGraph.h"
+
+#include "SphereColliderComponent.h"
 
 AABBColliderComponent::AABBColliderComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json)
 	: ColliderComponent(owningGameObject)
 {
 	Type = COLLIDER_AABB;
 
-	nlohmann::json min = json["Min"];
-	nlohmann::json max = json["Max"];
+	nlohmann::json min = json["Bounds"]["Min"];
+	nlohmann::json max = json["Bounds"]["Max"];
 	_bounds.Min = {min["X"], min["Y"], min["Z"]};
 	_bounds.Max = {max["X"], max["Y"], max["Z"]};
 	_bounds.Center = Vector3::Zero();
@@ -18,17 +23,65 @@ AABBColliderComponent::AABBColliderComponent(WP_GAMEOBJECT owningGameObject, nlo
 	Collideable = json["Collideable"];
 }
 
+void AABBColliderComponent::FixedUpdate(double fixedDeltaTime)
+{
+	std::list<CollisionResponse> collision = SceneGraph::CheckColliders(GetColliderPtr());
+	//do collider stuff ig
+
+	if (auto optionalPhys = GameObject.lock()->TryGetComponent<PhysicsComponent>();
+		optionalPhys.has_value() && !collision.empty())
+		optionalPhys.value().lock()->AddForce(0, 25, 0);
+}
+
+Vector3 AABBColliderComponent::GetClosestPoint(Vector3 point)
+{
+	auto [Center, Min, Max] = GetBounds();
+	Vector3 boxPoint = {
+		Maths::Max(Center.X + Min.X, Maths::Min(point.X, Center.X + Max.X)),
+		Maths::Max(Center.Y + Min.Y, Maths::Min(point.Y, Center.Y + Max.Y)),
+		Maths::Max(Center.Z + Min.Z, Maths::Min(point.Z, Center.Z + Max.Z))
+	};
+
+	return boxPoint;
+}
 
 Bounds AABBColliderComponent::GetBounds()
 {
-	if (_useMeshBounds)
-	{
-		if (auto optionalMesh = GameObject.lock()->TryGetComponent<MeshComponent>(); optionalMesh.has_value())
-			return optionalMesh.value().lock()->GetBounds();
-	}
-
 	Bounds bounds = _bounds;
+	if (auto optionalMesh = GameObject.lock()->TryGetComponent<MeshComponent>(); optionalMesh.has_value() && _useMeshBounds)
+		bounds = optionalMesh.value().lock()->GetBounds();
+
+	float scale = Vector3(GameObject.lock()->Transform->GetScale()).Magnitude();
+	bounds.Min *= scale;
+	bounds.Max *= scale;
 	bounds.Center = GameObject.lock()->Transform->GetPosition();
 
+	_bounds = bounds;
 	return bounds;
+}
+
+bool AABBColliderComponent::Intersects(const Bounds& other)
+{
+	auto [Center, Min, Max] = GetBounds();
+	bool xCheck = Max.X <= other.Min.X && Max.X >= Min.X;
+	bool yCheck = Max.Y <= other.Min.Y && Max.Y >= Min.Y;
+	bool zCheck = Max.Z <= other.Min.Z && Max.Z >= Min.Z;
+
+	return xCheck && yCheck && zCheck;
+}
+
+bool AABBColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider)
+{
+	if (!Collideable || !collider->Collideable)
+		return false;
+
+	Vector3 thisPos = GameObject.lock()->Transform->GetPosition();
+	Vector3 closestPoint = GetClosestPoint(thisPos);
+
+	return collider->IsPointInsideSphere(closestPoint);
+}
+
+bool AABBColliderComponent::AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider)
+{
+	return Intersects(collider->GetBounds());
 }

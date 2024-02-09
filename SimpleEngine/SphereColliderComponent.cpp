@@ -1,8 +1,9 @@
 ﻿#include "SphereColliderComponent.h"
 
-#include "Debug.h"
 #include "GameObject.h"
+#include "Maths.h"
 #include "SceneGraph.h"
+#include "AABBColliderComponent.h";
 
 SphereColliderComponent::SphereColliderComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json)
 	: ColliderComponent(owningGameObject)
@@ -27,6 +28,14 @@ void SphereColliderComponent::FixedUpdate(double fixedDeltaTime)
 		optionalPhys.value().lock()->AddForce(0, 25, 0);
 }
 
+bool SphereColliderComponent::IsPointInsideSphere(Vector3 point)
+{
+	Vector3 thisPos = GameObject.lock()->Transform->GetPosition();
+	float distance = Vector3(point - thisPos).MagnitudeSqr();
+
+	return distance < _radius * _radius;
+}
+
 bool SphereColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider)
 {
 	if (!Collideable || !collider->Collideable)
@@ -39,4 +48,15 @@ bool SphereColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderC
 		return true;
 
 	return false;
+}
+
+bool SphereColliderComponent::AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider)
+{
+	if (!Collideable || !collider->Collideable)
+		return false;
+
+	Vector3 thisPos = GameObject.lock()->Transform->GetPosition();
+	Vector3 closestPoint = collider->GetClosestPoint(thisPos);
+
+	return IsPointInsideSphere(closestPoint);
 }
