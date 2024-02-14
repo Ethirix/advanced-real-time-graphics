@@ -139,11 +139,11 @@
               "MeshType": 1,
               "TexturePaths": {
                 "Diffuse": {
-                  "Path": "Assets/Textures/Cone/Crate_DIFFUSE.dds",
+                  "Path": "Assets/Textures/Crate/Crate_DIFFUSE.dds",
                   "Slot": 0
                 },
                 "Specular": {
-                  "Path": "Assets/Textures/Cone/Crate_SPECULAR.dds",
+                  "Path": "Assets/Textures/Crate/Crate_SPECULAR.dds",
                   "Slot": 1
                 },
                 "Displacement": {
@@ -151,7 +151,7 @@
                   "Slot": -1
                 },
                 "Normal": {
-                  "Path": "Assets/Textures/Cone/Crate_NORMAL.dds",
+                  "Path": "Assets/Textures/Crate/Crate_NORMAL.dds",
                   "Slot": -1
                 }
               },

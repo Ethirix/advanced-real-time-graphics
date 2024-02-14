@@ -105,7 +105,6 @@ bool AABBColliderComponent::PlaneCollideCheck(std::shared_ptr<PlaneColliderCompo
 	float radius = positiveExtent.X * std::abs(normal.X) + positiveExtent.Y * std::abs(normal.Y) + positiveExtent.Z *
 		std::abs(normal.Z);
 
-
 	float distance = normal.Dot(aabbPosition) - collider->GetDistance();
 
 	return std::abs(distance) <= radius;
