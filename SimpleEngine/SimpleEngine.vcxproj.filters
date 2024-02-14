@@ -95,6 +95,9 @@
     <Filter Include="Components\Physics\ColliderComponent\AABBCollider">
       <UniqueIdentifier>{f804af4e-677d-41b2-8287-4a43848ba10e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Physics\ColliderComponent\PlaneCollider">
+      <UniqueIdentifier>{8c4f7cfa-0afb-47fa-bdef-b71d35789afe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -147,6 +150,15 @@
     </ClCompile>
     <ClCompile Include="SphereColliderComponent.cpp">
       <Filter>Components\Physics\ColliderComponent\SphereCollider</Filter>
+    </ClCompile>
+    <ClCompile Include="Maths.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AABBColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent\AABBCollider</Filter>
+    </ClCompile>
+    <ClCompile Include="PlaneColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent\PlaneCollider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -287,6 +299,18 @@
     </ClInclude>
     <ClInclude Include="CollisionResponse.h">
       <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Bounds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Maths.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AABBColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent\AABBCollider</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaneColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent\PlaneCollider</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

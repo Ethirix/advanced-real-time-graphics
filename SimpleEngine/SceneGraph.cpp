@@ -6,6 +6,7 @@
 #include "LightComponent.h"
 #include "MeshComponent.h"
 #include "PhysicsComponent.h"
+#include "PlaneColliderComponent.h"
 #include "SphereColliderComponent.h"
 
 void SceneGraph::Initialize(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device)
@@ -83,6 +84,13 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 				obj, component);
 
 			obj->AddComponent(aabbColliderComponent);
+		}
+		else if (type == "PlaneColliderComponent")
+		{
+			auto planeColliderComponent = std::make_shared<PlaneColliderComponent>(
+				obj, component);
+
+			obj->AddComponent(planeColliderComponent);
 		}
 	}
 

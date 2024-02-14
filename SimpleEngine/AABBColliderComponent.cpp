@@ -7,6 +7,7 @@
 #include "SceneGraph.h"
 
 #include "SphereColliderComponent.h"
+#include "PlaneColliderComponent.h"
 
 AABBColliderComponent::AABBColliderComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json)
 	: ColliderComponent(owningGameObject)
@@ -83,5 +84,29 @@ bool AABBColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderCom
 
 bool AABBColliderComponent::AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider)
 {
+	if (!Collideable || !collider->Collideable)
+		return false;
+
 	return Intersects(collider->GetBounds());
+}
+
+bool AABBColliderComponent::PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider)
+{
+	if (!Collideable || !collider->Collideable)
+		return false;
+
+	Vector3 aabbPosition = GameObject.lock()->Transform->GetPosition();
+	Vector3 positiveExtent = GetBounds().Max - aabbPosition;
+
+	//equation from: https://gdbooks.gitbooks.io/3dcollisions/content/Chapter2/static_aabb_plane.html
+	//float r = e[0]*Abs(p.n[0]) + e[1]*Abs(p.n[1]) + e[2]*Abs(p.n[2]);
+	Vector3 normal = collider->GetNormal();
+
+	float radius = positiveExtent.X * std::abs(normal.X) + positiveExtent.Y * std::abs(normal.Y) + positiveExtent.Z *
+		std::abs(normal.Z);
+
+
+	float distance = normal.Dot(aabbPosition) - collider->GetDistance();
+
+	return std::abs(distance) <= radius;
 }

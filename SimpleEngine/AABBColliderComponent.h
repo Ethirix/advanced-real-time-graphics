@@ -19,6 +19,7 @@ public:
 protected:
 	bool SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider) override;
 	bool AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider) override;
+	bool PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider) override;
 
 private:
 	//USE GETTER!

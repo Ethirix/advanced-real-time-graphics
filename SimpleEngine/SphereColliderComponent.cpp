@@ -1,9 +1,10 @@
 ﻿#include "SphereColliderComponent.h"
 
+#include "AABBColliderComponent.h";
 #include "GameObject.h"
 #include "Maths.h"
+#include "PlaneColliderComponent.h"
 #include "SceneGraph.h"
-#include "AABBColliderComponent.h";
 
 SphereColliderComponent::SphereColliderComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json)
 	: ColliderComponent(owningGameObject)
@@ -59,4 +60,11 @@ bool SphereColliderComponent::AABBCollideCheck(std::shared_ptr<AABBColliderCompo
 	Vector3 closestPoint = collider->GetClosestPoint(thisPos);
 
 	return IsPointInsideSphere(closestPoint);
+}
+
+bool SphereColliderComponent::PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider)
+{
+	Vector3 closestPoint = collider->ClosestPointOnPlane(GameObject.lock()->Transform->GetPosition());
+
+	return closestPoint.MagnitudeSqr() <= Maths::Pow(_radius, 2);
 }

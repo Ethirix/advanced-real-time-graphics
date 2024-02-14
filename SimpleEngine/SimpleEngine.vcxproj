@@ -162,6 +162,7 @@
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="ParticleComponent.cpp" />
     <ClCompile Include="PhysicsComponent.cpp" />
+    <ClCompile Include="PlaneColliderComponent.cpp" />
     <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="MeshType.h" />
     <ClInclude Include="ParticleComponent.h" />
     <ClInclude Include="PhysicsComponent.h" />
+    <ClInclude Include="PlaneColliderComponent.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="RasterizerStateConfig.h" />
     <ClInclude Include="SafePointerArray.h" />

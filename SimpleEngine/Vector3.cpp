@@ -82,6 +82,15 @@ Vector3 Vector3::Normalise()
 	return {xN, yN, zN};
 }
 
+Vector3 Vector3::Cross(Vector3 rhs)
+{
+	Vector3 cross;
+	cross.X = Y * rhs.Z - Z * rhs.Y;
+	cross.Y = Z * rhs.X - X * rhs.Z;
+	cross.Z = X * rhs.Y - Y * rhs.X;
+
+	return cross;
+}
 
 float Vector3::Dot(Vector3 rhs)
 {
@@ -123,6 +132,17 @@ Vector3 Vector3::Normalise(Vector3 vector)
 
 	return {xN, yN, zN};
 }
+
+Vector3 Vector3::Cross(Vector3 lhs, Vector3 rhs)
+{
+	Vector3 cross;
+	cross.X = lhs.Y * rhs.Z - lhs.Z * rhs.Y;
+	cross.Y = lhs.Z * rhs.X - lhs.X * rhs.Z;
+	cross.Z = lhs.X * rhs.Y - lhs.Y * rhs.X;
+
+	return cross;
+}
+
 
 float Vector3::Dot(Vector3 lhs, Vector3 rhs)
 {

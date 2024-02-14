@@ -305,8 +305,13 @@
           "Stencil": ""
         },
         {
-          "Type": "SphereColliderComponent",
-          "Radius": 5,
+          "Type": "PlaneColliderComponent",
+          "Distance": 0,
+          "Normal": {
+            "X": 0,
+            "Y": 1,
+            "Z": 0
+          },
           "Collideable": true
         }
       ],
