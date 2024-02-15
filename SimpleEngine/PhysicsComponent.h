@@ -25,6 +25,8 @@ public:
 	void ApplyImpulse(Vector3 force);
 	void ApplyImpulse(float x, float y, float z);
 
+	bool AddRelativeForce(Vector3 force, Vector3 point);
+
 	void RunCollisionImpulse(CollisionResponse response);
 private:
 	void CalculateNetForce();
@@ -47,6 +49,8 @@ private:
 	Vector3 _velocity{};
 	Vector3 _acceleration{};
 	Vector3 _netForce{};
+
+	Vector3 _torque{};
 
 	float _mass = 1.0f;
 

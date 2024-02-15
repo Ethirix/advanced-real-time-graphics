@@ -72,6 +72,13 @@ void PhysicsComponent::RunCollisionImpulse(CollisionResponse response)
 	ApplyImpulse(impulse);
 }
 
+bool PhysicsComponent::AddRelativeForce(Vector3 force, Vector3 point)
+{
+	AddForce(force);
+	_torque = point.Cross(force);
+}
+
+
 void PhysicsComponent::FixedUpdate(double fixedDeltaTime)
 {
 	auto transform = GameObject.lock()->Transform;
