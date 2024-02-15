@@ -44,7 +44,7 @@
       "Position": {
         "X": 0,
         "Y": 100,
-        "Z": 0
+        "Z": 20
       },
       "Scale": {
         "X": 5,
@@ -89,6 +89,7 @@
           "Mass": 10,
           "DragCoefficient": 1.4,
           "FrictionCoefficient": 0.3,
+          "Restitution": 0.1,
           "UseGravity": true,
           "UseDrag": true,
           "UseFriction": false
@@ -306,12 +307,12 @@
         },
         {
           "Type": "PlaneColliderComponent",
-          "Distance": 0,
           "Normal": {
             "X": 0,
             "Y": 1,
             "Z": 0
           },
+          "Distance": 0,
           "Collideable": true
         }
       ],
@@ -365,7 +366,7 @@
     {
       "Name": "PointLightGreen",
       "Position": {
-        "X": 1,
+        "X": 0,
         "Y": 15,
         "Z": 0
       },
@@ -414,6 +415,7 @@
           "Mass": 10,
           "DragCoefficient": 1.4,
           "FrictionCoefficient": 0.3,
+          "Restitution": 0.2,
           "UseGravity": true,
           "UseDrag": true,
           "UseFriction": false

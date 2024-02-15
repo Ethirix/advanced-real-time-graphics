@@ -24,17 +24,7 @@ AABBColliderComponent::AABBColliderComponent(WP_GAMEOBJECT owningGameObject, nlo
 	Collideable = json["Collideable"];
 }
 
-void AABBColliderComponent::FixedUpdate(double fixedDeltaTime)
-{
-	std::list<CollisionResponse> collision = SceneGraph::CheckColliders(GetColliderPtr());
-	//do collider stuff ig
-
-	if (auto optionalPhys = GameObject.lock()->TryGetComponent<PhysicsComponent>();
-		optionalPhys.has_value() && !collision.empty())
-		optionalPhys.value().lock()->AddForce(0, 25, 0);
-}
-
-Vector3 AABBColliderComponent::GetClosestPoint(Vector3 point)
+Vector3 AABBColliderComponent::ClosestPoint(Vector3 point)
 {
 	auto [Center, Min, Max] = GetBounds();
 	Vector3 boxPoint = {
@@ -57,16 +47,19 @@ Bounds AABBColliderComponent::GetBounds()
 	bounds.Max *= scale;
 	bounds.Center = GameObject.lock()->Transform->GetPosition();
 
-	_bounds = bounds;
+	//_bounds = bounds;
 	return bounds;
 }
 
 bool AABBColliderComponent::Intersects(const Bounds& other)
 {
-	auto [Center, Min, Max] = GetBounds();
-	bool xCheck = Max.X <= other.Min.X && Max.X >= Min.X;
-	bool yCheck = Max.Y <= other.Min.Y && Max.Y >= Min.Y;
-	bool zCheck = Max.Z <= other.Min.Z && Max.Z >= Min.Z;
+	auto [Centre, Min, Max] = GetBounds();
+	bool xCheck = Centre.X + Min.X <= other.Center.X + other.Max.X
+	&& Centre.X + Max.X >= other.Center.X + other.Min.X;
+	bool yCheck = Centre.Y + Min.Y <= other.Center.Y + other.Max.Y
+	&& Centre.Y + Max.Y >= other.Center.Y + other.Min.Y;
+	bool zCheck = Centre.Z + Min.Z <= other.Center.Z + other.Max.Z
+	&& Centre.Z + Max.Z >= other.Center.Z + other.Min.Z;
 
 	return xCheck && yCheck && zCheck;
 }
@@ -77,7 +70,7 @@ bool AABBColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderCom
 		return false;
 
 	Vector3 thisPos = GameObject.lock()->Transform->GetPosition();
-	Vector3 closestPoint = GetClosestPoint(thisPos);
+	Vector3 closestPoint = ClosestPoint(thisPos);
 
 	return collider->IsPointInsideSphere(closestPoint);
 }

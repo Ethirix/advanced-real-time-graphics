@@ -10,7 +10,7 @@ public:
 	explicit PlaneColliderComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json);
 
 	void Update(double deltaTime) override {}
-	void FixedUpdate(double fixedDeltaTime) override;
+	//void FixedUpdate(double fixedDeltaTime) override;
 	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override {}
 
 	void SetNormal(Vector3 normal);
@@ -21,7 +21,7 @@ public:
 
 	[[nodiscard]] bool Intersects(const std::shared_ptr<PlaneColliderComponent>& plane);
 	[[nodiscard]] bool PointOnPlane(Vector3 point);
-	[[nodiscard]] Vector3 ClosestPointOnPlane(Vector3 point);
+	[[nodiscard]] Vector3 ClosestPoint(Vector3 point) override;
 
 protected:
 	bool SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider) override;

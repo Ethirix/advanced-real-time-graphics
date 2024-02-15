@@ -14,19 +14,20 @@ SphereColliderComponent::SphereColliderComponent(WP_GAMEOBJECT owningGameObject,
 	Type = COLLIDER_SPHERE;
 }
 
+Vector3 SphereColliderComponent::ClosestPoint(Vector3 point)
+{
+	Vector3 spherePos = GameObject.lock()->Transform->GetPosition();
+	Vector3 sphereToPoint = point - spherePos;
+	sphereToPoint = sphereToPoint.Normalise();
+
+	sphereToPoint *= _radius;
+
+	return spherePos + sphereToPoint;
+}
+
 float SphereColliderComponent::GetRadius()
 {
 	return _radius;
-}
-
-void SphereColliderComponent::FixedUpdate(double fixedDeltaTime)
-{
-	std::list<CollisionResponse> collision = SceneGraph::CheckColliders(GetColliderPtr());
-	//do collider stuff ig
-
-	if (auto optionalPhys = GameObject.lock()->TryGetComponent<PhysicsComponent>(); 
-		optionalPhys.has_value() && !collision.empty())
-		optionalPhys.value().lock()->AddForce(0, 25, 0);
 }
 
 bool SphereColliderComponent::IsPointInsideSphere(Vector3 point)
@@ -57,14 +58,14 @@ bool SphereColliderComponent::AABBCollideCheck(std::shared_ptr<AABBColliderCompo
 		return false;
 
 	Vector3 thisPos = GameObject.lock()->Transform->GetPosition();
-	Vector3 closestPoint = collider->GetClosestPoint(thisPos);
+	Vector3 closestPoint = collider->ClosestPoint(thisPos);
 
 	return IsPointInsideSphere(closestPoint);
 }
 
 bool SphereColliderComponent::PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider)
 {
-	Vector3 closestPoint = collider->ClosestPointOnPlane(GameObject.lock()->Transform->GetPosition());
+	Vector3 closestPoint = collider->ClosestPoint(GameObject.lock()->Transform->GetPosition());
 
 	return closestPoint.MagnitudeSqr() <= Maths::Pow(_radius, 2);
 }

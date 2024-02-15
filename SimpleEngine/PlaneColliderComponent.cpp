@@ -18,16 +18,6 @@ PlaneColliderComponent::PlaneColliderComponent(WP_GAMEOBJECT owningGameObject, n
 	Collideable = json["Collideable"];
 }
 
-void PlaneColliderComponent::FixedUpdate(double fixedDeltaTime)
-{
-	std::list<CollisionResponse> collision = SceneGraph::CheckColliders(GetColliderPtr());
-	//do collider stuff ig
-
-	if (auto optionalPhys = GameObject.lock()->TryGetComponent<PhysicsComponent>();
-		optionalPhys.has_value() && !collision.empty())
-		optionalPhys.value().lock()->AddForce(0, 25, 0);
-}
-
 void PlaneColliderComponent::SetNormal(Vector3 normal)
 {
 	_normal = normal.Normalise();
@@ -60,7 +50,7 @@ bool PlaneColliderComponent::PointOnPlane(Vector3 point)
 	return point.Dot(GetNormal()) - _distance == 0;	
 }
 
-Vector3 PlaneColliderComponent::ClosestPointOnPlane(Vector3 point)
+Vector3 PlaneColliderComponent::ClosestPoint(Vector3 point)
 {
 	Vector3 normal = GetNormal();
 	float distance = normal.Dot(point) - _distance;
@@ -102,7 +92,7 @@ bool PlaneColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderCo
 	if (!Collideable || !collider->Collideable)
 		return false;
 
-	Vector3 closestPoint = ClosestPointOnPlane(collider->GameObject.lock()->Transform->GetPosition());
+	Vector3 closestPoint = ClosestPoint(collider->GameObject.lock()->Transform->GetPosition());
 
 	return closestPoint.MagnitudeSqr() <= Maths::Pow(collider->GetRadius(), 2);
 }

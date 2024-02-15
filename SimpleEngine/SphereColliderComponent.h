@@ -10,11 +10,12 @@ public:
 	SphereColliderComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json);
 
 	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override {}
-	void FixedUpdate(double fixedDeltaTime) override;
+	//void FixedUpdate(double fixedDeltaTime) override;
 	void Update(double deltaTime) override {}
 
 	[[nodiscard]] float GetRadius();
 	[[nodiscard]] bool IsPointInsideSphere(Vector3 point);
+	[[nodiscard]] Vector3 ClosestPoint(Vector3 point) override;
 
 protected:
 	bool SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider) override;

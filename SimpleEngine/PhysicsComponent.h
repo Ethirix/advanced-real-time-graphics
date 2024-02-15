@@ -5,6 +5,7 @@
 #include "Vector3.h"
 
 class GameObject;
+class CollisionResponse;
 class PhysicsComponent : public ComponentBase
 {
 public:
@@ -15,10 +16,16 @@ public:
 	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override {}
 
 	Vector3 GetVelocity();
+	float GetMass();
+
+	void SetMass(float mass);
 
 	void AddForce(Vector3 force);
 	void AddForce(float x, float y, float z);
+	void ApplyImpulse(Vector3 force);
+	void ApplyImpulse(float x, float y, float z);
 
+	void RunCollisionImpulse(CollisionResponse response);
 private:
 	void CalculateNetForce();
 
@@ -34,6 +41,7 @@ public:
 
 	float DragCoefficient = 1;
 	float FrictionCoefficient = 0.5f;
+	float Restitution = 0.0f;
 
 private:
 	Vector3 _velocity{};
