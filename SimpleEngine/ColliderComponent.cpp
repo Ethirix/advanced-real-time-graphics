@@ -32,7 +32,7 @@ void ColliderComponent::RunCollisionResponse(double fixedDeltaTime)
 	}
 }
 
-bool ColliderComponent::CollidesWith(const std::shared_ptr<ColliderComponent>& collider)
+CollisionResponse ColliderComponent::CollidesWith(const std::shared_ptr<ColliderComponent>& collider)
 {
 	switch (collider->Type)
 	{

@@ -38,6 +38,11 @@ Vector3 PlaneColliderComponent::GetNormal()
 	return _normal;
 }
 
+DirectX::XMFLOAT3X3 PlaneColliderComponent::GetInertiaTensor(float mass)
+{
+	return {};
+}
+
 bool PlaneColliderComponent::Intersects(const std::shared_ptr<PlaneColliderComponent>& plane)
 {
 	Vector3 direction = GetNormal().Cross(plane->GetNormal());
@@ -58,7 +63,7 @@ Vector3 PlaneColliderComponent::ClosestPoint(Vector3 point)
 	return point - normal * distance;
 }
 
-bool PlaneColliderComponent::AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider)
+CollisionResponse PlaneColliderComponent::AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider)
 {
 	if (!Collideable || !collider->Collideable)
 		return false;

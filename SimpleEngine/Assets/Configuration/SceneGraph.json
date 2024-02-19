@@ -43,7 +43,7 @@
       "Name": "Suzanne",
       "Position": {
         "X": 0,
-        "Y": 100,
+        "Y": 10,
         "Z": 20
       },
       "Scale": {
@@ -86,10 +86,11 @@
         },
         {
           "Type": "PhysicsComponent",
-          "Mass": 10,
+          "Mass": 1,
           "DragCoefficient": 1.4,
           "FrictionCoefficient": 0.3,
           "Restitution": 0.1,
+          "AngularDamping": 0.75,
           "UseGravity": true,
           "UseDrag": true,
           "UseFriction": false
@@ -416,6 +417,7 @@
           "DragCoefficient": 1.4,
           "FrictionCoefficient": 0.3,
           "Restitution": 0.2,
+          "AngularDamping": 0.99,
           "UseGravity": true,
           "UseDrag": true,
           "UseFriction": false

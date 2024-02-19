@@ -45,7 +45,6 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	{
 		if (std::string type = component["Type"]; type == "MeshComponent")
 		{
-			
 			auto meshComponent = std::make_shared<MeshComponent>(
 				obj, component, device);
 
@@ -147,24 +146,9 @@ std::list<CollisionResponse> SceneGraph::CheckColliders(const std::shared_ptr<Co
 			{
 				if (coll.lock() == collider)
 					continue;
-
-				if (sphere->CollidesWith(coll.lock()))
-				{
-					std::weak_ptr<PhysicsComponent> physComp = {};
-					if (auto phys = coll.lock()->GameObject.lock()->TryGetComponent<PhysicsComponent>(); phys.has_value())
-						physComp = phys.value();
-
-					Vector3 parentColliderPosition = collider->GameObject.lock()->Transform->GetPosition();
-					CollisionResponse response;
-					response.Collider = coll;
-					response.Transform = coll.lock()->GameObject.lock()->Transform;
-					response.PhysicsComponent = physComp;
-					response.Normal = parentColliderPosition - coll.lock()->ClosestPoint(parentColliderPosition);
-					response.Normal = response.Normal.Normalise();
-					response.ClosestPointOnCollider = coll.lock()->ClosestPoint(parentColliderPosition);
-
-					responses.emplace_back(response);	
-				}
+				if (CollisionResponse response = sphere->CollidesWith(coll.lock()); 
+					response.Collider)
+					responses.emplace_back(response);
 			}
 		}
 		break;
@@ -178,23 +162,9 @@ std::list<CollisionResponse> SceneGraph::CheckColliders(const std::shared_ptr<Co
 				if (coll.lock() == collider)
 					continue;
 
-				if (aabb->CollidesWith(coll.lock()))
-				{
-					std::weak_ptr<PhysicsComponent> physComp = {};
-					if (auto phys = coll.lock()->GameObject.lock()->TryGetComponent<PhysicsComponent>(); phys.has_value())
-						physComp = phys.value();
-
-					Vector3 parentColliderPosition = collider->GameObject.lock()->Transform->GetPosition();
-					CollisionResponse response;
-					response.Collider = coll;
-					response.Transform = coll.lock()->GameObject.lock()->Transform;
-					response.PhysicsComponent = physComp;
-					response.Normal = parentColliderPosition - coll.lock()->ClosestPoint(parentColliderPosition);
-					response.Normal = response.Normal.Normalise();
-					response.ClosestPointOnCollider = coll.lock()->ClosestPoint(parentColliderPosition);
-
+				if (CollisionResponse response = aabb->CollidesWith(coll.lock()); 
+					response.Collider)
 					responses.emplace_back(response);
-				}
 			}
 		}
 		break;
@@ -208,23 +178,9 @@ std::list<CollisionResponse> SceneGraph::CheckColliders(const std::shared_ptr<Co
 				if (coll.lock() == collider)
 					continue;
 
-				if (plane->CollidesWith(coll.lock()))
-				{
-					std::weak_ptr<PhysicsComponent> physComp = {};
-					if (auto phys = coll.lock()->GameObject.lock()->TryGetComponent<PhysicsComponent>(); phys.has_value())
-						physComp = phys.value();
-
-					Vector3 parentColliderPosition = collider->GameObject.lock()->Transform->GetPosition();
-					CollisionResponse response;
-					response.Collider = coll;
-					response.Transform = coll.lock()->GameObject.lock()->Transform;
-					response.PhysicsComponent = physComp;
-					response.Normal = parentColliderPosition - coll.lock()->ClosestPoint(parentColliderPosition);
-					response.Normal = response.Normal.Normalise();
-					response.ClosestPointOnCollider = coll.lock()->ClosestPoint(parentColliderPosition);
-
+				if (CollisionResponse response = plane->CollidesWith(coll.lock()); 
+					response.Collider)
 					responses.emplace_back(response);
-				}
 			}
 		}
 		break;

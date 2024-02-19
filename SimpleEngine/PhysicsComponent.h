@@ -25,14 +25,15 @@ public:
 	void ApplyImpulse(Vector3 force);
 	void ApplyImpulse(float x, float y, float z);
 
-	bool AddRelativeForce(Vector3 force, Vector3 point);
+	void AddRelativeForce(Vector3 force, Vector3 point);
 
 	void RunCollisionImpulse(CollisionResponse response);
 private:
-	void CalculateNetForce();
+	void CalculateNetForce(double fixedDeltaTime);
 
 	Vector3 CalculateDrag();
 	Vector3 CalculateFriction();
+	Vector3 CalculateAngularVelocity(double fixedDeltaTime);
 
 	float CalculateNormalForce();
 
@@ -44,9 +45,11 @@ public:
 	float DragCoefficient = 1;
 	float FrictionCoefficient = 0.5f;
 	float Restitution = 0.0f;
+	float AngularDamping = 0.99f;
 
 private:
 	Vector3 _velocity{};
+	Vector3 _angularVelocity{};
 	Vector3 _acceleration{};
 	Vector3 _netForce{};
 

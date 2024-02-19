@@ -110,6 +110,11 @@ void TransformComponent::SetRotation(float x, float y, float z)
 	_quaternion = q;
 }
 
+void TransformComponent::SetRotation(Quaternion q)
+{
+	_quaternion = q;
+}
+
 void TransformComponent::AddToRotation(DirectX::XMFLOAT3 rot)
 {
 	DirectX::XMFLOAT4 q = _quaternion.ToDXFloat4();

@@ -11,4 +11,5 @@ struct CollisionResponse
 
 	Vector3 Normal;
 	Vector3 ClosestPointOnCollider;
+	float PenetrationDepth;
 };

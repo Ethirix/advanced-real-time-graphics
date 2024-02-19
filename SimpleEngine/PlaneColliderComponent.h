@@ -22,10 +22,11 @@ public:
 	[[nodiscard]] bool Intersects(const std::shared_ptr<PlaneColliderComponent>& plane);
 	[[nodiscard]] bool PointOnPlane(Vector3 point);
 	[[nodiscard]] Vector3 ClosestPoint(Vector3 point) override;
+	[[nodiscard]] DirectX::XMFLOAT3X3 GetInertiaTensor(float mass) override;
 
 protected:
 	bool SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider) override;
-	bool AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider) override;
+	CollisionResponse AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider) override;
 	bool PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider) override;
 
 private:

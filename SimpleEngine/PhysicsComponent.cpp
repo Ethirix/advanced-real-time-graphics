@@ -3,6 +3,7 @@
 #include "CollisionResponse.h"
 #include "Constants.h"
 #include "GameObject.h"
+#include "Maths.h"
 #include "Quaternion.h"
 #include "Vector3.h"
 
@@ -18,9 +19,10 @@ PhysicsComponent::PhysicsComponent(WP_GAMEOBJECT owningGameObject, nlohmann::jso
 	UseGravity = json["UseGravity"];
 	UseDrag = json["UseDrag"];
 	UseFriction = json["UseFriction"];
+	AngularDamping = json["AngularDamping"];
 }
 
-void PhysicsComponent::CalculateNetForce()
+void PhysicsComponent::CalculateNetForce(double fixedDeltaTime)
 {
 	if (UseGravity)
 		_netForce += GRAVITY;
@@ -30,6 +32,8 @@ void PhysicsComponent::CalculateNetForce()
 
 	if (UseFriction) //disabled until collision detection
 		_netForce += CalculateFriction();
+
+	_angularVelocity = CalculateAngularVelocity(fixedDeltaTime);
 }
 
 Vector3 PhysicsComponent::CalculateFriction()
@@ -72,7 +76,34 @@ void PhysicsComponent::RunCollisionImpulse(CollisionResponse response)
 	ApplyImpulse(impulse);
 }
 
-bool PhysicsComponent::AddRelativeForce(Vector3 force, Vector3 point)
+Vector3 PhysicsComponent::CalculateAngularVelocity(double fixedDeltaTime)
+{
+	auto optionalCollider = GameObject.lock()->TryGetComponent<ColliderComponent>();
+	if (!optionalCollider.has_value())
+		return Vector3::Zero();
+
+	DirectX::XMFLOAT3X3 inertiaTensor = optionalCollider.value().lock()->GetInertiaTensor(_mass);
+	DirectX::XMMATRIX matrix = XMMatrixInverse(nullptr, XMLoadFloat3x3(&inertiaTensor));
+	DirectX::XMFLOAT3 torqueXM3 = _torque.ToDXFloat3();
+	DirectX::XMVECTOR torqueVector = XMLoadFloat3(&torqueXM3);
+	DirectX::XMVECTOR angularAccelerationXMV3 = XMVector3Transform(torqueVector, matrix);
+	DirectX::XMFLOAT3 angularAcceleration{};
+	XMStoreFloat3(&angularAcceleration, angularAccelerationXMV3);
+
+	Vector3 angularVelocity = _angularVelocity;
+	angularVelocity += Vector3(angularAcceleration) * fixedDeltaTime;
+	Quaternion q = GameObject.lock()->Transform->GetRotation();
+	q += q * angularVelocity * 1 / 2.0f * fixedDeltaTime;
+	if (q.Magnitude() != 0)
+		q /= q.Magnitude();
+	GameObject.lock()->Transform->SetRotation(q);
+
+	angularVelocity *= std::powf(AngularDamping, fixedDeltaTime);
+
+	return angularVelocity;
+}
+
+void PhysicsComponent::AddRelativeForce(Vector3 force, Vector3 point)
 {
 	AddForce(force);
 	_torque = point.Cross(force);
@@ -84,7 +115,7 @@ void PhysicsComponent::FixedUpdate(double fixedDeltaTime)
 	auto transform = GameObject.lock()->Transform;
 	Vector3 deltaPosition = transform->GetPosition();
 
-	CalculateNetForce();
+	CalculateNetForce(fixedDeltaTime);
 
 	_acceleration += _netForce / _mass;
 

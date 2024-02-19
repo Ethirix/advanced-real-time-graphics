@@ -42,6 +42,7 @@ public:
 
 	void SetRotation(DirectX::XMFLOAT3 rot);
 	void SetRotation(float x, float y, float z);
+	void SetRotation(Quaternion q);
 	void AddToRotation(DirectX::XMFLOAT3 rot);
 	void AddToRotation(float x, float y, float z);
 

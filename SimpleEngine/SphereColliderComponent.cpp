@@ -30,6 +30,16 @@ float SphereColliderComponent::GetRadius()
 	return _radius;
 }
 
+DirectX::XMFLOAT3X3 SphereColliderComponent::GetInertiaTensor(float mass)
+{
+	DirectX::XMFLOAT3X3 tensor;
+	tensor.m[0][0] = 2 / 5.0f * mass * Maths::Pow(_radius, 2);
+	tensor.m[1][1] = 2 / 5.0f * mass * Maths::Pow(_radius, 2);
+	tensor.m[2][2] = 2 / 5.0f * mass * Maths::Pow(_radius, 2);
+
+	return tensor;
+}
+
 bool SphereColliderComponent::IsPointInsideSphere(Vector3 point)
 {
 	Vector3 thisPos = GameObject.lock()->Transform->GetPosition();
@@ -52,7 +62,7 @@ bool SphereColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderC
 	return false;
 }
 
-bool SphereColliderComponent::AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider)
+CollisionResponse SphereColliderComponent::AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider)
 {
 	if (!Collideable || !collider->Collideable)
 		return false;
