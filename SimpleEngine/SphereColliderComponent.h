@@ -19,9 +19,9 @@ public:
 	[[nodiscard]] DirectX::XMFLOAT3X3 GetInertiaTensor(float mass) override;
 
 protected:
-	bool SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider) override;
+	CollisionResponse SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider) override;
 	CollisionResponse AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider) override;
-	bool PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider) override;
+	CollisionResponse PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider) override;
 private:
 	float _radius = 0;
 };

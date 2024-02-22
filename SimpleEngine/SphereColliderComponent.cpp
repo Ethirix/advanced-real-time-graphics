@@ -48,7 +48,7 @@ bool SphereColliderComponent::IsPointInsideSphere(Vector3 point)
 	return distance < _radius * _radius;
 }
 
-bool SphereColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider)
+CollisionResponse SphereColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider)
 {
 	if (!Collideable || !collider->Collideable)
 		return false;
@@ -73,7 +73,7 @@ CollisionResponse SphereColliderComponent::AABBCollideCheck(std::shared_ptr<AABB
 	return IsPointInsideSphere(closestPoint);
 }
 
-bool SphereColliderComponent::PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider)
+CollisionResponse SphereColliderComponent::PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider)
 {
 	Vector3 closestPoint = collider->ClosestPoint(GameObject.lock()->Transform->GetPosition());
 

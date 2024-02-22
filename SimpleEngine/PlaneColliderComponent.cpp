@@ -84,7 +84,7 @@ CollisionResponse PlaneColliderComponent::AABBCollideCheck(std::shared_ptr<AABBC
 	return std::abs(distance) <= radius;
 }
 
-bool PlaneColliderComponent::PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider)
+CollisionResponse PlaneColliderComponent::PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider)
 {
 	if (!Collideable || !collider->Collideable)
 		return false;
@@ -92,7 +92,7 @@ bool PlaneColliderComponent::PlaneCollideCheck(std::shared_ptr<PlaneColliderComp
 	return Intersects(collider);
 }
 
-bool PlaneColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider)
+CollisionResponse PlaneColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider)
 {
 	if (!Collideable || !collider->Collideable)
 		return false;
