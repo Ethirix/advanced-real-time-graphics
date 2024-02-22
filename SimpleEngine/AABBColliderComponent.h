@@ -13,10 +13,10 @@ public:
 	//void FixedUpdate(double fixedDeltaTime) override;
 	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override {}
 
-	[[nodiscard]] Bounds GetBounds();
 	[[nodiscard]] Vector3 ClosestPoint(Vector3 point) override;
-	[[nodiscard]] bool Intersects(const Bounds& other);
 	[[nodiscard]] DirectX::XMFLOAT3X3 GetInertiaTensor(float mass) override;
+
+	[[nodiscard]] Bounds GetBounds();
 
 protected:
 	CollisionResponse SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider) override;
@@ -24,7 +24,9 @@ protected:
 	CollisionResponse PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider) override;
 
 private:
-	//USE GETTER!
-	Bounds _bounds = {};
+	bool Intersects(std::shared_ptr<AABBColliderComponent> collider);
+
+	//USE GetBounds()!
+	Bounds _noneMeshBounds = {};
 	bool _useMeshBounds = true;
 };

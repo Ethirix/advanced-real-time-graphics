@@ -649,12 +649,12 @@ void SimpleEngine::Update()
 	//BIG HACK NEED TO GET A CONCRETE WAY TO GET THE SKYBOX!
 	SceneGraph::GetObjectAtPosition(4)->Transform->SetPosition(_camera.lock()->GameObject.lock()->Transform->GetPosition());
 
-	if (GetAsyncKeyState('F') & 0x8000)
+	if (GetAsyncKeyState('F') & 0x0001)
 	{
 		auto components = SceneGraph::GetComponentsFromObjects<PhysicsComponent>();
 		for (std::weak_ptr<PhysicsComponent> component : components)
 		{
-			component.lock()->AddRelativeForce(Vector3(0, 10, 0), Vector3(1, 0, -1));
+			component.lock()->AddRelativeForce(Vector3(1, 0, 0), Vector3(1, 0, -1));
 		}
 	}
 

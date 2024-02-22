@@ -33,7 +33,7 @@
           },
           "NearPlane": 0.01,
           "FarPlane": 100000.0,
-          "MovementSpeed": 8.0,
+          "MovementSpeed": 16.0,
           "RotationSpeed": 2.0
         }
       ],
@@ -90,7 +90,7 @@
           "DragCoefficient": 1.4,
           "FrictionCoefficient": 0.3,
           "Restitution": 0.1,
-          "AngularDamping": 0.75,
+          "AngularDamping": 0.99,
           "UseGravity": true,
           "UseDrag": true,
           "UseFriction": false

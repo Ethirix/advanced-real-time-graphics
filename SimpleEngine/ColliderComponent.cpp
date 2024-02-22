@@ -27,6 +27,8 @@ void ColliderComponent::RunCollisionResponse(double fixedDeltaTime)
 		auto optionalPhysComponent = GameObject.lock()->TryGetComponent<PhysicsComponent>();
 		if (optionalPhysComponent.has_value())
 		{
+			if (collisionResponse.PenetrationDepth > 0)
+				GameObject.lock()->Transform->AddToPosition(Vector3(collisionResponse.Normal * collisionResponse.PenetrationDepth).ToDXFloat3());
 			optionalPhysComponent.value().lock()->RunCollisionImpulse(collisionResponse);
 		}
 	}
@@ -61,5 +63,5 @@ CollisionResponse ColliderComponent::CollidesWith(const std::shared_ptr<Collider
 		break;
 	}
 
-	return false;
+	return {};
 }

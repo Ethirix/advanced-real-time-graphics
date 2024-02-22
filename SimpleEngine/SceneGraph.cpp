@@ -147,7 +147,7 @@ std::list<CollisionResponse> SceneGraph::CheckColliders(const std::shared_ptr<Co
 				if (coll.lock() == collider)
 					continue;
 				if (CollisionResponse response = sphere->CollidesWith(coll.lock()); 
-					response.Collider)
+					!response.Collider.expired())
 					responses.emplace_back(response);
 			}
 		}
@@ -163,7 +163,7 @@ std::list<CollisionResponse> SceneGraph::CheckColliders(const std::shared_ptr<Co
 					continue;
 
 				if (CollisionResponse response = aabb->CollidesWith(coll.lock()); 
-					response.Collider)
+					!response.Collider.expired())
 					responses.emplace_back(response);
 			}
 		}
@@ -179,7 +179,7 @@ std::list<CollisionResponse> SceneGraph::CheckColliders(const std::shared_ptr<Co
 					continue;
 
 				if (CollisionResponse response = plane->CollidesWith(coll.lock()); 
-					response.Collider)
+					!response.Collider.expired())
 					responses.emplace_back(response);
 			}
 		}

@@ -3,7 +3,6 @@
 #include "CollisionResponse.h"
 #include "Constants.h"
 #include "GameObject.h"
-#include "Maths.h"
 #include "Quaternion.h"
 #include "Vector3.h"
 
@@ -25,13 +24,13 @@ PhysicsComponent::PhysicsComponent(WP_GAMEOBJECT owningGameObject, nlohmann::jso
 void PhysicsComponent::CalculateNetForce(double fixedDeltaTime)
 {
 	if (UseGravity)
-		_netForce += GRAVITY;
+		_netForce += GRAVITY * fixedDeltaTime;
 
 	if (UseDrag)
-		_netForce += CalculateDrag();
+		_netForce += CalculateDrag() * fixedDeltaTime;
 
 	if (UseFriction) //disabled until collision detection
-		_netForce += CalculateFriction();
+		_netForce += CalculateFriction() * fixedDeltaTime;
 
 	_angularVelocity = CalculateAngularVelocity(fixedDeltaTime);
 }
@@ -93,13 +92,12 @@ Vector3 PhysicsComponent::CalculateAngularVelocity(double fixedDeltaTime)
 	Vector3 angularVelocity = _angularVelocity;
 	angularVelocity += Vector3(angularAcceleration) * fixedDeltaTime;
 	Quaternion q = GameObject.lock()->Transform->GetRotation();
-	q += q * angularVelocity * 1 / 2.0f * fixedDeltaTime;
+	q += q * angularVelocity * (1 / 2.0f) * fixedDeltaTime;
 	if (q.Magnitude() != 0)
 		q /= q.Magnitude();
 	GameObject.lock()->Transform->SetRotation(q);
 
 	angularVelocity *= std::powf(AngularDamping, fixedDeltaTime);
-
 	return angularVelocity;
 }
 
@@ -109,10 +107,9 @@ void PhysicsComponent::AddRelativeForce(Vector3 force, Vector3 point)
 	_torque = point.Cross(force);
 }
 
-
 void PhysicsComponent::FixedUpdate(double fixedDeltaTime)
 {
-	auto transform = GameObject.lock()->Transform;
+	auto& transform = GameObject.lock()->Transform;
 	Vector3 deltaPosition = transform->GetPosition();
 
 	CalculateNetForce(fixedDeltaTime);
@@ -129,6 +126,7 @@ void PhysicsComponent::FixedUpdate(double fixedDeltaTime)
 
 	_netForce = Vector3::Zero();
 	_acceleration = Vector3::Zero();
+	_torque = Vector3::Zero();
 
 	transform->SetPosition(deltaPosition.ToDXFloat3());
 }

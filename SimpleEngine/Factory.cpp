@@ -172,8 +172,11 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 			max.Z = element.Z;
 	}
 
-	mesh->Min = min;
-	mesh->Max = max;
+	mesh->Bounds.Min = min;
+	mesh->Bounds.Max = max;
+	mesh->Bounds.Extents = max;
+	mesh->Bounds.Size = max * 2;
+	mesh->Bounds.Center = Vector3::Zero();
 
 	return mesh;
 }
