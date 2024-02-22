@@ -24,7 +24,7 @@ protected:
 	CollisionResponse PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider) override;
 
 private:
-	bool Intersects(std::shared_ptr<AABBColliderComponent> collider);
+	bool Intersects(const std::shared_ptr<AABBColliderComponent>& collider);
 
 	//USE GetBounds()!
 	Bounds _noneMeshBounds = {};
