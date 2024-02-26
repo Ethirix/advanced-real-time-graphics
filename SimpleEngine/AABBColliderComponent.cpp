@@ -41,11 +41,10 @@ Vector3 AABBColliderComponent::ClosestPoint(Vector3 point)
 DirectX::XMFLOAT3X3 AABBColliderComponent::GetInertiaTensor(float mass)
 {
 	DirectX::XMFLOAT3X3 tensor {};
-	auto [Center, Min, Max] = GetBounds();
-	Vector3 extents = { Max.X, Max.Y, Min.Z };
-	tensor.m[0][0] = 1 / 12.0f * mass * (Maths::Pow(extents.Y, 2) + Maths::Pow(extents.Z, 2));
-	tensor.m[1][1] = 1 / 12.0f * mass * (Maths::Pow(extents.X, 2) + Maths::Pow(extents.Z, 2));
-	tensor.m[2][2] = 1 / 12.0f * mass * (Maths::Pow(extents.X, 2) + Maths::Pow(extents.Y, 2));
+	Bounds bounds = GetBounds();
+	tensor.m[0][0] = 1 / 12.0f * mass * (Maths::Pow(bounds.Extents.Y, 2) + Maths::Pow(bounds.Extents.Z, 2));
+	tensor.m[1][1] = 1 / 12.0f * mass * (Maths::Pow(bounds.Extents.X, 2) + Maths::Pow(bounds.Extents.Z, 2));
+	tensor.m[2][2] = 1 / 12.0f * mass * (Maths::Pow(bounds.Extents.X, 2) + Maths::Pow(bounds.Extents.Y, 2));
 
 	return tensor;
 }
@@ -62,7 +61,9 @@ Bounds AABBColliderComponent::GetBounds()
 	}
 
 	Vector3 pos = GameObject.lock()->Transform->GetPosition();
+	Vector3 scale = GameObject.lock()->Transform->GetScale();
 
+	bounds.Extents = {bounds.Extents.X * scale.X, bounds.Extents.Y * scale.Y, bounds.Extents.Z * scale.Z};
 	bounds.Max = pos + bounds.Extents;
 	bounds.Min = pos - bounds.Extents;
 	bounds.Center = pos;
@@ -79,16 +80,6 @@ bool AABBColliderComponent::Intersects(const std::shared_ptr<AABBColliderCompone
 		   (thisBounds.Min.Z <= colliderBounds.Max.Z && thisBounds.Max.Z >= colliderBounds.Min.Z);
 }
 
-//CollisionResponse response{};
-//response.Collider = collider;
-//response.Normal = closestPoint - collider->ClosestPoint(pos);
-//response.Transform = collider->GameObject.lock()->Transform;
-//response.ClosestPointOnCollider = collider->ClosestPoint(pos);
-//response.PhysicsComponent = physComp;
-//response.PenetrationDepth = Vector3(closestPoint - colliderClosestPoint).Magnitude();
-
-//return response;
-
 CollisionResponse AABBColliderComponent::AABBCollideCheck(std::shared_ptr<AABBColliderComponent> collider)
 {
 	if (!Collideable || !collider->Collideable)
@@ -97,8 +88,19 @@ CollisionResponse AABBColliderComponent::AABBCollideCheck(std::shared_ptr<AABBCo
 	if (!Intersects(collider))
 		return {};
 
-	//Do Collision Response
-	return {};
+	Vector3 pos = GameObject.lock()->Transform->GetPosition();
+	Vector3 closestPoint = ClosestPoint(collider->GameObject.lock()->Transform->GetPosition());
+	Vector3 colliderClosestPoint = collider->ClosestPoint(pos);
+
+	CollisionResponse response{};
+	response.Collider = collider;
+	response.Normal = Vector3::Normalise(pos - colliderClosestPoint);
+	response.Transform = collider->GameObject.lock()->Transform;
+	response.ClosestPointOnCollider = colliderClosestPoint;
+	response.PhysicsComponent = collider->GameObject.lock()->GetComponent<PhysicsComponent>();
+	response.PenetrationDepth = Vector3(closestPoint - colliderClosestPoint).Magnitude();
+
+	return response;
 }
 
 CollisionResponse AABBColliderComponent::SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider)
@@ -106,6 +108,25 @@ CollisionResponse AABBColliderComponent::SphereCollideCheck(std::shared_ptr<Sphe
 	if (!Collideable || !collider->Collideable)
 		return {};
 
+	Vector3 spherePos = collider->GameObject.lock()->Transform->GetPosition();
+	Vector3 pos = GameObject.lock()->Transform->GetPosition();
+
+	Vector3 closestPoint = ClosestPoint(spherePos);
+
+	if (Vector3::MagnitudeSqr(spherePos - closestPoint) >= Maths::Pow(collider->GetRadius(), 2))
+		return {};
+
+	Vector3 colliderClosestPoint = collider->ClosestPoint(pos);
+
+	CollisionResponse response{};
+	response.Collider = collider;
+	response.Normal = Vector3::Normalise(pos - colliderClosestPoint);
+	response.Transform = collider->GameObject.lock()->Transform;
+	response.ClosestPointOnCollider = colliderClosestPoint;
+	response.PhysicsComponent = collider->GameObject.lock()->GetComponent<PhysicsComponent>();
+	response.PenetrationDepth = Vector3(closestPoint - colliderClosestPoint).Magnitude();
+
+	return response;
 }
 
 CollisionResponse AABBColliderComponent::PlaneCollideCheck(std::shared_ptr<PlaneColliderComponent> collider)
@@ -113,4 +134,29 @@ CollisionResponse AABBColliderComponent::PlaneCollideCheck(std::shared_ptr<Plane
 	if (!Collideable || !collider->Collideable)
 		return {};
 
+	Bounds bounds = GetBounds();
+	Vector3 planeNormal = collider->GetNormal();
+
+	//https://gdbooks.gitbooks.io/3dcollisions/content/Chapter2/static_aabb_plane.html
+	float projectionRadius = bounds.Extents.X * std::abs(planeNormal.X) + bounds.Extents.Y * std::abs(planeNormal.Y)
+		+ bounds.Extents.Z * std::abs(planeNormal.Z);
+
+	float distance = planeNormal.Dot(bounds.Center) - collider->GetDistance();
+
+	if (std::abs(distance) > projectionRadius)
+		return {};
+
+	Vector3 pos = GameObject.lock()->Transform->GetPosition();
+	Vector3 closestPoint = ClosestPoint(collider->GameObject.lock()->Transform->GetPosition());
+	Vector3 colliderClosestPoint = collider->ClosestPoint(pos);
+
+	CollisionResponse response{};
+	response.Collider = collider;
+	response.Normal = Vector3::Normalise(pos - colliderClosestPoint);
+	response.Transform = collider->GameObject.lock()->Transform;
+	response.ClosestPointOnCollider = colliderClosestPoint;
+	response.PhysicsComponent = collider->GameObject.lock()->GetComponent<PhysicsComponent>();
+	response.PenetrationDepth = std::abs(Vector3(colliderClosestPoint - pos).Magnitude() - bounds.Extents.Y);
+
+	return response;
 }

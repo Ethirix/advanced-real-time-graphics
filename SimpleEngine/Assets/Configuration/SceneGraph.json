@@ -43,7 +43,7 @@
       "Name": "Suzanne",
       "Position": {
         "X": 0,
-        "Y": 10,
+        "Y": 100,
         "Z": 20
       },
       "Scale": {
@@ -54,7 +54,7 @@
       "Rotation": {
         "X": 0,
         "Y": 0,
-        "Z": 0
+        "Z": 45
       },
       "Components": [
         {
@@ -86,14 +86,14 @@
         },
         {
           "Type": "PhysicsComponent",
-          "Mass": 1,
+          "Mass": 60,
           "DragCoefficient": 1.4,
-          "FrictionCoefficient": 0.3,
-          "Restitution": 0.1,
-          "AngularDamping": 0.99,
+          "FrictionCoefficient": 0.6,
+          "Restitution": 0.2,
+          "AngularDamping": 0.2,
           "UseGravity": true,
           "UseDrag": true,
-          "UseFriction": false
+          "UseFriction": true
         },
         {
           "Type": "AABBColliderComponent",
@@ -368,7 +368,7 @@
       "Name": "PointLightGreen",
       "Position": {
         "X": 0,
-        "Y": 15,
+        "Y": 20,
         "Z": 0
       },
       "Scale": {
@@ -413,14 +413,14 @@
         },
         {
           "Type": "PhysicsComponent",
-          "Mass": 10,
+          "Mass": 5,
           "DragCoefficient": 1.4,
-          "FrictionCoefficient": 0.3,
+          "FrictionCoefficient": 0.7,
           "Restitution": 0.2,
-          "AngularDamping": 0.99,
+          "AngularDamping": 0.4,
           "UseGravity": true,
           "UseDrag": true,
-          "UseFriction": false
+          "UseFriction": true
         },
         {
           "Type": "MeshComponent",

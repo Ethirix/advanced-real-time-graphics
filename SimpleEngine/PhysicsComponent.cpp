@@ -23,31 +23,18 @@ PhysicsComponent::PhysicsComponent(WP_GAMEOBJECT owningGameObject, nlohmann::jso
 
 void PhysicsComponent::CalculateNetForce(double fixedDeltaTime)
 {
-	if (UseGravity)
-		_netForce += GRAVITY * fixedDeltaTime;
-
 	if (UseDrag)
-		_netForce += CalculateDrag() * fixedDeltaTime;
-
-	if (UseFriction) //disabled until collision detection
-		_netForce += CalculateFriction() * fixedDeltaTime;
+		_netForce += CalculateDrag();
 
 	_angularVelocity = CalculateAngularVelocity(fixedDeltaTime);
 }
 
-Vector3 PhysicsComponent::CalculateFriction()
+Vector3 PhysicsComponent::CalculateFriction(CollisionResponse response)
 {
 	Vector3 velocity = _velocity;
 	velocity = Vector3::Zero() - velocity;
 	velocity = velocity.Normalise();
-	return velocity * (FrictionCoefficient * CalculateNormalForce());
-}
-
-float PhysicsComponent::CalculateNormalForce()
-{
-	Quaternion quaternion = GameObject.lock()->Transform->GetRotation();
-	Vector3 euler = MakeEulerAnglesFromQ(quaternion);
-	return GRAVITY.Magnitude() * _mass * std::cos(euler.Angle(Vector3::Up()));
+	return (velocity + response.Normal) * FrictionCoefficient;
 }
 
 Vector3 PhysicsComponent::CalculateDrag()
@@ -55,24 +42,30 @@ Vector3 PhysicsComponent::CalculateDrag()
 	Vector3 velocity = _velocity;
 	velocity = Vector3::Zero() - velocity;
 	velocity = velocity.Normalise();
-	return velocity * (0.5f * AIR_DENSITY * (_velocity.Magnitude() * _velocity.Magnitude()) * DragCoefficient * 1);
+	return velocity * (0.5f * AIR_DENSITY * DragCoefficient * _velocity.MagnitudeSqr() * 1); //1 == CSA
 }
 
 void PhysicsComponent::RunCollisionImpulse(CollisionResponse response)
 {
+	if (_mass == 0)
+		return;
+
 	Vector3 rv = response.PhysicsComponent.expired()
 		? _velocity
 		: _velocity - response.PhysicsComponent.lock()->GetVelocity();
 	
 	float vj = -(1 + Restitution) * rv.Dot(response.Normal);
 
-	float j = response.PhysicsComponent.expired()
-		? vj / (1 / _mass + 1)
-		: vj / (1 / _mass + 1 / response.PhysicsComponent.lock()->GetMass());
+	float j = response.PhysicsComponent.expired() || response.PhysicsComponent.lock()->GetMass() == 0
+		? vj / (1 / _mass)
+		: vj / (1 / _mass / response.PhysicsComponent.lock()->GetMass());
 
-	Vector3 impulse = response.Normal * 1 / _mass * j;
+	Vector3 impulse = response.Normal * (1 / _mass * j);
 
 	ApplyImpulse(impulse);
+
+	if (UseFriction)
+		_netForce += CalculateFriction(response);
 }
 
 Vector3 PhysicsComponent::CalculateAngularVelocity(double fixedDeltaTime)
@@ -90,14 +83,13 @@ Vector3 PhysicsComponent::CalculateAngularVelocity(double fixedDeltaTime)
 	XMStoreFloat3(&angularAcceleration, angularAccelerationXMV3);
 
 	Vector3 angularVelocity = _angularVelocity;
-	angularVelocity += Vector3(angularAcceleration) * fixedDeltaTime;
+	angularVelocity += Vector3(angularAcceleration);
 	Quaternion q = GameObject.lock()->Transform->GetRotation();
-	q += q * angularVelocity * (1 / 2.0f) * fixedDeltaTime;
+	q += q * angularVelocity * (1 / 2.0f);
 	if (q.Magnitude() != 0)
 		q /= q.Magnitude();
 	GameObject.lock()->Transform->SetRotation(q);
 
-	angularVelocity *= std::powf(AngularDamping, fixedDeltaTime);
 	return angularVelocity;
 }
 
@@ -109,12 +101,17 @@ void PhysicsComponent::AddRelativeForce(Vector3 force, Vector3 point)
 
 void PhysicsComponent::FixedUpdate(double fixedDeltaTime)
 {
+	if (_mass == 0)
+		return;
+
 	auto& transform = GameObject.lock()->Transform;
 	Vector3 deltaPosition = transform->GetPosition();
 
 	CalculateNetForce(fixedDeltaTime);
-
 	_acceleration += _netForce / _mass;
+
+	if (UseGravity)
+		_acceleration += GRAVITY * fixedDeltaTime;
 
 	_velocity.X += _acceleration.X * fixedDeltaTime;
 	_velocity.Y += _acceleration.Y * fixedDeltaTime;
@@ -127,6 +124,7 @@ void PhysicsComponent::FixedUpdate(double fixedDeltaTime)
 	_netForce = Vector3::Zero();
 	_acceleration = Vector3::Zero();
 	_torque = Vector3::Zero();
+	_angularVelocity *= std::powf(AngularDamping, fixedDeltaTime);
 
 	transform->SetPosition(deltaPosition.ToDXFloat3());
 }

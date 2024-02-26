@@ -32,10 +32,8 @@ private:
 	void CalculateNetForce(double fixedDeltaTime);
 
 	Vector3 CalculateDrag();
-	Vector3 CalculateFriction();
+	Vector3 CalculateFriction(CollisionResponse response);
 	Vector3 CalculateAngularVelocity(double fixedDeltaTime);
-
-	float CalculateNormalForce();
 
 public:
 	bool UseGravity = true;

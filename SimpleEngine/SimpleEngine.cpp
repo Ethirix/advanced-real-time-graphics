@@ -626,7 +626,7 @@ void SimpleEngine::Update()
 	_lastFrameTime = timePoint;
 
 	_timeSinceLastFixedUpdate += deltaTime;
-	if (_timeSinceLastFixedUpdate >= PHYSICS_TIMESTEP)
+	while (_timeSinceLastFixedUpdate >= PHYSICS_TIMESTEP)
 	{
 		FixedUpdate(PHYSICS_TIMESTEP);
 		_timeSinceLastFixedUpdate -= PHYSICS_TIMESTEP;
@@ -654,7 +654,7 @@ void SimpleEngine::Update()
 		auto components = SceneGraph::GetComponentsFromObjects<PhysicsComponent>();
 		for (std::weak_ptr<PhysicsComponent> component : components)
 		{
-			component.lock()->AddRelativeForce(Vector3(1, 0, 0), Vector3(1, 0, -1));
+			component.lock()->AddRelativeForce(Vector3(2, 20, 0), Vector3::Zero());
 		}
 	}
 

@@ -115,11 +115,5 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 
 Bounds MeshComponent::GetBounds()
 {
-	Bounds bounds = {};
-	auto transform = GameObject.lock()->Transform;
-	bounds.Center = transform->GetPosition();
-	bounds.Min = Mesh->Min; //{ Mesh->Min.X * transform->GetScale().x, Mesh->Min.Y * transform->GetScale().y, Mesh->Min.Z * transform->GetScale().z };
-	bounds.Max = Mesh->Max; //{ Mesh->Max.X * transform->GetScale().x, Mesh->Max.Y * transform->GetScale().y, Mesh->Max.Z * transform->GetScale().z };
-
-	return bounds;
+	return _bounds;
 }

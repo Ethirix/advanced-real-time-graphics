@@ -94,12 +94,9 @@ Vector3 Vector3::Cross(Vector3 rhs)
 
 float Vector3::Dot(Vector3 rhs)
 {
-	Vector3 lhsN = Normalise();
-	Vector3 rhsN = Normalise(rhs);
-
-	float lrX = lhsN.X * rhsN.X;
-	float lrY = lhsN.Y * rhsN.Y;
-	float lrZ = lhsN.Z * rhsN.Z;
+	float lrX = X * rhs.X;
+	float lrY = Y * rhs.Y;
+	float lrZ = Z * rhs.Z;
 
 	return lrX + lrY + lrZ;
 }
@@ -146,12 +143,9 @@ Vector3 Vector3::Cross(Vector3 lhs, Vector3 rhs)
 
 float Vector3::Dot(Vector3 lhs, Vector3 rhs)
 {
-	Vector3 lhsN = Normalise(lhs);
-	Vector3 rhsN = Normalise(rhs);
-
-	float lrX = lhsN.X * rhsN.X;
-	float lrY = lhsN.Y * rhsN.Y;
-	float lrZ = lhsN.Z * rhsN.Z;
+	float lrX = lhs.X * rhs.X;
+	float lrY = lhs.Y * rhs.Y;
+	float lrZ = lhs.Z * rhs.Z;
 
 	return lrX + lrY + lrZ;
 }
