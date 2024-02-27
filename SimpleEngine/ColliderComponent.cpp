@@ -14,15 +14,12 @@ ColliderComponent::ColliderComponent(WP_GAMEOBJECT owningGameObject)
 
 void ColliderComponent::FixedUpdate(double fixedDeltaTime)
 {
-	RunCollisionResponse(fixedDeltaTime);
+	RunCollisionResponse();
 }
 
-void ColliderComponent::RunCollisionResponse(double fixedDeltaTime)
+void ColliderComponent::RunCollisionResponse()
 {
-	std::list<CollisionResponse> collision = SceneGraph::CheckColliders(GetColliderPtr());
-	//do collider stuff ig
-
-	for (auto collisionResponse : collision)
+	for (std::list<CollisionResponse> collision = SceneGraph::CheckColliders(GetColliderPtr()); auto collisionResponse : collision)
 	{
 		if (auto optionalPhysComponent = GameObject.lock()->TryGetComponent<PhysicsComponent>(); optionalPhysComponent.has_value())
 			optionalPhysComponent.value().lock()->RunCollisionImpulse(collisionResponse);

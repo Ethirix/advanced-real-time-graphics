@@ -27,7 +27,7 @@ public:
 
 	CollisionResponse CollidesWith(const std::shared_ptr<ColliderComponent>& collider);
 
-	void RunCollisionResponse(double fixedDeltaTime);
+	void RunCollisionResponse();
 
 protected:
 	virtual CollisionResponse SphereCollideCheck(std::shared_ptr<SphereColliderComponent> collider) = 0;
