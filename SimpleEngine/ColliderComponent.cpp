@@ -24,13 +24,8 @@ void ColliderComponent::RunCollisionResponse(double fixedDeltaTime)
 
 	for (auto collisionResponse : collision)
 	{
-		auto optionalPhysComponent = GameObject.lock()->TryGetComponent<PhysicsComponent>();
-		if (optionalPhysComponent.has_value())
-		{
-			if (collisionResponse.PenetrationDepth > 0)
-				GameObject.lock()->Transform->AddToPosition(Vector3(collisionResponse.Normal * collisionResponse.PenetrationDepth).ToDXFloat3());
+		if (auto optionalPhysComponent = GameObject.lock()->TryGetComponent<PhysicsComponent>(); optionalPhysComponent.has_value())
 			optionalPhysComponent.value().lock()->RunCollisionImpulse(collisionResponse);
-		}
 	}
 }
 

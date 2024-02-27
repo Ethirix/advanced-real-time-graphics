@@ -62,5 +62,9 @@ private:
 	double _timeSinceLastFixedUpdate = 0;
 	std::map<std::string, Shaders> _shaders = {};
 	std::weak_ptr<CameraComponent> _camera = {};
+
+	int _selectedObject = -1;
+	Vector3 _force{};
+	Vector3 _forcePosition{};
 };
 

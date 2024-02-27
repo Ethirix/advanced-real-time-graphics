@@ -1,6 +1,7 @@
 ﻿#include "AABBColliderComponent.h"
 
 #include "CollisionResponse.h"
+#include "Debug.h"
 #include "GameObject.h"
 #include "Maths.h"
 #include "MeshComponent.h"
@@ -98,7 +99,7 @@ CollisionResponse AABBColliderComponent::AABBCollideCheck(std::shared_ptr<AABBCo
 	response.Transform = collider->GameObject.lock()->Transform;
 	response.ClosestPointOnCollider = colliderClosestPoint;
 	response.PhysicsComponent = collider->GameObject.lock()->GetComponent<PhysicsComponent>();
-	response.PenetrationDepth = Vector3(closestPoint - colliderClosestPoint).Magnitude();
+	response.PenetrationDepth = Vector3(colliderClosestPoint - closestPoint).Magnitude();
 
 	return response;
 }
@@ -108,15 +109,15 @@ CollisionResponse AABBColliderComponent::SphereCollideCheck(std::shared_ptr<Sphe
 	if (!Collideable || !collider->Collideable)
 		return {};
 
-	Vector3 spherePos = collider->GameObject.lock()->Transform->GetPosition();
 	Vector3 pos = GameObject.lock()->Transform->GetPosition();
-
-	Vector3 closestPoint = ClosestPoint(spherePos);
-
-	if (Vector3::MagnitudeSqr(spherePos - closestPoint) >= Maths::Pow(collider->GetRadius(), 2))
-		return {};
-
+	Vector3 closestPoint = ClosestPoint(collider->GameObject.lock()->Transform->GetPosition());
 	Vector3 colliderClosestPoint = collider->ClosestPoint(pos);
+
+	Vector3 difference = colliderClosestPoint - closestPoint;
+	float magSqr = difference.MagnitudeSqr();
+
+	if (magSqr >= Maths::Pow(collider->GetRadius(), 2))
+		return {};
 
 	CollisionResponse response{};
 	response.Collider = collider;
@@ -124,7 +125,7 @@ CollisionResponse AABBColliderComponent::SphereCollideCheck(std::shared_ptr<Sphe
 	response.Transform = collider->GameObject.lock()->Transform;
 	response.ClosestPointOnCollider = colliderClosestPoint;
 	response.PhysicsComponent = collider->GameObject.lock()->GetComponent<PhysicsComponent>();
-	response.PenetrationDepth = Vector3(closestPoint - colliderClosestPoint).Magnitude();
+	response.PenetrationDepth = Maths::Pow(collider->GetRadius(), 2) - magSqr;
 
 	return response;
 }
@@ -147,7 +148,6 @@ CollisionResponse AABBColliderComponent::PlaneCollideCheck(std::shared_ptr<Plane
 		return {};
 
 	Vector3 pos = GameObject.lock()->Transform->GetPosition();
-	Vector3 closestPoint = ClosestPoint(collider->GameObject.lock()->Transform->GetPosition());
 	Vector3 colliderClosestPoint = collider->ClosestPoint(pos);
 
 	CollisionResponse response{};

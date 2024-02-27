@@ -7,6 +7,8 @@
 #include "SceneGraph.h"
 #include <cmath>
 
+#include "Debug.h"
+
 SphereColliderComponent::SphereColliderComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json)
 	: ColliderComponent(owningGameObject)
 {
@@ -69,16 +71,15 @@ CollisionResponse SphereColliderComponent::AABBCollideCheck(std::shared_ptr<AABB
 	if (!Collideable || !collider->Collideable)
 		return {};
 
-	Vector3 spherePos = collider->GameObject.lock()->Transform->GetPosition();
 	Vector3 pos = GameObject.lock()->Transform->GetPosition();
+	Vector3 closestPoint = ClosestPoint(collider->GameObject.lock()->Transform->GetPosition());
+	Vector3 colliderClosestPoint = collider->ClosestPoint(pos);
 
-	Vector3 closestPoint = ClosestPoint(spherePos);
+	Vector3 difference = closestPoint - colliderClosestPoint;
+	float magSqr = difference.MagnitudeSqr();
 
-	float magSqr = Vector3::MagnitudeSqr(spherePos - closestPoint);
 	if (magSqr >= Maths::Pow(_radius, 2))
 		return {};
-
-	Vector3 colliderClosestPoint = collider->ClosestPoint(pos);
 
 	CollisionResponse response{};
 	response.Collider = collider;
@@ -86,7 +87,7 @@ CollisionResponse SphereColliderComponent::AABBCollideCheck(std::shared_ptr<AABB
 	response.Transform = collider->GameObject.lock()->Transform;
 	response.ClosestPointOnCollider = colliderClosestPoint;
 	response.PhysicsComponent = collider->GameObject.lock()->GetComponent<PhysicsComponent>();
-	response.PenetrationDepth = Vector3(closestPoint - colliderClosestPoint).Magnitude();
+	response.PenetrationDepth = Maths::Pow(_radius, 2) - magSqr;
 
 	return response;
 }

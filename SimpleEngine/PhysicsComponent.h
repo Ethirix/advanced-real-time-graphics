@@ -22,8 +22,6 @@ public:
 
 	void AddForce(Vector3 force);
 	void AddForce(float x, float y, float z);
-	void ApplyImpulse(Vector3 force);
-	void ApplyImpulse(float x, float y, float z);
 
 	void AddRelativeForce(Vector3 force, Vector3 point);
 
@@ -33,7 +31,7 @@ private:
 
 	Vector3 CalculateDrag();
 	Vector3 CalculateFriction(CollisionResponse response);
-	Vector3 CalculateAngularVelocity(double fixedDeltaTime);
+	void CalculateAngularVelocity(double fixedDeltaTime);
 
 public:
 	bool UseGravity = true;
@@ -50,8 +48,9 @@ private:
 	Vector3 _angularVelocity{};
 	Vector3 _acceleration{};
 	Vector3 _netForce{};
-
+	Vector3 _positionOffset{};
 	Vector3 _torque{};
+	Vector3 _impulse{};
 
 	float _mass = 1.0f;
 

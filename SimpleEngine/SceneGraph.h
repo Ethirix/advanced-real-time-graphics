@@ -12,11 +12,12 @@ class SceneGraph
 public:
 	static void Initialize(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device);
 
-	static GameObject* GetObjectAtPosition(unsigned index);
+	static std::weak_ptr<GameObject> GetObjectAtPosition(unsigned index);
 
 	static void Update(double deltaTime);
 	static void FixedUpdate(double fixedDeltaTime);
 	static void Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context);
+	static int Size();
 
 	static std::list<CollisionResponse> CheckColliders(const std::shared_ptr<ColliderComponent>& collider);
 

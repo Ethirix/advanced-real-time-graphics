@@ -54,7 +54,7 @@
       "Rotation": {
         "X": 0,
         "Y": 0,
-        "Z": 45
+        "Z": 0
       },
       "Components": [
         {
@@ -86,7 +86,7 @@
         },
         {
           "Type": "PhysicsComponent",
-          "Mass": 60,
+          "Mass": 30,
           "DragCoefficient": 1.4,
           "FrictionCoefficient": 0.6,
           "Restitution": 0.2,
@@ -113,105 +113,159 @@
           "Collideable": true
         }
       ],
-      "Children": [
+      "Children": []
+    },
+    {
+      "Name": "Cube",
+      "Position": {
+        "X": 15,
+        "Y": 30,
+        "Z": 30
+      },
+      "Scale": {
+        "X": 2,
+        "Y": 2,
+        "Z": 2
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
         {
-          "Name": "Cube",
-          "Position": {
-            "X": 15,
-            "Y": 0,
-            "Z": 0
-          },
-          "Scale": {
-            "X": 2,
-            "Y": 2,
-            "Z": 2
-          },
-          "Rotation": {
-            "X": 0,
-            "Y": 0,
-            "Z": 0
-          },
-          "Components": [
-            {
-              "Type": "MeshComponent",
-              "MeshPath": "Assets/Meshes/cube2.obj",
-              "MaterialPath": "Assets/Materials/cube2.mtl",
-              "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
-              "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
-              "MeshType": 1,
-              "TexturePaths": {
-                "Diffuse": {
-                  "Path": "Assets/Textures/Crate/Crate_DIFFUSE.dds",
-                  "Slot": 0
-                },
-                "Specular": {
-                  "Path": "Assets/Textures/Crate/Crate_SPECULAR.dds",
-                  "Slot": 1
-                },
-                "Displacement": {
-                  "Path": "",
-                  "Slot": -1
-                },
-                "Normal": {
-                  "Path": "Assets/Textures/Crate/Crate_NORMAL.dds",
-                  "Slot": -1
-                }
-              },
-              "Stencil": ""
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cube2.obj",
+          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Crate/Crate_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "Assets/Textures/Crate/Crate_SPECULAR.dds",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "Assets/Textures/Crate/Crate_NORMAL.dds",
+              "Slot": -1
             }
-          ],
-          "Children": [
-            {
-              "Name": "Cone",
-              "Position": {
-                "X": 15,
-                "Y": 0,
-                "Z": 0
-              },
-              "Scale": {
-                "X": 2,
-                "Y": 2,
-                "Z": 2
-              },
-              "Rotation": {
-                "X": 0,
-                "Y": 0,
-                "Z": 0
-              },
-              "Components": [
-                {
-                  "Type": "MeshComponent",
-                  "MeshPath": "Assets/Meshes/cone.obj",
-                  "MaterialPath": "Assets/Materials/cone.mtl",
-                  "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
-                  "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
-                  "MeshType": 1,
-                  "TexturePaths": {
-                    "Diffuse": {
-                      "Path": "Assets/Textures/Cone/Cone_DIFFUSE.dds",
-                      "Slot": 0
-                    },
-                    "Specular": {
-                      "Path": "Assets/Textures/Cone/Cone_SPECULAR.dds",
-                      "Slot": 1
-                    },
-                    "Displacement": {
-                      "Path": "",
-                      "Slot": -1
-                    },
-                    "Normal": {
-                      "Path": "",
-                      "Slot": -1
-                    }
-                  },
-                  "Stencil": ""
-                }
-              ],
-              "Children": []
+          },
+          "Stencil": ""
+        },
+        {
+          "Type": "PhysicsComponent",
+          "Mass": 20,
+          "DragCoefficient": 1.4,
+          "FrictionCoefficient": 0.8,
+          "Restitution": 0.2,
+          "AngularDamping": 0.2,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": true
+        },
+        {
+          "Type": "AABBColliderComponent",
+          "Bounds": {
+            "Min": {
+              "X": -1,
+              "Y": -1,
+              "Z": -1
+            },
+            "Max": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
             }
-          ]
+          },
+          "UseMeshBounds": true,
+          "Collideable": true
         }
-      ]
+      ],
+      "Children": []
+    },
+    {
+      "Name": "Cone",
+      "Position": {
+        "X": 0,
+        "Y": 20,
+        "Z": 30
+      },
+      "Scale": {
+        "X": 2,
+        "Y": 2,
+        "Z": 2
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cone.obj",
+          "MaterialPath": "Assets/Materials/cone.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Cone/Cone_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "Assets/Textures/Cone/Cone_SPECULAR.dds",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
+        },
+        {
+          "Type": "PhysicsComponent",
+          "Mass": 10,
+          "DragCoefficient": 0.1,
+          "FrictionCoefficient": 0.4,
+          "Restitution": 0.1,
+          "AngularDamping": 0.4,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": true
+        },
+        {
+          "Type": "AABBColliderComponent",
+          "Bounds": {
+            "Min": {
+              "X": -1,
+              "Y": -1,
+              "Z": -1
+            },
+            "Max": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
+            }
+          },
+          "UseMeshBounds": true,
+          "Collideable": true
+        }
+      ],
+      "Children": []
     },
     {
       "Name": "Skybox",
@@ -340,21 +394,21 @@
         {
           "Type": "LightComponent",
           "DiffuseColour": {
-            "R": 1,
-            "G": 0.95,
-            "B": 0.95
+            "R": 0.9,
+            "G": 0.80,
+            "B": 0.85
           },
           "DiffusePower": 1,
           "SpecularColour": {
-            "R": 0.95,
-            "G": 1,
-            "B": 1
+            "R": 0.9,
+            "G": 0.8,
+            "B": 0.8
           },
           "SpecularPower": 1,
           "AmbientColour": {
-            "R": 0.05,
-            "G": 0.05,
-            "B": 0.05
+            "R": 0.50,
+            "G": 0.4,
+            "B": 0.55
           },
           "ConstantAttenuation": 1,
           "LinearAttenuation": 0,
@@ -408,7 +462,7 @@
         },
         {
           "Type": "SphereColliderComponent",
-          "Radius": 5,
+          "Radius": 0.05,
           "Collideable": true
         },
         {

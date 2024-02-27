@@ -9,6 +9,7 @@
 #include "Configuration.h"
 #include "Constants.h"
 #include "DataStore.h"
+#include "Helpers.h"
 #include "LightComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
@@ -22,6 +23,9 @@ LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wPara
 
 	switch (message)
 	{
+	case WM_ACTIVATE:
+	case WM_ACTIVATEAPP:
+		
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
 		EndPaint(hwnd, &ps);
@@ -647,22 +651,93 @@ void SimpleEngine::Update()
 	}
 
 	//BIG HACK NEED TO GET A CONCRETE WAY TO GET THE SKYBOX!
-	SceneGraph::GetObjectAtPosition(4)->Transform->SetPosition(_camera.lock()->GameObject.lock()->Transform->GetPosition());
-
-	if (GetAsyncKeyState('F') & 0x0001)
-	{
-		auto components = SceneGraph::GetComponentsFromObjects<PhysicsComponent>();
-		for (std::weak_ptr<PhysicsComponent> component : components)
-		{
-			component.lock()->AddRelativeForce(Vector3(2, 20, 0), Vector3::Zero());
-		}
-	}
+	if (auto skybox = SceneGraph::GetObjectAtPosition(4); !skybox.expired())
+		skybox.lock()->Transform->SetPosition(_camera.lock()->GameObject.lock()->Transform->GetPosition());
 
 	SceneGraph::Update(deltaTime);
 }
 
 void SimpleEngine::FixedUpdate(double fixedDeltaTime)
 {
+	#pragma region Force Keybind Logic
+	/*
+	 *	SQUARE BRACKETS - Switch Object
+	 *		[-] - Previous or Next Object in current scope
+	 *	KEYPAD - Force and Force Position
+	 *		KP_7 - X-Force Up
+	 *		KP_1 - X-Force Down
+	 *		KP_8 - Y-Force Up
+	 *		KP_2 - Y-Force Down
+	 *		KP_9 - Z-Force Up
+	 *		KP_3 - Z-Force Down
+	 *			LEFT ALT Modifier - Change the Force Position in same way
+	 *	GENERAL KEYS
+	 *		TAB - Unselect Object
+	 *		KP_DECIMAL - Zero Force
+	 *		KP_0 - Zero Force Position
+	 *		F - Apply Force
+	*/
+
+	if (GetAsyncKeyState(VK_TAB) & 0x0001)
+		_selectedObject = -1;
+
+	if (GetAsyncKeyState(VK_OEM_6) & 0x0001 && _selectedObject < SceneGraph::Size() - 1)
+		_selectedObject += 1;
+	if (GetAsyncKeyState(VK_OEM_4) & 0x0001 && _selectedObject > -1)
+		_selectedObject -= 1;
+
+	if (GetAsyncKeyState(VK_DECIMAL) & 0x0001)
+		_forcePosition = Vector3::Zero();
+	if (GetAsyncKeyState(VK_NUMPAD0) & 0x0001)
+		_force = Vector3::Zero();
+		
+
+	if (GetAsyncKeyState(VK_MENU))
+	{
+		if (GetAsyncKeyState(VK_NUMPAD7) & 0x8000)
+			_forcePosition.X += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
+			_forcePosition.X -= fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
+			_forcePosition.Y += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000)
+			_forcePosition.Y -= fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD9) & 0x8000)
+			_forcePosition.Z += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD3) & 0x8000)
+			_forcePosition.Z -= fixedDeltaTime;
+	}
+	else
+	{
+		if (GetAsyncKeyState(VK_NUMPAD7) & 0x8000)
+			_force.X += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
+			_force.X -= fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
+			_force.Y += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000)
+			_force.Y -= fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD9) & 0x8000)
+			_force.Z += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD3) & 0x8000)
+			_force.Z -= fixedDeltaTime;
+	}
+
+	std::weak_ptr<GameObject> obj = SceneGraph::GetObjectAtPosition(_selectedObject);
+	if (GetAsyncKeyState('F') & 0x8000)
+	{
+		if (!obj.expired())
+		{
+			if (auto phys = obj.lock()->GetComponent<PhysicsComponent>(); !phys.expired())
+			{
+				phys.lock()->AddRelativeForce(_force, _forcePosition);
+			}
+		}
+	}
+	#pragma endregion
+
+	Helpers::UpdateTitleBar(fixedDeltaTime, obj, _force, _forcePosition, _hwnd);
+
 	SceneGraph::FixedUpdate(fixedDeltaTime);
 }
 

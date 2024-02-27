@@ -28,6 +28,11 @@ void SceneGraph::InitialiseSceneGraph(const nlohmann::json& json,
 	}
 }
 
+int SceneGraph::Size()
+{
+	return _sceneGraph.size();
+}
+
 std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	nlohmann::json json,
 	const Microsoft::WRL::ComPtr<ID3D11Device>& device,
@@ -103,9 +108,11 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	return obj;
 }
 
-GameObject* SceneGraph::GetObjectAtPosition(unsigned index)
+std::weak_ptr<GameObject> SceneGraph::GetObjectAtPosition(unsigned index)
 {
-	return _sceneGraph[index].get();
+	if (index < 0 || index >= _sceneGraph.size())
+		return {};
+	return _sceneGraph[index];
 }
 
 void SceneGraph::Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context)
