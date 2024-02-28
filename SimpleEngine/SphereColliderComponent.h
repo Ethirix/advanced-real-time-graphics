@@ -14,7 +14,6 @@ public:
 	void Update(double deltaTime) override {}
 
 	[[nodiscard]] float GetRadius();
-	[[nodiscard]] bool IsPointInsideSphere(Vector3 point);
 	[[nodiscard]] Vector3 ClosestPoint(Vector3 point) override;
 	[[nodiscard]] DirectX::XMFLOAT3X3 GetInertiaTensor(float mass) override;
 

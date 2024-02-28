@@ -88,7 +88,7 @@
           "Type": "PhysicsComponent",
           "Mass": 30,
           "DragCoefficient": 1.4,
-          "FrictionCoefficient": 0.6,
+          "FrictionCoefficient": 0.8,
           "Restitution": 0.2,
           "AngularDamping": 0.2,
           "UseGravity": true,
@@ -240,7 +240,7 @@
           "Type": "PhysicsComponent",
           "Mass": 10,
           "DragCoefficient": 0.1,
-          "FrictionCoefficient": 0.4,
+          "FrictionCoefficient": 0.9,
           "Restitution": 0.1,
           "AngularDamping": 0.4,
           "UseGravity": true,
@@ -462,7 +462,7 @@
         },
         {
           "Type": "SphereColliderComponent",
-          "Radius": 0.05,
+          "Radius": 0.25,
           "Collideable": true
         },
         {
