@@ -41,8 +41,8 @@ Vector3 PhysicsComponent::CalculateDrag()
 {
 	Vector3 velocity = _velocity;
 	velocity = Vector3::Zero() - velocity;
-	velocity = velocity.Normalise();
-	return velocity * (0.5f * AIR_DENSITY * DragCoefficient * _velocity.MagnitudeSqr() * _crossSectionalArea);
+	velocity = velocity.Normalise();	
+	return velocity * (0.5f * AIR_DENSITY * _velocity.MagnitudeSqr() * DragCoefficient * _crossSectionalArea);
 }
 
 void PhysicsComponent::RunCollisionImpulse(CollisionResponse response)

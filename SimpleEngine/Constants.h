@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 constexpr double PHYSICS_TIMESTEP = 1.0f / 120.0f;
-constexpr float AIR_DENSITY = 1.204f;
+constexpr float AIR_DENSITY = 1.225f;
 
 #define GRAVITY Vector3(0, -9.81, 0)
 
