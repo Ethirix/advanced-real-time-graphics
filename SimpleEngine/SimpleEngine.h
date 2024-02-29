@@ -61,7 +61,10 @@ private:
 	std::chrono::time_point<std::chrono::steady_clock> _lastFrameTime = std::chrono::high_resolution_clock::now();
 	double _timeSinceLastFixedUpdate = 0;
 	std::map<std::string, Shaders> _shaders = {};
-	std::unique_ptr<SceneGraph> _sceneGraph = nullptr;
 	std::weak_ptr<CameraComponent> _camera = {};
+
+	int _selectedObject = -1;
+	Vector3 _force{};
+	Vector3 _forcePosition{};
 };
 

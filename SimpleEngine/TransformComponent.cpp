@@ -3,20 +3,20 @@
 #include "Buffers.h"
 
 #pragma region Scale
-DirectX::XMFLOAT3& TransformComponent::GetScale(const bool recursiveBlock)
+DirectX::XMFLOAT3 TransformComponent::GetScale(const bool recursiveBlock)
 {
 	if (Parent.expired() || recursiveBlock)
-		return _scale;
+		return _scale.ToDXFloat3();
 
-	const DirectX::XMFLOAT3 parentScale = Parent.lock()->GetScale(true);
-	DirectX::XMFLOAT3 realScale =
+	const Vector3 parentScale = Parent.lock()->GetScale(true);
+	Vector3 realScale =
 	{
-		_scale.x / parentScale.x,
-		_scale.y / parentScale.y,
-		_scale.z / parentScale.z
+		_scale.X / parentScale.X,
+		_scale.Y / parentScale.Y,
+		_scale.Z / parentScale.Z
 	};
 
-	return realScale;
+	return realScale.ToDXFloat3();
 }
 
 void TransformComponent::SetScale(const DirectX::XMFLOAT3 scale)
@@ -31,7 +31,7 @@ void TransformComponent::SetScale(float x, float y, float z)
 #pragma endregion
 
 #pragma region Position
-DirectX::XMFLOAT3& TransformComponent::GetWorldPosition()
+DirectX::XMFLOAT3 TransformComponent::GetWorldPosition()
 {
 	DirectX::XMVECTOR transform;
 	DirectX::XMVECTOR rot;
@@ -46,18 +46,18 @@ DirectX::XMFLOAT3& TransformComponent::GetWorldPosition()
 	return pos;
 }
 
-DirectX::XMFLOAT3& TransformComponent::GetPosition()
+DirectX::XMFLOAT3 TransformComponent::GetPosition()
 {
 	if (Parent.expired())
-		return _localPosition;
+		return _localPosition.ToDXFloat3();
 
-	const DirectX::XMFLOAT3 parentScale = Parent.lock()->GetScale(true);
+	const Vector3 parentScale = Parent.lock()->GetScale(true);
 
 	DirectX::XMFLOAT3 realPosition =
 	{
-		_localPosition.x / parentScale.x,
-		_localPosition.y / parentScale.y,
-		_localPosition.z / parentScale.z
+		_localPosition.X / parentScale.X,
+		_localPosition.Y / parentScale.Y,
+		_localPosition.Z / parentScale.Z
 	};
 
 	return realPosition;
@@ -75,16 +75,16 @@ void TransformComponent::SetPosition(float x, float y, float z)
 
 void TransformComponent::AddToPosition(DirectX::XMFLOAT3 pos)
 {
-	_localPosition.x += pos.x;
-	_localPosition.y += pos.y;
-	_localPosition.z += pos.z;
+	_localPosition.X += pos.x;
+	_localPosition.Y += pos.y;
+	_localPosition.Z += pos.z;
 }
 
 void TransformComponent::AddToPosition(float x, float y, float z)
 {
-	_localPosition.x += x;
-	_localPosition.y += y;
-	_localPosition.z += z;
+	_localPosition.X += x;
+	_localPosition.Y += y;
+	_localPosition.Z += z;
 }
 
 
@@ -93,40 +93,58 @@ void TransformComponent::AddToPosition(float x, float y, float z)
 #pragma region Rotation
 void TransformComponent::SetRotation(const DirectX::XMFLOAT3 rot)
 {
-	XMStoreFloat4(&_quaternion, 
-		DirectX::XMQuaternionRotationRollPitchYawFromVector(
-			XMLoadFloat3(&rot)));
+	DirectX::XMFLOAT4 q;
+	XMStoreFloat4(&q, 
+	              DirectX::XMQuaternionRotationRollPitchYawFromVector(
+		              XMLoadFloat3(&rot)));
+
+	_quaternion = q;
 }
 
 void TransformComponent::SetRotation(float x, float y, float z)
 {
-	XMStoreFloat4(&_quaternion,
+	DirectX::XMFLOAT4 q;
+	XMStoreFloat4(&q, 
 		DirectX::XMQuaternionRotationRollPitchYaw(x, y, z));
+
+	_quaternion = q;
+}
+
+void TransformComponent::SetRotation(Quaternion q)
+{
+	_quaternion = q;
 }
 
 void TransformComponent::AddToRotation(DirectX::XMFLOAT3 rot)
 {
-	XMStoreFloat4(&_quaternion, DirectX::XMQuaternionMultiply(XMLoadFloat4(&_quaternion), 
+	DirectX::XMFLOAT4 q = _quaternion.ToDXFloat4();
+	XMStoreFloat4(&q, DirectX::XMQuaternionMultiply(XMLoadFloat4(&q), 
 		DirectX::XMQuaternionRotationRollPitchYawFromVector(
 		XMLoadFloat3(&rot))));
+
+	_quaternion = q;
 }
 
 void TransformComponent::AddToRotation(float x, float y, float z)
 {
-	XMStoreFloat4(&_quaternion, DirectX::XMQuaternionMultiply(XMLoadFloat4(&_quaternion),
+	DirectX::XMFLOAT4 q = _quaternion.ToDXFloat4();
+	XMStoreFloat4(&q, DirectX::XMQuaternionMultiply(XMLoadFloat4(&q),
 		DirectX::XMQuaternionRotationRollPitchYaw(x, y, z)));
+
+	_quaternion = q;
 }
 
-DirectX::XMFLOAT4& TransformComponent::GetRotation()
+DirectX::XMFLOAT4 TransformComponent::GetRotation()
 {
-	return _quaternion;
+	return _quaternion.ToDXFloat4();
 }
 #pragma endregion
 
 void TransformComponent::Update(double deltaTime)
 {
+	DirectX::XMFLOAT4 quaternion = _quaternion.ToDXFloat4();
 	DirectX::XMMATRIX matrix = DirectX::XMMatrixScaling(GetScale().x, GetScale().y, GetScale().z)
-		* DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&_quaternion))
+		* DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&quaternion))
 		* DirectX::XMMatrixTranslation(GetPosition().x, GetPosition().y, GetPosition().z);
 
 	if (!Parent.expired())

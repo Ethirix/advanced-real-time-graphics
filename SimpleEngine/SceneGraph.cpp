@@ -1,11 +1,15 @@
 ﻿#include "SceneGraph.h"
 #include <fstream>
 
+#include "AABBColliderComponent.h"
 #include "CameraComponent.h"
 #include "LightComponent.h"
 #include "MeshComponent.h"
+#include "PhysicsComponent.h"
+#include "PlaneColliderComponent.h"
+#include "SphereColliderComponent.h"
 
-SceneGraph::SceneGraph(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device)
+void SceneGraph::Initialize(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device)
 {
 	std::ifstream fileStream(path);
 	nlohmann::json json = nlohmann::json::parse(fileStream);
@@ -22,6 +26,11 @@ void SceneGraph::InitialiseSceneGraph(const nlohmann::json& json,
 		auto obj = RunInitialisationRecursive(objs, device);
 		_sceneGraph.emplace_back(std::move(obj));
 	}
+}
+
+int SceneGraph::Size()
+{
+	return _sceneGraph.size();
 }
 
 std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
@@ -41,76 +50,51 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	{
 		if (std::string type = component["Type"]; type == "MeshComponent")
 		{
-			nlohmann::json textures = component["TexturePaths"];
-			nlohmann::json diffuse = textures["Diffuse"];
-			nlohmann::json specular = textures["Specular"];
-			nlohmann::json displacement = textures["Displacement"];
-			nlohmann::json normal = textures["Normal"];
 			auto meshComponent = std::make_shared<MeshComponent>(
-				obj,
-				device,
-				component["MeshPath"],
-				component["MaterialPath"],
-				component["VertexShaderPath"],
-				component["PixelShaderPath"],
-				component["MeshType"],
-				std::pair(static_cast<std::string>(diffuse["Path"]), diffuse["Slot"]),
-				std::pair(static_cast<std::string>(specular["Path"]), specular["Slot"]),
-				std::pair(static_cast<std::string>(normal["Path"]), normal["Slot"]),
-				std::pair(static_cast<std::string>(diffuse["Path"]), displacement["Slot"]),
-				component["Stencil"]
-			);
+				obj, component, device);
 
 			obj->AddComponent(meshComponent);
 		}
 		else if (type == "PhysicsComponent")
 		{
-			//TODO: Add physics component
+			auto physicsComponent = std::make_shared<PhysicsComponent>(
+				obj, component);
+			obj->AddComponent(physicsComponent);
 		}
 		else if (type == "CameraComponent")
 		{
 			auto cameraComponent = std::make_shared<CameraComponent>(
-				obj,
-				component["FieldOfView"],
-				DirectX::XMFLOAT3(
-					component["At"]["X"], 
-					component["At"]["Y"], 
-					component["At"]["Z"]),
-				DirectX::XMFLOAT3(
-					component["Up"]["X"], 
-					component["Up"]["Y"],
-					component["Up"]["Z"]),
-				component["NearPlane"],
-				component["FarPlane"],
-				component["MovementSpeed"],
-				component["RotationSpeed"]
-			);
+				obj, component);
 
 			obj->AddComponent(cameraComponent);
 		}
 		else if (type == "LightComponent")
 		{
-			nlohmann::json diffuseColour = component["DiffuseColour"];
-			nlohmann::json specularColour = component["SpecularColour"];
-			nlohmann::json ambientColour = component["AmbientColour"];
-			DirectX::XMFLOAT3 pos = obj->Transform->GetPosition();
 			auto lightComponent = std::make_shared<LightComponent>(
-				obj,
-				LightData(
-					DirectX::XMFLOAT4(pos.x, pos.y, pos.z, 1),
-					DirectX::XMFLOAT3(diffuseColour["R"], diffuseColour["G"], diffuseColour["B"]),
-					component["DiffusePower"],
-					DirectX::XMFLOAT3(specularColour["R"], specularColour["G"], specularColour["B"]),
-					component["SpecularPower"],
-					DirectX::XMFLOAT3(ambientColour["R"], ambientColour["G"], ambientColour["B"]),
-					component["ConstantAttenuation"],
-					component["LinearAttenuation"],
-					component["QuadraticAttenuation"],
-					component["LightRadius"]
-				)
-			);
+				obj, component);
 
 			obj->AddComponent(lightComponent);
+		}
+		else if (type == "SphereColliderComponent")
+		{
+			auto sphereColliderComponent = std::make_shared<SphereColliderComponent>(
+				obj, component);
+
+			obj->AddComponent(sphereColliderComponent);
+		}
+		else if (type == "AABBColliderComponent")
+		{
+			auto aabbColliderComponent = std::make_shared<AABBColliderComponent>(
+				obj, component);
+
+			obj->AddComponent(aabbColliderComponent);
+		}
+		else if (type == "PlaneColliderComponent")
+		{
+			auto planeColliderComponent = std::make_shared<PlaneColliderComponent>(
+				obj, component);
+
+			obj->AddComponent(planeColliderComponent);
 		}
 	}
 
@@ -122,6 +106,13 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 	}
 
 	return obj;
+}
+
+std::weak_ptr<GameObject> SceneGraph::GetObjectAtPosition(unsigned index)
+{
+	if (index < 0 || index >= _sceneGraph.size())
+		return {};
+	return _sceneGraph[index];
 }
 
 void SceneGraph::Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context)
@@ -146,4 +137,63 @@ void SceneGraph::FixedUpdate(double fixedDeltaTime)
 {
 	for (std::shared_ptr<GameObject> gameObject : _sceneGraph)
 		gameObject->FixedUpdate(fixedDeltaTime);
+}
+
+std::list<CollisionResponse> SceneGraph::CheckColliders(const std::shared_ptr<ColliderComponent>& collider)
+{
+	std::list<CollisionResponse> responses = {};
+	switch (collider->Type)
+	{
+	case COLLIDER_SPHERE:
+		{
+			std::shared_ptr<SphereColliderComponent> sphere =
+			std::dynamic_pointer_cast<SphereColliderComponent>(collider);
+		
+			for (std::weak_ptr<ColliderComponent> coll: GetComponentsFromObjects<ColliderComponent>())
+			{
+				if (coll.lock() == collider)
+					continue;
+				if (CollisionResponse response = sphere->CollidesWith(coll.lock()); 
+					!response.Collider.expired())
+					responses.emplace_back(response);
+			}
+		}
+		break;
+	case COLLIDER_AABB:
+		{
+			std::shared_ptr<AABBColliderComponent> aabb =
+				std::dynamic_pointer_cast<AABBColliderComponent>(collider);
+
+			for (std::weak_ptr<ColliderComponent> coll : GetComponentsFromObjects<ColliderComponent>())
+			{
+				if (coll.lock() == collider)
+					continue;
+
+				if (CollisionResponse response = aabb->CollidesWith(coll.lock()); 
+					!response.Collider.expired())
+					responses.emplace_back(response);
+			}
+		}
+		break;
+		case COLLIDER_PLANE:
+		{
+			std::shared_ptr<PlaneColliderComponent> plane =
+				std::dynamic_pointer_cast<PlaneColliderComponent>(collider);
+
+			for (std::weak_ptr<ColliderComponent> coll : GetComponentsFromObjects<ColliderComponent>())
+			{
+				if (coll.lock() == collider)
+					continue;
+
+				if (CollisionResponse response = plane->CollidesWith(coll.lock()); 
+					!response.Collider.expired())
+					responses.emplace_back(response);
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
+	return responses;
 }

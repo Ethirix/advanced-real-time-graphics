@@ -3,25 +3,35 @@
 #include "Buffers.h"
 #include "GameObject.h"
 
-CameraComponent::CameraComponent(WP_GAMEOBJECT owningGameObject,
-                                 float fov, DirectX::XMFLOAT3 at, DirectX::XMFLOAT3 up, 
-								 float nearPlane, float farPlane,
-                                 float movementSpeed, float rotationSpeed)
-	: ComponentBase(owningGameObject), _at(at), _up(up),
-	_nearDepth(nearPlane), _farDepth(farPlane), _fieldOfView(fov),
-	_movementSpeed(movementSpeed), _rotationSpeed(rotationSpeed)
+CameraComponent::CameraComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json)
+	: ComponentBase(owningGameObject)
 {
+	_fieldOfView = json["FieldOfView"];
+	_at = DirectX::XMFLOAT3(
+			json["At"]["X"],
+			json["At"]["Y"],
+			json["At"]["Z"]);
+	_up = DirectX::XMFLOAT3(
+			json["Up"]["X"],
+			json["Up"]["Y"],
+			json["Up"]["Z"]);
+
+	_nearDepth = json["NearPlane"];
+	_farDepth = json["FarPlane"];
+	_movementSpeed = json["MovementSpeed"];
+	_rotationSpeed = json["RotationSpeed"];
+
 	_eye = GameObject.lock()->Transform->GetPosition();
 
 	XMStoreFloat4x4(&_view, DirectX::XMMatrixLookToLH(
-		                XMLoadFloat3(&_eye),
-		                XMLoadFloat3(&_at),
-		                XMLoadFloat3(&_up)));
+		XMLoadFloat3(&_eye),
+		XMLoadFloat3(&_at),
+		XMLoadFloat3(&_up)));
 
-	XMStoreFloat4x4(&_projection, 
+	XMStoreFloat4x4(&_projection,
 		DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(_fieldOfView),
-		static_cast<float>(Screen::Width) / static_cast<float>(Screen::Height),
-			_nearDepth, 
+			static_cast<float>(Screen::Width) / static_cast<float>(Screen::Height),
+			_nearDepth,
 			_farDepth));
 }
 

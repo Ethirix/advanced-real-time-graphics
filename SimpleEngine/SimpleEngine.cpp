@@ -9,6 +9,7 @@
 #include "Configuration.h"
 #include "Constants.h"
 #include "DataStore.h"
+#include "Helpers.h"
 #include "LightComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
@@ -22,6 +23,9 @@ LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wPara
 
 	switch (message)
 	{
+	case WM_ACTIVATE:
+	case WM_ACTIVATEAPP:
+		
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
 		EndPaint(hwnd, &ps);
@@ -293,10 +297,10 @@ HRESULT SimpleEngine::InitialisePipeline()
 
 HRESULT SimpleEngine::InitialiseRunTimeData()
 {
-	_sceneGraph = std::make_unique<SceneGraph>(
+	SceneGraph::Initialize(
 		"Assets/Configuration/SceneGraph.json", _device);
 
-	if (auto cameraComponent = _sceneGraph->TryGetComponentFromObjects<CameraComponent>();
+	if (auto cameraComponent = SceneGraph::TryGetComponentFromObjects<CameraComponent>();
 		cameraComponent.has_value())
 		_camera = cameraComponent.value();
 
@@ -606,7 +610,7 @@ void SimpleEngine::OnWindowSizeChangeComplete()
 
 	float aspect = _viewport.Width / _viewport.Height;
 
-    for (std::weak_ptr<CameraComponent> camera : _sceneGraph->GetComponentsFromObjects<CameraComponent>())
+    for (std::weak_ptr<CameraComponent> camera : SceneGraph::GetComponentsFromObjects<CameraComponent>())
     {
 	    DirectX::XMMATRIX perspective = DirectX::XMMatrixPerspectiveFovLH(
 		    DirectX::XMConvertToRadians(camera.lock()->GetFieldOfView()), aspect, 
@@ -626,7 +630,7 @@ void SimpleEngine::Update()
 	_lastFrameTime = timePoint;
 
 	_timeSinceLastFixedUpdate += deltaTime;
-	if (_timeSinceLastFixedUpdate >= PHYSICS_TIMESTEP)
+	while (_timeSinceLastFixedUpdate >= PHYSICS_TIMESTEP)
 	{
 		FixedUpdate(PHYSICS_TIMESTEP);
 		_timeSinceLastFixedUpdate -= PHYSICS_TIMESTEP;
@@ -635,23 +639,106 @@ void SimpleEngine::Update()
 
 	if (_camera.expired())
 	{
-		if (auto cameraComponent = _sceneGraph->TryGetComponentFromObjects<CameraComponent>(); cameraComponent.has_value())
+		if (auto cameraComponent = SceneGraph::TryGetComponentFromObjects<CameraComponent>(); cameraComponent.has_value())
 			_camera = cameraComponent.value();
 	}
 
-	auto lightComponents = _sceneGraph->GetComponentsFromObjects<LightComponent>();
+	auto lightComponents = SceneGraph::GetComponentsFromObjects<LightComponent>();
 	Buffers::CBLighting.BufferData.ActiveLightCount = lightComponents.size();
 	for (int i = 0; i < lightComponents.size() && i < MAX_LIGHTS; i++)
 	{
 		Buffers::CBLighting.BufferData.PointLights[i] = lightComponents[i].lock()->Light;
 	}
 
-	_sceneGraph->Update(deltaTime);
+	//BIG HACK NEED TO GET A CONCRETE WAY TO GET THE SKYBOX!
+	if (auto skybox = SceneGraph::GetObjectAtPosition(4); !skybox.expired())
+		skybox.lock()->Transform->SetPosition(_camera.lock()->GameObject.lock()->Transform->GetPosition());
+
+	SceneGraph::Update(deltaTime);
 }
 
 void SimpleEngine::FixedUpdate(double fixedDeltaTime)
 {
-	_sceneGraph->FixedUpdate(fixedDeltaTime);
+	#pragma region Force Keybind Logic
+	/*
+	 *	SQUARE BRACKETS - Switch Object
+	 *		[-] - Previous or Next Object in current scope
+	 *	KEYPAD - Force and Force Position
+	 *		KP_7 - X-Force Up
+	 *		KP_1 - X-Force Down
+	 *		KP_8 - Y-Force Up
+	 *		KP_2 - Y-Force Down
+	 *		KP_9 - Z-Force Up
+	 *		KP_3 - Z-Force Down
+	 *			LEFT ALT Modifier - Change the Force Position in same way
+	 *	GENERAL KEYS
+	 *		TAB - Unselect Object
+	 *		KP_DECIMAL - Zero Force
+	 *		KP_0 - Zero Force Position
+	 *		F - Apply Force
+	*/
+
+	if (GetAsyncKeyState(VK_TAB) & 0x0001)
+		_selectedObject = -1;
+
+	if (GetAsyncKeyState(VK_OEM_6) & 0x0001 && _selectedObject < SceneGraph::Size() - 1)
+		_selectedObject += 1;
+	if (GetAsyncKeyState(VK_OEM_4) & 0x0001 && _selectedObject > -1)
+		_selectedObject -= 1;
+
+	if (GetAsyncKeyState(VK_DECIMAL) & 0x0001)
+		_forcePosition = Vector3::Zero();
+	if (GetAsyncKeyState(VK_NUMPAD0) & 0x0001)
+		_force = Vector3::Zero();
+		
+
+	if (GetAsyncKeyState(VK_MENU))
+	{
+		if (GetAsyncKeyState(VK_NUMPAD7) & 0x8000)
+			_forcePosition.X += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
+			_forcePosition.X -= fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
+			_forcePosition.Y += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000)
+			_forcePosition.Y -= fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD9) & 0x8000)
+			_forcePosition.Z += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD3) & 0x8000)
+			_forcePosition.Z -= fixedDeltaTime;
+	}
+	else
+	{
+		if (GetAsyncKeyState(VK_NUMPAD7) & 0x8000)
+			_force.X += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
+			_force.X -= fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
+			_force.Y += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000)
+			_force.Y -= fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD9) & 0x8000)
+			_force.Z += fixedDeltaTime;
+		if (GetAsyncKeyState(VK_NUMPAD3) & 0x8000)
+			_force.Z -= fixedDeltaTime;
+	}
+
+	std::weak_ptr<GameObject> obj = SceneGraph::GetObjectAtPosition(_selectedObject);
+	if (GetAsyncKeyState('F') & 0x8000)
+	{
+		if (!obj.expired())
+		{
+			if (auto phys = obj.lock()->GetComponent<PhysicsComponent>(); !phys.expired())
+			{
+				phys.lock()->AddRelativeForce(_force, _forcePosition);
+			}
+		}
+	}
+	#pragma endregion
+
+	Helpers::UpdateTitleBar(fixedDeltaTime, obj, _force, _forcePosition, _hwnd);
+
+	SceneGraph::FixedUpdate(fixedDeltaTime);
 }
 
 void SimpleEngine::Draw()
@@ -667,14 +754,12 @@ void SimpleEngine::Draw()
 		return;
 	}
 
-	std::shared_ptr<CameraComponent> camera = _camera.lock();
-
 	float backgroundColour[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 	_context->ClearRenderTargetView(_frameBufferView.Get(), backgroundColour);
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 
-	_sceneGraph->Draw(_context);
+	SceneGraph::Draw(_context);
 
 	_swapChain->Present(0, 0);
 }

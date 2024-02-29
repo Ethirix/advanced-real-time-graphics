@@ -80,6 +80,24 @@
     <Filter Include="Header Files\Debugging">
       <UniqueIdentifier>{80840853-11a2-4ee8-b69e-a4edbbfea461}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Physics">
+      <UniqueIdentifier>{00cfca7c-4a8c-4ecd-bb79-c13c478b9644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ParticleComponent">
+      <UniqueIdentifier>{9a6174ed-b4f3-42b6-bfc1-6d2ebed744c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ColliderComponent">
+      <UniqueIdentifier>{ffafe0bd-5085-44b0-a7d4-450c7cffb161}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ColliderComponent\SphereCollider">
+      <UniqueIdentifier>{1088f0c6-6015-4597-b832-54cb523093d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ColliderComponent\AABBCollider">
+      <UniqueIdentifier>{f804af4e-677d-41b2-8287-4a43848ba10e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ColliderComponent\PlaneCollider">
+      <UniqueIdentifier>{8c4f7cfa-0afb-47fa-bdef-b71d35789afe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -117,6 +135,30 @@
     </ClCompile>
     <ClCompile Include="TransformComponent.cpp">
       <Filter>Components\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsComponent.cpp">
+      <Filter>Components\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleComponent.cpp">
+      <Filter>Components\Physics\ParticleComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent\SphereCollider</Filter>
+    </ClCompile>
+    <ClCompile Include="Maths.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AABBColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent\AABBCollider</Filter>
+    </ClCompile>
+    <ClCompile Include="PlaneColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent\PlaneCollider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -233,6 +275,42 @@
     </ClInclude>
     <ClInclude Include="Debug.h">
       <Filter>Header Files\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsComponent.h">
+      <Filter>Components\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleComponent.h">
+      <Filter>Components\Physics\ParticleComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent\SphereCollider</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderType.h">
+      <Filter>Components\Physics\ColliderComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionResponse.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Bounds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Maths.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AABBColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent\AABBCollider</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaneColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent\PlaneCollider</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

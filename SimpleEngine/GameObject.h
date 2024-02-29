@@ -24,7 +24,7 @@ public:
 	std::weak_ptr<T> GetComponent()
 	{
 		if (!std::is_base_of<ComponentBase, T>() || _components.size() == 0)
-			return nullptr;
+			return {};
 
 		for (std::shared_ptr<ComponentBase> component : _components)
 		{
@@ -32,7 +32,7 @@ public:
 				return derivedComponent;
 		}
 
-		return nullptr;
+		return {};
 	}
 
 	template <typename T>

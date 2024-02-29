@@ -152,6 +152,32 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		return {};
 	mesh->IndexBuffer = indexBuffer.value();
 
+
+	Vector3 min, max;
+	for (unsigned i = 0; i < mesh->Vertices.Length; i++)
+	{
+		Vector3 element = mesh->Vertices.Elements[i].Position;
+		if (element.X < min.X)
+			min.X = element.X;
+		if (element.Y < min.Y)
+			min.Y = element.Y;
+		if (element.Z < min.Z)
+			min.Z = element.Z;
+
+		if (element.X > max.X)
+			max.X = element.X;
+		if (element.Y > max.Y)
+			max.Y = element.Y;
+		if (element.Z > max.Z)
+			max.Z = element.Z;
+	}
+
+	mesh->Bounds.Min = min;
+	mesh->Bounds.Max = max;
+	mesh->Bounds.Extents = max;
+	mesh->Bounds.Size = max * 2;
+	mesh->Bounds.Center = Vector3::Zero();
+
 	return mesh;
 }
 

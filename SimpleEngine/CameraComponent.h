@@ -1,5 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
+#include <nlohmann/json.hpp>
 
 #include "ComponentBase.h"
 #include "Screen.h"
@@ -8,10 +9,7 @@ class CameraComponent :
     public ComponentBase
 {
 public:
-    explicit CameraComponent(WP_GAMEOBJECT owningGameObject, 
-		float fov, DirectX::XMFLOAT3 at, DirectX::XMFLOAT3 up,
-		float nearPlane, float farPlane, 
-		float movementSpeed, float rotationSpeed);
+	explicit CameraComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json);
 
 	void Update(double deltaTime) override;
 	void FixedUpdate(double fixedDeltaTime) override {}

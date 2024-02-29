@@ -1,4 +1,6 @@
 #pragma once
+#include <nlohmann/json.hpp>
+
 #include "ComponentBase.h"
 #include "LightData.h"
 
@@ -6,8 +8,7 @@ class LightComponent :
     public ComponentBase
 {
 public:
-	LightComponent(WP_GAMEOBJECT owningGameObject, const LightData& lightData) : ComponentBase(owningGameObject), Light(lightData)
-	{ }
+	explicit LightComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json);
 
 	void Update(double deltaTime) override;
 	void FixedUpdate(double fixedDeltaTime) override {}
