@@ -36,6 +36,7 @@ private:
 	HRESULT InitialiseShaders();
 	HRESULT InitialisePipeline();
 	HRESULT InitialiseRunTimeData();
+	HRESULT InitialiseImGUI();
 
 	HRESULT InitialiseVertexShaderLayout(ID3DBlob* vsBlob);
 	ComPtr<ID3D11VertexShader> CompileVertexShader(LPCWSTR path);
