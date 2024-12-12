@@ -1,0 +1,403 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{847543b6-6b5f-43df-9f02-c63322755524}</UniqueIdentifier>
+      <Extensions>.hlsl, .hlsli</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Buffers">
+      <UniqueIdentifier>{c2f5b0c4-ab90-48a1-b392-b73b20217228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Structs">
+      <UniqueIdentifier>{b0f363b6-95b2-4e62-b37e-db635a22a229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Samplers">
+      <UniqueIdentifier>{36ec57f1-6404-42ef-a0c8-f16220e8b6e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Structured Resources">
+      <UniqueIdentifier>{22438084-b69b-4edd-baea-287365b5e691}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Functions">
+      <UniqueIdentifier>{f64bf01e-9b72-425e-9d56-8b71f52fd69b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Buffers">
+      <UniqueIdentifier>{2abcf64f-5ba1-48be-af30-c4579376c947}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Configuration">
+      <UniqueIdentifier>{aa4e6d0d-b049-43e0-bc7f-6ddfaf5fa7da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Configuration">
+      <UniqueIdentifier>{b77c26ae-784a-4538-8811-5fe632fe860c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Configuration">
+      <UniqueIdentifier>{78d112bc-9870-45a4-9122-1e748f33479f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{4aaf9d0f-dc07-4f32-a430-1284cfd04cee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Creation">
+      <UniqueIdentifier>{d2f3e6e1-a940-47cd-b852-82ab38d7b660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Enums">
+      <UniqueIdentifier>{977bedc1-9f8e-48c3-bfcc-927de829fea9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Meshes">
+      <UniqueIdentifier>{4ff43be6-c4fb-4dbe-b32c-4977b197733b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Materials">
+      <UniqueIdentifier>{499d651c-397a-4a4c-917a-70fcf0aebeb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{115fe4a4-7d8b-4b45-8df9-14af980f1856}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Structs">
+      <UniqueIdentifier>{79503efd-df4d-4e3e-b93a-3cfb8827955f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Camera">
+      <UniqueIdentifier>{e1f3b000-97ae-492a-9925-43f32ad6a06f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Light">
+      <UniqueIdentifier>{361a3d7f-8166-4140-8fe3-320f93b489f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Mesh">
+      <UniqueIdentifier>{813648cf-28e8-451f-9353-1564e6e50a4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Transform">
+      <UniqueIdentifier>{c76b2bfa-fb8d-44c8-892c-3b6e90ece844}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Debugging">
+      <UniqueIdentifier>{80840853-11a2-4ee8-b69e-a4edbbfea461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics">
+      <UniqueIdentifier>{00cfca7c-4a8c-4ecd-bb79-c13c478b9644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ParticleComponent">
+      <UniqueIdentifier>{9a6174ed-b4f3-42b6-bfc1-6d2ebed744c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ColliderComponent">
+      <UniqueIdentifier>{ffafe0bd-5085-44b0-a7d4-450c7cffb161}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ColliderComponent\SphereCollider">
+      <UniqueIdentifier>{1088f0c6-6015-4597-b832-54cb523093d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ColliderComponent\AABBCollider">
+      <UniqueIdentifier>{f804af4e-677d-41b2-8287-4a43848ba10e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Physics\ColliderComponent\PlaneCollider">
+      <UniqueIdentifier>{8c4f7cfa-0afb-47fa-bdef-b71d35789afe}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RasterizerStateConfig.cpp">
+      <Filter>Source Files\Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Factory.cpp">
+      <Filter>Data Creation</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraComponent.cpp">
+      <Filter>Components\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="LightComponent.cpp">
+      <Filter>Components\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshComponent.cpp">
+      <Filter>Components\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>Components\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsComponent.cpp">
+      <Filter>Components\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleComponent.cpp">
+      <Filter>Components\Physics\ParticleComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent\SphereCollider</Filter>
+    </ClCompile>
+    <ClCompile Include="Maths.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AABBColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent\AABBCollider</Filter>
+    </ClCompile>
+    <ClCompile Include="PlaneColliderComponent.cpp">
+      <Filter>Components\Physics\ColliderComponent\PlaneCollider</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SimpleEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CBObjectCameraData.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="CBMaterial.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="CBTextures.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="CBLighting.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffers.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration.h">
+      <Filter>Header Files\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="RasterizerStateConfig.h">
+      <Filter>Header Files\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentBase.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Factory.h">
+      <Filter>Data Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshType.h">
+      <Filter>Header Files\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderType.h">
+      <Filter>Header Files\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="CreatedMeshes.h">
+      <Filter>Data Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshComponentConfig.h">
+      <Filter>Header Files\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponentConfig.h">
+      <Filter>Header Files\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferPair.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="DataStore.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderData.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="SafePointerArray.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="LightData.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraComponent.h">
+      <Filter>Components\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="LightComponent.h">
+      <Filter>Components\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshComponent.h">
+      <Filter>Components\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>Components\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Header Files\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsComponent.h">
+      <Filter>Components\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleComponent.h">
+      <Filter>Components\Physics\ParticleComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent\SphereCollider</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderType.h">
+      <Filter>Components\Physics\ColliderComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionResponse.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Bounds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Maths.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AABBColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent\AABBCollider</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaneColliderComponent.h">
+      <Filter>Components\Physics\ColliderComponent\PlaneCollider</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_BlinnPhong.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\LightData.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli">
+      <Filter>Resource Files\Shaders\Samplers</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\Material.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\Textures.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\VS_BaseOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\Texture.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Functions\Lighting.hlsli">
+      <Filter>Resource Files\Shaders\Functions</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\LightingOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
+    </None>
+    <None Include="Assets\Configuration\RasterizerStateConfig.json">
+      <Filter>Resource Files\Configuration</Filter>
+    </None>
+    <None Include="Assets\Configuration\SceneGraph.json">
+      <Filter>Resource Files\Configuration</Filter>
+    </None>
+    <None Include="Assets\Materials\suzanne.mtl">
+      <Filter>Resource Files\Materials</Filter>
+    </None>
+    <None Include="Assets\Meshes\suzanne.obj">
+      <Filter>Resource Files\Meshes</Filter>
+    </None>
+    <None Include="Assets\Materials\cube2.mtl">
+      <Filter>Resource Files\Materials</Filter>
+    </None>
+    <None Include="Assets\Materials\Icosphere3.mtl">
+      <Filter>Resource Files\Materials</Filter>
+    </None>
+    <None Include="Assets\Meshes\cube2.obj">
+      <Filter>Resource Files\Meshes</Filter>
+    </None>
+    <None Include="Assets\Meshes\Icosphere3.obj">
+      <Filter>Resource Files\Meshes</Filter>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T2_SkyboxTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

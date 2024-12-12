@@ -1,0 +1,57 @@
+{
+  "RasterizerStateDescriptions": [
+    {
+      "Key": "RSFillState",
+      "FillMode": 3,
+      "CullMode": 3,
+      "FrontCounterClockwise": false,
+      "DepthBias": 0,
+      "SlopeScaledDepthBias": 0.0,
+      "DepthBiasClamp": 0.0,
+      "DepthClipEnable": true,
+      "ScissorEnable": false,
+      "MultisampleEnable": false,
+      "AntialiasedLineEnable": false
+    },
+    {
+      "Key": "RSReverseFillState",
+      "FillMode": 3,
+      "CullMode": 2,
+      "FrontCounterClockwise": false,
+      "DepthBias": 0,
+      "SlopeScaledDepthBias": 0.0,
+      "DepthBiasClamp": 0.0,
+      "DepthClipEnable": true,
+      "ScissorEnable": false,
+      "MultisampleEnable": false,
+      "AntialiasedLineEnable": false
+    },
+    {
+      "Key": "RSWireframeState",
+      "FillMode": 2,
+      "CullMode": 1,
+      "FrontCounterClockwise": false,
+      "DepthBias": 0,
+      "SlopeScaledDepthBias": 0.0,
+      "DepthBiasClamp": 0.0,
+      "DepthClipEnable": true,
+      "ScissorEnable": false,
+      "MultisampleEnable": false,
+      "AntialiasedLineEnable": false
+    },
+    {
+      "Key": "RSCulledWireframeState",
+      "FillMode": 2,
+      "CullMode": 3,
+      "FrontCounterClockwise": false,
+      "DepthBias": 0,
+      "SlopeScaledDepthBias": 0.0,
+      "DepthBiasClamp": 0.0,
+      "DepthClipEnable": true,
+      "ScissorEnable": false,
+      "MultisampleEnable": false,
+      "AntialiasedLineEnable": false
+    }
+  ],
+  "DefaultRasterizerKey":  "RSFillState"
+}

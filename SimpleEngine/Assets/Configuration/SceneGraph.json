@@ -1,0 +1,726 @@
+{
+  "GameObjects": [
+    {
+      "Name": "MainCamera",
+      "Position": {
+        "X": 0,
+        "Y": 5,
+        "Z": -5
+      },
+      "Scale": {
+        "X": 1,
+        "Y": 1,
+        "Z": 1
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "CameraComponent",
+          "FieldOfView": 90.0,
+          "At": {
+            "X": 0,
+            "Y": 0,
+            "Z": 1
+          },
+          "Up": {
+            "X": 0,
+            "Y": 1,
+            "Z": 0
+          },
+          "NearPlane": 0.01,
+          "FarPlane": 100000.0,
+          "MovementSpeed": 16.0,
+          "RotationSpeed": 2.0
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "Suzanne",
+      "Position": {
+        "X": 0,
+        "Y": 100,
+        "Z": 20
+      },
+      "Scale": {
+        "X": 5,
+        "Y": 5,
+        "Z": 5
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/suzanne.obj",
+          "MaterialPath": "Assets/Materials/suzanne.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
+        },
+        {
+          "Type": "PhysicsComponent",
+          "Mass": 30,
+          "DragCoefficient": 1.4,
+          "FrictionCoefficient": 0.8,
+          "Restitution": 0.2,
+          "AngularDamping": 0.2,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": true
+        },
+        {
+          "Type": "AABBColliderComponent",
+          "Bounds": {
+            "Min": {
+              "X": -1,
+              "Y": -1,
+              "Z": -1
+            },
+            "Max": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
+            }
+          },
+          "UseMeshBounds": true,
+          "Collideable": true
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "Cube",
+      "Position": {
+        "X": 15,
+        "Y": 30,
+        "Z": 30
+      },
+      "Scale": {
+        "X": 2,
+        "Y": 2,
+        "Z": 2
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cube2.obj",
+          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Crate/Crate_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "Assets/Textures/Crate/Crate_SPECULAR.dds",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "Assets/Textures/Crate/Crate_NORMAL.dds",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
+        },
+        {
+          "Type": "PhysicsComponent",
+          "Mass": 20,
+          "DragCoefficient": 1.4,
+          "FrictionCoefficient": 0.8,
+          "Restitution": 0.2,
+          "AngularDamping": 0.2,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": true
+        },
+        {
+          "Type": "AABBColliderComponent",
+          "Bounds": {
+            "Min": {
+              "X": -1,
+              "Y": -1,
+              "Z": -1
+            },
+            "Max": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
+            }
+          },
+          "UseMeshBounds": true,
+          "Collideable": true
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "Cone",
+      "Position": {
+        "X": 0,
+        "Y": 20,
+        "Z": 30
+      },
+      "Scale": {
+        "X": 2,
+        "Y": 2,
+        "Z": 2
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cone.obj",
+          "MaterialPath": "Assets/Materials/cone.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Cone/Cone_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "Assets/Textures/Cone/Cone_SPECULAR.dds",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
+        },
+        {
+          "Type": "PhysicsComponent",
+          "Mass": 10,
+          "DragCoefficient": 0.1,
+          "FrictionCoefficient": 0.9,
+          "Restitution": 0.1,
+          "AngularDamping": 0.4,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": true
+        },
+        {
+          "Type": "AABBColliderComponent",
+          "Bounds": {
+            "Min": {
+              "X": -1,
+              "Y": -1,
+              "Z": -1
+            },
+            "Max": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
+            }
+          },
+          "UseMeshBounds": true,
+          "Collideable": true
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "Skybox",
+      "Position": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Scale": {
+        "X": 1,
+        "Y": 1,
+        "Z": 1
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/InvertedCube2.obj",
+          "MaterialPath": "",
+          "VertexShaderPath": "Assets/Shaders/VS_Skybox.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_Skybox.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Skybox/Skybox_DIFFUSE.dds",
+              "Slot": 2
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": "DSSkybox"
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "Plane",
+      "Position": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Scale": {
+        "X": 10,
+        "Y": 10,
+        "Z": 10
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/plane.obj",
+          "MaterialPath": "Assets/Materials/plane.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Plane/Plane_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "Assets/Textures/Plane/Plane_SPECULAR.dds",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
+        },
+        {
+          "Type": "PlaneColliderComponent",
+          "Normal": {
+            "X": 0,
+            "Y": 1,
+            "Z": 0
+          },
+          "Distance": 0,
+          "Collideable": true
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "GlobalLight",
+      "Position": {
+        "X": -20,
+        "Y": -20,
+        "Z": -20
+      },
+      "Scale": {
+        "X": 1,
+        "Y": 1,
+        "Z": 1
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "LightComponent",
+          "DiffuseColour": {
+            "R": 0.9,
+            "G": 0.80,
+            "B": 0.85
+          },
+          "DiffusePower": 1,
+          "SpecularColour": {
+            "R": 0.9,
+            "G": 0.8,
+            "B": 0.8
+          },
+          "SpecularPower": 1,
+          "AmbientColour": {
+            "R": 0.50,
+            "G": 0.4,
+            "B": 0.55
+          },
+          "ConstantAttenuation": 1,
+          "LinearAttenuation": 0,
+          "QuadraticAttenuation": 0,
+          "LightRadius": 0
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "PointLightGreen",
+      "Position": {
+        "X": 0,
+        "Y": 20,
+        "Z": 0
+      },
+      "Scale": {
+        "X": 0.05,
+        "Y": 0.05,
+        "Z": 0.05
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "LightComponent",
+          "DiffuseColour": {
+            "R": 0,
+            "G": 1,
+            "B": 0
+          },
+          "DiffusePower": 5,
+          "SpecularColour": {
+            "R": 0,
+            "G": 1,
+            "B": 0
+          },
+          "SpecularPower": 4,
+          "AmbientColour": {
+            "R": 0,
+            "G": 0,
+            "B": 0
+          },
+          "ConstantAttenuation": 1,
+          "LinearAttenuation": 0,
+          "QuadraticAttenuation": 0.1,
+          "LightRadius": 32
+        },
+        {
+          "Type": "SphereColliderComponent",
+          "Radius": 0.25,
+          "Collideable": true
+        },
+        {
+          "Type": "PhysicsComponent",
+          "Mass": 5,
+          "DragCoefficient": 1.4,
+          "FrictionCoefficient": 0.7,
+          "Restitution": 0.2,
+          "AngularDamping": 0.4,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": true
+        },
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cube2.obj",
+          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Light/Light_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "PointLightRed",
+      "Position": {
+        "X": 50,
+        "Y": 10,
+        "Z": 10
+      },
+      "Scale": {
+        "X": 0.05,
+        "Y": 0.05,
+        "Z": 0.05
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "LightComponent",
+          "DiffuseColour": {
+            "R": 1,
+            "G": 0,
+            "B": 0
+          },
+          "DiffusePower": 4,
+          "SpecularColour": {
+            "R": 1,
+            "G": 0,
+            "B": 0
+          },
+          "SpecularPower": 3.2,
+          "AmbientColour": {
+            "R": 0,
+            "G": 0,
+            "B": 0
+          },
+          "ConstantAttenuation": 1,
+          "LinearAttenuation": 0,
+          "QuadraticAttenuation": 0.05,
+          "LightRadius": 128
+        },
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cube2.obj",
+          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Light/Light_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "PointLightOrange",
+      "Position": {
+        "X": -50,
+        "Y": 10,
+        "Z": 50
+      },
+      "Scale": {
+        "X": 0.05,
+        "Y": 0.05,
+        "Z": 0.05
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "LightComponent",
+          "DiffuseColour": {
+            "R": 1,
+            "G": 0.45,
+            "B": 0
+          },
+          "DiffusePower": 2,
+          "SpecularColour": {
+            "R": 1,
+            "G": 0.45,
+            "B": 0
+          },
+          "SpecularPower": 1.6,
+          "AmbientColour": {
+            "R": 0,
+            "G": 0,
+            "B": 0
+          },
+          "ConstantAttenuation": 1,
+          "LinearAttenuation": 0,
+          "QuadraticAttenuation": 0.1,
+          "LightRadius": 128
+        },
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cube2.obj",
+          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Light/Light_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "PointLightCyan",
+      "Position": {
+        "X": 100,
+        "Y": 10,
+        "Z": 0
+      },
+      "Scale": {
+        "X": 0.05,
+        "Y": 0.05,
+        "Z": 0.05
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "LightComponent",
+          "DiffuseColour": {
+            "R": 0,
+            "G": 1,
+            "B": 1
+          },
+          "DiffusePower": 5,
+          "SpecularColour": {
+            "R": 0,
+            "G": 1,
+            "B": 1
+          },
+          "SpecularPower": 4,
+          "AmbientColour": {
+            "R": 0,
+            "G": 0,
+            "B": 0
+          },
+          "ConstantAttenuation": 1,
+          "LinearAttenuation": 0.1,
+          "QuadraticAttenuation": 0.1,
+          "LightRadius": 128
+        },
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/cube2.obj",
+          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/Light/Light_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "",
+              "Slot": -1
+            }
+          },
+          "Stencil": ""
+        }
+      ],
+      "Children": []
+    }
+  ]
+}
