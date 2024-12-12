@@ -1,15 +1,20 @@
 #include "SimpleEngine.h"
+
 #include <d3d11_4.h>
 #include <d3dcompiler.h>
 #include <filesystem>
 #include <nlohmann/json.hpp>
 
+#include <imgui_impl_dx11.h>
+#include <imgui_impl_win32.h>
 #include "Buffers.h"
 #include "CBObjectCameraData.h"
 #include "Configuration.h"
 #include "Constants.h"
 #include "DataStore.h"
+#include "GlobalDefines.h"
 #include "Helpers.h"
+#include "imgui.h"
 #include "LightComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
@@ -18,6 +23,10 @@ LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wPara
 {
 	PAINTSTRUCT ps;
 	HDC hdc;
+
+	extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam))
+		return true;
 
 	auto* engine = reinterpret_cast<SimpleEngine*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
@@ -61,28 +70,14 @@ LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wPara
 
 HRESULT SimpleEngine::Initialise(HINSTANCE hInstance, int nShowCmd)
 {
-	HRESULT hr = S_OK;
-
-	hr = CreateWindowHandle(hInstance);
-	if (FAILED(hr)) return E_FAIL;
-
-	hr = CreateD3DDevice();
-	if (FAILED(hr)) return E_FAIL;
-
-	hr = CreateSwapChain();
-	if (FAILED(hr)) return E_FAIL;
-
-	hr = CreateFrameBuffer();
-	if (FAILED(hr)) return E_FAIL;
-
-	hr = InitialiseShaders();
-	if (FAILED(hr)) return E_FAIL;
-
-	hr = InitialisePipeline();
-	if (FAILED(hr)) return E_FAIL;
-
-	hr = InitialiseRunTimeData();
-	if (FAILED(hr)) return E_FAIL;
+	HRESULT hr = CreateWindowHandle(hInstance); FAIL_CHECK
+	hr = CreateD3DDevice(); FAIL_CHECK
+	hr = CreateSwapChain(); FAIL_CHECK
+	hr = CreateFrameBuffer(); FAIL_CHECK
+	hr = InitialiseShaders(); FAIL_CHECK
+	hr = InitialisePipeline(); FAIL_CHECK
+	hr = InitialiseRunTimeData(); FAIL_CHECK
+	hr = InitialiseImGUI(); FAIL_CHECK 
 
 	return hr;
 }
@@ -305,6 +300,20 @@ HRESULT SimpleEngine::InitialiseRunTimeData()
 		_camera = cameraComponent.value();
 
 	OnWindowSizeChangeComplete();
+
+	return S_OK;
+}
+
+HRESULT SimpleEngine::InitialiseImGUI()
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	ImGui_ImplWin32_Init(_hwnd);
+	ImGui_ImplDX11_Init(_device.Get(), _context.Get());
 
 	return S_OK;
 }
@@ -637,6 +646,11 @@ void SimpleEngine::Update()
 	}
 	#pragma endregion
 
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	ImGui::ShowDemoWindow(); //TEST
+
 	if (_camera.expired())
 	{
 		if (auto cameraComponent = SceneGraph::TryGetComponentFromObjects<CameraComponent>(); cameraComponent.has_value())
@@ -760,6 +774,9 @@ void SimpleEngine::Draw()
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 
 	SceneGraph::Draw(_context);
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	_swapChain->Present(0, 0);
 }
