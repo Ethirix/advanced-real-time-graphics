@@ -456,9 +456,13 @@
     <None Include="Assets\Shaders\PS_Skybox.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="imgui\imgui.natstepfilter" />
+    <None Include="imgui\imgui.natstepfilter">
+      <Filter>ImGUI</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="imgui\imgui.natvis" />
+    <Natvis Include="imgui\imgui.natvis">
+      <Filter>ImGUI</Filter>
+    </Natvis>
   </ItemGroup>
 </Project>

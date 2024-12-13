@@ -21,20 +21,10 @@
         {
           "Type": "CameraComponent",
           "FieldOfView": 90.0,
-          "At": {
-            "X": 0,
-            "Y": 0,
-            "Z": 1
-          },
-          "Up": {
-            "X": 0,
-            "Y": 1,
-            "Z": 0
-          },
           "NearPlane": 0.01,
           "FarPlane": 100000.0,
           "MovementSpeed": 16.0,
-          "RotationSpeed": 2.0
+          "RotationSpeed": 1.0
         }
       ],
       "Children": []
@@ -426,9 +416,9 @@
         "Z": 0
       },
       "Scale": {
-        "X": 0.05,
-        "Y": 0.05,
-        "Z": 0.05
+        "X": 0.25,
+        "Y": 0.25,
+        "Z": 0.25
       },
       "Rotation": {
         "X": 0,

@@ -7,26 +7,21 @@ CameraComponent::CameraComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json 
 	: ComponentBase(owningGameObject)
 {
 	_fieldOfView = json["FieldOfView"];
-	_at = DirectX::XMFLOAT3(
-			json["At"]["X"],
-			json["At"]["Y"],
-			json["At"]["Z"]);
-	_up = DirectX::XMFLOAT3(
-			json["Up"]["X"],
-			json["Up"]["Y"],
-			json["Up"]["Z"]);
-
 	_nearDepth = json["NearPlane"];
 	_farDepth = json["FarPlane"];
 	_movementSpeed = json["MovementSpeed"];
 	_rotationSpeed = json["RotationSpeed"];
 
-	_eye = GameObject.lock()->Transform->GetPosition();
+	DirectX::XMFLOAT3 pos = GameObject.lock()->Transform->GetPosition();
+	DirectX::XMFLOAT3 rot = MakeEulerAnglesFromQ(GameObject.lock()->Transform->GetRotation()).ToDXFloat3();
+
+	DirectX::XMFLOAT3 forward = GetForward(rot);
+	DirectX::XMFLOAT3 up = GetUp(rot);
 
 	XMStoreFloat4x4(&_view, DirectX::XMMatrixLookToLH(
-		XMLoadFloat3(&_eye),
-		XMLoadFloat3(&_at),
-		XMLoadFloat3(&_up)));
+		XMLoadFloat3(&pos),
+		XMLoadFloat3(&forward),
+		XMLoadFloat3(&up)));
 
 	XMStoreFloat4x4(&_projection,
 		DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(_fieldOfView),
@@ -35,91 +30,121 @@ CameraComponent::CameraComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json 
 			_farDepth));
 }
 
+DirectX::XMFLOAT3 CameraComponent::GetForward(DirectX::XMFLOAT3 rot)
+{
+	if (GameObject.expired())
+		return { 0, 0, 1 };
+	
+	return {
+		cos(DegreesToRadians(rot.x)) * sin(DegreesToRadians(rot.y)),
+		-sin(DegreesToRadians(rot.x)),
+		cos(DegreesToRadians(rot.x)) * cos(DegreesToRadians(rot.y))
+	};
+}
+
+DirectX::XMFLOAT3 CameraComponent::GetRight(DirectX::XMFLOAT3 rot)
+{
+	if (GameObject.expired())
+		return { 0, 0, 1 };
+
+	return {
+		cos(DegreesToRadians(rot.y)),
+		0,
+		-sin(DegreesToRadians(rot.y))
+	};
+}
+
+DirectX::XMFLOAT3 CameraComponent::GetUp(DirectX::XMFLOAT3 rot)
+{
+	if (GameObject.expired())
+		return { 0, 0, 1 };
+
+	return {
+		sin(DegreesToRadians(rot.x)) * sin(DegreesToRadians(rot.y)),
+		cos(DegreesToRadians(rot.x)),
+		sin(DegreesToRadians(rot.x)) * cos(DegreesToRadians(rot.y))
+	};
+}
+
 void CameraComponent::Update(double deltaTime)
 {
-	DirectX::XMMATRIX cameraWorld = XMMatrixInverse(nullptr, XMLoadFloat4x4(&_view));
+	if (GameObject.expired())
+		return;
 
 	//0x0001 is per frame (lowest significance bit)
 	//0x8000 is every frame (highest significance bit)
-	//r[0] - right; r[1] - up; r[2] - front; r[3] - transform
-	
-	using namespace DirectX;
-	if (GetAsyncKeyState('W') & 0x8000)
-	{
-		//translate (forward) by camera forward * deltaTime
-		cameraWorld.r[3] += cameraWorld.r[2] * deltaTime * _movementSpeed;
-	}													   
-	if (GetAsyncKeyState('S') & 0x8000)					   
-	{													   
-		cameraWorld.r[3] -= cameraWorld.r[2] * deltaTime * _movementSpeed;
-	}													   
-	if (GetAsyncKeyState('D') & 0x8000)					   
-	{													   
-		cameraWorld.r[3] += cameraWorld.r[0] * deltaTime * _movementSpeed;
-	}													   
-	if (GetAsyncKeyState('A') & 0x8000)					   
-	{													   
-		cameraWorld.r[3] -= cameraWorld.r[0] * deltaTime * _movementSpeed;
-	}													   
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)			   
-	{													   
-		cameraWorld.r[3] += cameraWorld.r[1] * deltaTime * _movementSpeed;
-	}													   
-	if (GetAsyncKeyState(VK_LCONTROL) & 0x8000)			   
-	{													   
-		cameraWorld.r[3] -= cameraWorld.r[1] * deltaTime * _movementSpeed;
-	}
+	std::shared_ptr<TransformComponent> transform = GameObject.lock()->Transform;
 
+	using namespace DirectX;
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
-		XMMATRIX rotMatrix = XMMatrixRotationQuaternion(XMQuaternionRotationAxis(cameraWorld.r[0], 
-			static_cast<float>(-deltaTime * _rotationSpeed)));
-		cameraWorld.r[1] = XMVector3TransformNormal(cameraWorld.r[1], rotMatrix);
-		cameraWorld.r[2] = XMVector3TransformNormal(cameraWorld.r[2], rotMatrix);
+		transform->AddToRotation(-deltaTime * _rotationSpeed, 0, 0);
 	}
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 	{
-		XMMATRIX rotMatrix = XMMatrixRotationQuaternion(XMQuaternionRotationAxis(cameraWorld.r[0], 
-			static_cast<float>(deltaTime * _rotationSpeed)));
-		cameraWorld.r[1] = XMVector3TransformNormal(cameraWorld.r[1], rotMatrix);
-		cameraWorld.r[2] = XMVector3TransformNormal(cameraWorld.r[2], rotMatrix);
+		transform->AddToRotation(deltaTime * _rotationSpeed, 0, 0);
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
-		//rotate around axis
-		XMMATRIX rotMatrix = XMMatrixRotationQuaternion(XMQuaternionRotationAxis(cameraWorld.r[1], 
-			static_cast<float>(deltaTime * _rotationSpeed)));
-		//transform the rotating axis by the rotation matrix
-		cameraWorld.r[2] = XMVector3TransformNormal(cameraWorld.r[2], rotMatrix);
-		cameraWorld.r[0] = XMVector3TransformNormal(cameraWorld.r[0], rotMatrix);
+		transform->AddToRotation(0, deltaTime * _rotationSpeed, 0);
 	}
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
-		XMMATRIX rotMatrix = XMMatrixRotationQuaternion(XMQuaternionRotationAxis(cameraWorld.r[1], 
-			static_cast<float>(-deltaTime * _rotationSpeed)));
-		cameraWorld.r[2] = XMVector3TransformNormal(cameraWorld.r[2], rotMatrix);
-		cameraWorld.r[0] = XMVector3TransformNormal(cameraWorld.r[0], rotMatrix);
+		transform->AddToRotation(0, -deltaTime * _rotationSpeed, 0);
 	}
-	if (GetAsyncKeyState('Q') & 0x8000)
+	//if (GetAsyncKeyState('Q') & 0x8000)
+	//{
+	//	transform->AddToRotation(0, 0, -deltaTime * _rotationSpeed);
+	//}
+	//if (GetAsyncKeyState('E') & 0x8000)
+	//{
+	//	transform->AddToRotation(0, 0, deltaTime * _rotationSpeed);
+	//}
+
+	XMFLOAT3 rot = MakeEulerAnglesFromQ(GameObject.lock()->Transform->GetRotation()).ToDXFloat3();
+	XMFLOAT3 pos = GameObject.lock()->Transform->GetPosition();
+	XMVECTOR posV = XMLoadFloat3(&pos);
+
+	XMFLOAT3 forward = GetForward(rot);
+	XMVECTOR forwardV = XMLoadFloat3(&forward);
+
+	XMFLOAT3 right = GetRight(rot);
+	XMVECTOR rightV = XMLoadFloat3(&right);
+
+	XMFLOAT3 up = GetUp(rot);
+	XMVECTOR upV = XMLoadFloat3(&up);
+	
+	if (GetAsyncKeyState('W') & 0x8000)
 	{
-		XMMATRIX rotMatrix = XMMatrixRotationQuaternion(XMQuaternionRotationAxis(cameraWorld.r[2],
-			static_cast<float>(deltaTime * _rotationSpeed)));
-		cameraWorld.r[1] = XMVector3TransformNormal(cameraWorld.r[1], rotMatrix);
-		cameraWorld.r[0] = XMVector3TransformNormal(cameraWorld.r[0], rotMatrix);
-	}
-	if (GetAsyncKeyState('E') & 0x8000)
-	{
-		XMMATRIX rotMatrix = XMMatrixRotationQuaternion(XMQuaternionRotationAxis(cameraWorld.r[2],
-			static_cast<float>(-deltaTime * _rotationSpeed)));
-		cameraWorld.r[1] = XMVector3TransformNormal(cameraWorld.r[1], rotMatrix);
-		cameraWorld.r[0] = XMVector3TransformNormal(cameraWorld.r[0], rotMatrix);
+		posV += forwardV * deltaTime * _movementSpeed;
+	}													   
+	if (GetAsyncKeyState('S') & 0x8000)					   
+	{													   
+		posV -= forwardV * deltaTime * _movementSpeed;
+	}													   
+	if (GetAsyncKeyState('D') & 0x8000)					   
+	{													   
+		posV += rightV * deltaTime * _movementSpeed;
+	}													   
+	if (GetAsyncKeyState('A') & 0x8000)					   
+	{													   
+		posV -= rightV * deltaTime * _movementSpeed;
+	}													   
+	if (GetAsyncKeyState(VK_SPACE) & 0x8000)			   
+	{													   
+		posV += upV * deltaTime * _movementSpeed;
+	}													   
+	if (GetAsyncKeyState(VK_LCONTROL) & 0x8000)			   
+	{													   
+		posV -= upV * deltaTime * _movementSpeed;
 	}
 
-	XMStoreFloat3(&_eye, cameraWorld.r[3]);
-	GameObject.lock()->Transform->SetPosition(_eye);
-	XMStoreFloat4x4(&_view, XMMatrixInverse(nullptr, cameraWorld));
+	XMStoreFloat3(&pos, posV);
+	XMStoreFloat4x4(&_view, XMMatrixLookToLH(posV, forwardV, upV));
 
-	Buffers::CBObjectCameraData.BufferData.CameraPosition = {_eye.x, _eye.y, _eye.z, 1};
-	Buffers::CBObjectCameraData.BufferData.View = XMMatrixTranspose(XMLoadFloat4x4(&GetView()));
+	transform->SetPosition(pos);
+
+	Buffers::CBObjectCameraData.BufferData.CameraPosition = { pos.x, pos.y, pos.z, 1 };
+	Buffers::CBObjectCameraData.BufferData.View = XMMatrixTranspose(XMLoadFloat4x4(&_view));
 	Buffers::CBObjectCameraData.BufferData.Projection = XMMatrixTranspose(XMLoadFloat4x4(&GetProjection()));
 }
