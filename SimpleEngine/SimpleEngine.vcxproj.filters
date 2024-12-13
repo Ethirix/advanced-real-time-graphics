@@ -447,7 +447,7 @@
     <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli">
       <Filter>Resource Files\Shaders\Structs</Filter>
     </None>
-    <None Include="Assets\Shaders\Structured Resources\T2_SkyboxTexture.hlsli">
+    <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
     <None Include="Assets\Shaders\VS_Skybox.hlsl">
@@ -456,9 +456,16 @@
     <None Include="Assets\Shaders\PS_Skybox.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="imgui\imgui.natstepfilter" />
+    <None Include="imgui\imgui.natstepfilter">
+      <Filter>ImGUI</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="imgui\imgui.natvis" />
+    <Natvis Include="imgui\imgui.natvis">
+      <Filter>ImGUI</Filter>
+    </Natvis>
   </ItemGroup>
 </Project>

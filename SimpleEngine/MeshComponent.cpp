@@ -72,11 +72,14 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 
 	Buffers::CBTextures.BufferData.HasDiffuseTexture = Textures->Diffuse.Resource ? true : false;
 	Buffers::CBTextures.BufferData.HasSpecularTexture = Textures->Specular.Resource ? true : false;
+	Buffers::CBTextures.BufferData.HasNormalTexture = Textures->Normal.Resource ? true : false;
 
 	if (Textures->Diffuse.Slot != -1)
 		context->PSSetShaderResources(Textures->Diffuse.Slot, 1, Textures->Diffuse.Resource.GetAddressOf());
 	if (Textures->Specular.Slot != -1)
 		context->PSSetShaderResources(Textures->Specular.Slot, 1, Textures->Specular.Resource.GetAddressOf());
+	if (Textures->Normal.Slot != -1)
+		context->PSSetShaderResources(Textures->Normal.Slot, 1, Textures->Normal.Resource.GetAddressOf());
 
 	Buffers::CBMaterial.BufferData.Ambient = Material ? Material->Ambient : DirectX::XMFLOAT4{};
 	Buffers::CBMaterial.BufferData.Diffuse = Material ? Material->Diffuse : DirectX::XMFLOAT4{};

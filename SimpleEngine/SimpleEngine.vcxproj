@@ -258,6 +258,7 @@
     <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli" />
     <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
       <FileType>Document</FileType>
     </None>
@@ -266,7 +267,7 @@
     </None>
     <None Include="imgui\imgui.natstepfilter" />
     <None Include="packages.config" />
-    <None Include="Assets\Shaders\Structured Resources\T2_SkyboxTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli" />
     <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli" />
   </ItemGroup>
   <ItemGroup>
