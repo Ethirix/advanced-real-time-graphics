@@ -98,6 +98,7 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		}
 		else if (objToken == "f")
 		{
+			//TODO: Rework OBJ - Remove Deduplication of Data.
 			std::vector<UINT> data;
 			USHORT polygonSideCount = 0;
 
@@ -128,19 +129,31 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		}
 	}
 
-	mesh->Vertices.Elements = new struct Vertex[positionIndices.size()];
-	mesh->Vertices.Length = positionIndices.size();
-	for (int i = 0; i < positionIndices.size(); i++)
+	mesh->Vertices.Elements = new struct Vertex[positions.size()];
+	mesh->Vertices.Length = positions.size();
+	for (int i = 0; i < positions.size(); ++i)
 	{
-		mesh->Vertices.Elements[i].Position = positions[positionIndices[i]];
-		mesh->Vertices.Elements[i].Normal = normals[normalIndices[i]];
-		mesh->Vertices.Elements[i].TextureCoordinate = textureCoordinates[textCoordIndices[i]];
+		mesh->Vertices.Elements[i].Position = positions[i];
+		mesh->Vertices.Elements[i].Normal = normals[i];
+		mesh->Vertices.Elements[i].TextureCoordinate = textureCoordinates[i];
 	}
 
-	mesh->VertexIndices.Elements = new UINT[mesh->Vertices.Length];
-	mesh->VertexIndices.Length = mesh->Vertices.Length;
-	for (unsigned i = 0; i < mesh->Vertices.Length; i++)
-		mesh->VertexIndices.Elements[i] = i;
+	mesh->VertexIndices.Elements = new UINT[positionIndices.size()];
+	mesh->VertexIndices.Length = positionIndices.size();
+
+	//mesh->Vertices.Elements = new struct Vertex[positionIndices.size()];
+	//mesh->Vertices.Length = positionIndices.size();
+	//for (int i = 0; i < positionIndices.size(); i++)
+	//{
+	//	mesh->Vertices.Elements[i].Position = positions[positionIndices[i]];
+	//	mesh->Vertices.Elements[i].Normal = normals[normalIndices[i]];
+	//	mesh->Vertices.Elements[i].TextureCoordinate = textureCoordinates[textCoordIndices[i]];
+	//}
+
+	//mesh->VertexIndices.Elements = new UINT[mesh->Vertices.Length];
+	//mesh->VertexIndices.Length = mesh->Vertices.Length;
+	//for (unsigned i = 0; i < mesh->Vertices.Length; i++)
+	//	mesh->VertexIndices.Elements[i] = i;
 
 	OPTIONAL_BUFFER vertexBuffer = InitializeVertexBuffer(path, mesh, device);
 	if (!vertexBuffer.has_value())
