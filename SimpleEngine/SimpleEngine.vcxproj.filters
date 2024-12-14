@@ -369,6 +369,9 @@
     <ClInclude Include="imgui\imstb_textedit.h">
       <Filter>ImGUI</Filter>
     </ClInclude>
+    <ClInclude Include="VertexIndices.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
