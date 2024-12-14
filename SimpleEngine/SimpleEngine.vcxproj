@@ -240,6 +240,7 @@
     <ClInclude Include="TransformComponentConfig.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VertexIndices.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Configuration\RasterizerStateConfig.json" />

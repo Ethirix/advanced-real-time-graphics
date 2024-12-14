@@ -9,6 +9,7 @@
 #include "DataStore.h"
 #include "DDSTextureLoader.h"
 #include "Helpers.h"
+#include "VertexIndices.h"
 
 #pragma region Mesh Functions
 
@@ -52,8 +53,11 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		return {};
 
 	std::vector<DirectX::XMFLOAT3> positions, normals;
-	std::vector<UINT> positionIndices, normalIndices, textCoordIndices;
 	std::vector<DirectX::XMFLOAT2> textureCoordinates;
+
+	std::unordered_map<std::string, VertexIndices> faces{};
+	std::vector<UINT> indices;
+	UINT currentIndex = 0;
 
 	while (std::getline(fileStream, currentLine))
 	{
@@ -98,7 +102,7 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		}
 		else if (objToken == "f")
 		{
-			std::vector<UINT> data;
+			VertexIndices currentFace{};
 			USHORT polygonSideCount = 0;
 
 			while (true)
@@ -109,38 +113,64 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 				if (indicesLine.empty())
 					break;
 
-				polygonSideCount++;
-				if (polygonSideCount > 3)
+				if (polygonSideCount++ > 3)
 					return {};
 
-				std::ranges::replace(indicesLine, '/', ' ');
-				std::istringstream indicesStringStream(indicesLine);
+				if (faces.contains(indicesLine))
+				{
+					indices.emplace_back(faces.find(indicesLine)->second.Index);
+					continue;
+				}
+
+				std::string replacedLine = indicesLine;
+				std::ranges::replace(replacedLine, '/', ' ');
+				std::istringstream indicesStringStream(replacedLine);
 
 				UINT index;
-				while (indicesStringStream >> index)
-					data.emplace_back(index - 1);
+				indicesStringStream >> index;
+				currentFace.Position = index - 1;
+				indicesStringStream >> index;
+				currentFace.TextureCoordinate = index - 1;
+				indicesStringStream >> index;
+				currentFace.Normal = index - 1;
+				currentFace.Index = currentIndex++;
 
-				positionIndices.emplace_back(data[0]);
-				textCoordIndices.emplace_back(data[1]);
-				normalIndices.emplace_back(data[2]);
-				data.clear();
+				faces.try_emplace(indicesLine, currentFace);
+				indices.emplace_back(currentFace.Index);
 			}
 		}
 	}
 
-	mesh->Vertices.Elements = new struct Vertex[positionIndices.size()];
-	mesh->Vertices.Length = positionIndices.size();
-	for (int i = 0; i < positionIndices.size(); i++)
+	std::vector<VertexIndices> orderedFaces;
+	for (int i = 0; i < faces.size(); ++i)
 	{
-		mesh->Vertices.Elements[i].Position = positions[positionIndices[i]];
-		mesh->Vertices.Elements[i].Normal = normals[normalIndices[i]];
-		mesh->Vertices.Elements[i].TextureCoordinate = textureCoordinates[textCoordIndices[i]];
+		for (VertexIndices& vertex : faces | std::views::values)
+		{
+			if (vertex.Index == i)
+			{
+				orderedFaces.emplace_back(vertex);
+				break;
+			}
+		}
 	}
 
-	mesh->VertexIndices.Elements = new UINT[mesh->Vertices.Length];
-	mesh->VertexIndices.Length = mesh->Vertices.Length;
-	for (unsigned i = 0; i < mesh->Vertices.Length; i++)
-		mesh->VertexIndices.Elements[i] = i;
+	mesh->Vertices.Elements = new struct Vertex[faces.size()];
+	mesh->Vertices.Length = faces.size();
+	{
+		unsigned i = 0;
+		for (const VertexIndices& vertex : orderedFaces)
+		{
+			mesh->Vertices.Elements[i].Position = positions[vertex.Position];
+			mesh->Vertices.Elements[i].Normal = normals[vertex.Normal];
+			mesh->Vertices.Elements[i].TextureCoordinate = textureCoordinates[vertex.TextureCoordinate];
+
+			i++;
+		}
+	}
+	mesh->VertexIndices.Elements = new UINT[indices.size()];
+	mesh->VertexIndices.Length = indices.size();
+	for (unsigned i = 0; i < indices.size(); ++i)
+		mesh->VertexIndices.Elements[i] = indices[i];
 
 	OPTIONAL_BUFFER vertexBuffer = InitializeVertexBuffer(path, mesh, device);
 	if (!vertexBuffer.has_value())
