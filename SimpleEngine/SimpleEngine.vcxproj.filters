@@ -446,7 +446,6 @@
     <None Include="Assets\Meshes\Icosphere3.obj">
       <Filter>Resource Files\Meshes</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli">
       <Filter>Resource Files\Shaders\Structs</Filter>
     </None>
@@ -465,6 +464,7 @@
     <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="imgui\imgui.natvis">
