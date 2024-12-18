@@ -172,6 +172,8 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 	for (unsigned i = 0; i < indices.size(); ++i)
 		mesh->VertexIndices.Elements[i] = indices[i];
 
+	CalculateTangents(mesh);
+
 	OPTIONAL_BUFFER vertexBuffer = InitializeVertexBuffer(path, mesh, device);
 	if (!vertexBuffer.has_value())
 		return {};
@@ -209,6 +211,14 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 	mesh->Bounds.Center = Vector3::Zero();
 
 	return mesh;
+}
+
+void Factory::CalculateTangents(SHARED_PTR_MESH mesh, bool recalculateNormals)
+{
+	//TODO: Add Tangent and Bitangent loading
+	//TODO: Add own normal calculation to Tangent/Bitangent function
+	//https://marti.works/posts/post-calculating-tangents-for-your-mesh/post/
+	//https://terathon.com/blog/tangent-space.html
 }
 
 OPTIONAL_BUFFER Factory::InitializeVertexBuffer(PATH_STR path, const SHARED_PTR_MESH& mesh, DEVICE device)
