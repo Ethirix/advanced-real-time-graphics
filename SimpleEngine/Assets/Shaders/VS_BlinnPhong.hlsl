@@ -4,7 +4,9 @@
 VS_BaseOut VS_Main(
 	float3 position : POSITION,
 	float3 normal : NORMAL,
-	float2 texCoords : TEXCOORDS)
+	float2 texCoords : TEXCOORDS,
+	float3 tangent : TANGENT,
+	float3 bitangent : BITANGENT)
 {
     VS_BaseOut output = (VS_BaseOut) 0;
 

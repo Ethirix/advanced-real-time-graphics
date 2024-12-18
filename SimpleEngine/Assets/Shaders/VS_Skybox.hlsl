@@ -2,18 +2,19 @@
 #include "Structs/VS_SkyboxOut.hlsli"
 
 VS_SkyboxOut VS_Main(
-	float3 Position : POSITION,
-	float3 NormalVector : NORMAL,
-	float2 TexCoords : TEXCOORDS
-)
+	float3 position : POSITION,
+	float3 normal: NORMAL,
+	float2 texCoords : TEXCOORDS,
+	float3 tangent : TANGENT,
+	float3 bitangent : BITANGENT)
 {
     VS_SkyboxOut output = (VS_SkyboxOut) 0;
-    float4 pos4 = float4(Position, 1);
+    float4 pos4 = float4(position, 1);
     output.Position = mul(pos4, World);
     output.Position = mul(output.Position, View);
     output.Position = mul(output.Position, Projection);
     output.Position = output.Position.xyww;
-    output.TextureCoordinates = Position;
+    output.TextureCoordinates = position;
 
     return output;
 }

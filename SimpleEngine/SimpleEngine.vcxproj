@@ -267,9 +267,9 @@
       <FileType>Document</FileType>
     </None>
     <None Include="imgui\imgui.natstepfilter" />
-    <None Include="packages.config" />
     <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli" />
     <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli" />
