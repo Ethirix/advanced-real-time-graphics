@@ -250,6 +250,7 @@
     <None Include="Assets\Materials\suzanne.mtl" />
     <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli" />
     <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli" />
+    <None Include="Assets\Shaders\Functions\TangentSpaceConverter.hlsli" />
     <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli" />
     <None Include="Assets\Shaders\Structs\LightData.hlsli" />
     <None Include="Assets\Shaders\Structs\LightingOut.hlsli" />

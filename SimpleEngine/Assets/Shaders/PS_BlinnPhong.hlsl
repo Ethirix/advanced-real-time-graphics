@@ -16,10 +16,13 @@ float4 PS_Main(VS_BaseOut input) : SV_TARGET
     float4 ambient = float4(0, 0, 0, 0);
     float4 diffuse = float4(0, 0, 0, 0);
     float4 specular = float4(0, 0, 0, 0);
+
     Textures textures = CreateTexturesFromTextures(T0_DiffuseTexture, HasDiffuseTexture, T1_SpecularTexture,
                                                    HasSpecularTexture, T2_NormalTexture, HasNormalTexture);
     Material material = CreateMaterial(DiffuseMaterial, AmbientMaterial, SpecularMaterial, SpecularExponent);
 
+    //  TODO: Convert Pixel Shader to use Tangent Space lighting.
+    //      Potentially pass a Boolean to the CalculatePointLight to determine what Space to use for calculations.
     for (uint i = 0; i < ActiveLightCount; i++)
     {
         LightingOut light = CalculatePointLight(

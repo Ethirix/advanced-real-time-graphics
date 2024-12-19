@@ -6,12 +6,14 @@ struct VS_BaseOut
     float4 Color : COLOR;
 
     float4 Position : SV_POSITION;
-    float4 WorldPosition : POSITION0;
+    float4 Normal : NORMAL;
 
-    float4 Normal : NORMAL0;
-    float4 WorldNormal : WORLDNORMAL0;
+    float4 WorldNormal : WORLDNORMAL;
+    float4 WorldPosition : POSITION;
 
-    float2 TextureCoordinates : TEXCOORDS0;
+    float2 TextureCoordinates : TEXCOORD;
+
+    float4 TangentEye : TANGENTEYE;
 };
 
 #endif

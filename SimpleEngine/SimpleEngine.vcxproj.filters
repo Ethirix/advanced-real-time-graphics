@@ -465,6 +465,10 @@
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="Assets\Shaders\Structs\VS_BaseIn.hlsli" />
+    <None Include="Assets\Shaders\Functions\TangentSpaceConverter.hlsli">
+      <Filter>Resource Files\Shaders\Functions</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="imgui\imgui.natvis">

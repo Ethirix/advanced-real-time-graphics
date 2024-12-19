@@ -14,6 +14,10 @@ struct LightData
     float QuadraticAttenuation;
     float LightRadius;
     float ___LDPad0;
+	//End of C++ align
+
+    //Modified per vertex
+    float4 LightVertexPosition;
 };
 
 #endif 
