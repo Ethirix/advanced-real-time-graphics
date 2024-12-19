@@ -213,12 +213,77 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 	return mesh;
 }
 
-void Factory::CalculateTangents(SHARED_PTR_MESH mesh, bool recalculateNormals)
+void Factory::CalculateTangents(SHARED_PTR_MESH& mesh, bool recalculateNormals)
 {
 	//TODO: Add Tangent and Bitangent loading
 	//TODO: Add own normal calculation to Tangent/Bitangent function
 	//https://marti.works/posts/post-calculating-tangents-for-your-mesh/post/
 	//https://terathon.com/blog/tangent-space.html
+
+	std::vector<Vector3> tangents(mesh->Vertices.Length);
+	std::vector<Vector3> bitangents(mesh->Vertices.Length);
+
+	for (unsigned i = 0; i < mesh->VertexIndices.Length; i += 3)
+	{
+		//Indices to triangles
+		unsigned index0 = mesh->VertexIndices.Elements[i + 0];
+		unsigned index1 = mesh->VertexIndices.Elements[i + 1];
+		unsigned index2 = mesh->VertexIndices.Elements[i + 2];
+
+		DirectX::XMFLOAT3 vertexPos0 = mesh->Vertices.Elements[index0].Position;
+		DirectX::XMFLOAT3 vertexPos1 = mesh->Vertices.Elements[index1].Position;
+		DirectX::XMFLOAT3 vertexPos2 = mesh->Vertices.Elements[index2].Position;
+
+		DirectX::XMFLOAT2 textureCoordinate0 = mesh->Vertices.Elements[index0].TextureCoordinate;
+		DirectX::XMFLOAT2 textureCoordinate1 = mesh->Vertices.Elements[index1].TextureCoordinate;
+		DirectX::XMFLOAT2 textureCoordinate2 = mesh->Vertices.Elements[index2].TextureCoordinate;
+
+		DirectX::XMFLOAT3 edge0 = (Vector3(vertexPos1) - Vector3(vertexPos0)).ToDXFloat3();
+		DirectX::XMFLOAT3 edge1 = (Vector3(vertexPos2) - Vector3(vertexPos0)).ToDXFloat3();
+
+		DirectX::XMFLOAT2 uv0 = { textureCoordinate1.x - textureCoordinate0.x, textureCoordinate1.y - textureCoordinate0.y };
+		DirectX::XMFLOAT2 uv1 = { textureCoordinate2.x - textureCoordinate0.x, textureCoordinate2.y - textureCoordinate0.y };
+
+		float result = 1.0f / (uv0.x * uv1.y - uv0.y * uv1.x);
+
+		DirectX::XMFLOAT3 tangent
+		{
+			(edge0.x * uv1.y - edge1.x * uv0.y) * result,
+			(edge0.y * uv1.y - edge1.y * uv0.y) * result,
+			(edge0.z * uv1.y - edge1.z * uv0.y) * result
+		};
+
+		DirectX::XMFLOAT3 biTangent
+		{
+			(edge0.x * uv1.x - edge1.x * uv0.x) * result,
+			(edge0.y * uv1.x - edge1.y * uv0.x) * result,
+			(edge0.z * uv1.x - edge1.z * uv0.x) * result
+		};
+
+		//Additive to get an 'average' as vertices are deduplicated
+		tangents[index0] += tangent;
+		tangents[index1] += tangent;
+		tangents[index2] += tangent;
+
+		bitangents[index0] += biTangent;
+		bitangents[index1] += biTangent;
+		bitangents[index2] += biTangent;
+	}
+
+	for (unsigned i = 0; i < mesh->Vertices.Length; i++)
+	{
+		Vector3 normal = mesh->Vertices.Elements[i].Normal;
+		Vector3 tangent = tangents[i];
+		Vector3 bitangent = bitangents[i];
+
+		Vector3 normalisedTangent = (tangent - normal * normal.Dot(tangent)).Normalise();
+		Vector3 normalisedBitangent = (tangent - normal * normal.Dot(tangent)).Normalise();
+
+		float handedness = Vector3::Cross(normal, tangent).Dot(bitangent) > 0 ? 1.0f : -1.0f;
+
+		mesh->Vertices.Elements[i].Tangent = { normalisedTangent.X, normalisedTangent.Y, normalisedTangent.Z, handedness };
+		mesh->Vertices.Elements[i].Bitangent = { normalisedBitangent.X, normalisedBitangent.Y, normalisedBitangent.Z, handedness };
+	}
 }
 
 OPTIONAL_BUFFER Factory::InitializeVertexBuffer(PATH_STR path, const SHARED_PTR_MESH& mesh, DEVICE device)

@@ -6,8 +6,8 @@ struct VS_BaseIn
     float3 Position : POSITION;
     float3 Normal : NORMAL;
     float2 TextureCoordinates : TEXCOORD;
-    float3 Tangent : TANGENT;
-    float3 Bitangent : BINORMAL;
+    float4 Tangent : TANGENT;
+    float4 Bitangent : BINORMAL;
 };
 
 #endif

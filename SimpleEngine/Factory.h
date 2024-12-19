@@ -31,7 +31,7 @@ private:
 
 	static OPTIONAL_SHARED_PTR_MESH WavefrontOBJLoader(PATH_STR path, DEVICE device, MeshType type);
 
-	static void CalculateTangents(SHARED_PTR_MESH mesh, bool recalculateNormals = false);
+	static void CalculateTangents(SHARED_PTR_MESH& mesh, bool recalculateNormals = false);
 
 	static OPTIONAL_BUFFER InitializeVertexBuffer(PATH_STR path, const SHARED_PTR_MESH& mesh, DEVICE device);
 
