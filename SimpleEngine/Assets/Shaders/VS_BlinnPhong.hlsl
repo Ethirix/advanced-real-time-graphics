@@ -22,10 +22,10 @@ VS_BaseOut VS_Main(VS_BaseIn input)
     float4 n = normalize(mul(float4(input.Normal, 0), World));
     float4x4 inverseTBN = transpose(float4x4(t, b, n, float4(0, 0, 0, 1)));
 
-    for (uint i = 0; i < ActiveLightCount; i++)
-    {
-	    PointLights[i].LightVertexPosition = VectorToTangentSpace(PointLights[i].Position - output.WorldPosition, inverseTBN);
-    }
+    //for (uint i = 0; i < ActiveLightCount; i++)
+    //{
+	   // PointLights[i].LightVertexPosition = VectorToTangentSpace(PointLights[i].Position - output.WorldPosition, inverseTBN);
+    //}
 
     output.TangentEye = VectorToTangentSpace(CameraPosition - output.WorldPosition, inverseTBN);
     output.WorldNormal = n;

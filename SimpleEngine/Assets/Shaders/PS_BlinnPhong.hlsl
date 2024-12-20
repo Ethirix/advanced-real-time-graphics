@@ -21,13 +21,13 @@ float4 PS_Main(VS_BaseOut input) : SV_TARGET
                                                    HasSpecularTexture, T2_NormalTexture, HasNormalTexture);
     Material material = CreateMaterial(DiffuseMaterial, AmbientMaterial, SpecularMaterial, SpecularExponent);
 
-    //  TODO: Convert Pixel Shader to use Tangent Space lighting.
-    //      Potentially pass a Boolean to the CalculatePointLight to determine what Space to use for calculations.
+    //TODO: Convert Pixel Shader to use Tangent Space lighting.
+    //Potentially pass a Boolean to the CalculatePointLight to determine what Space to use for calculations.
     for (uint i = 0; i < ActiveLightCount; i++)
     {
         LightingOut light = CalculatePointLight(
-	        PointLights[i], 
-	        input.WorldPosition, 
+	        PointLights[i],
+	        input.WorldPosition,
 	        input.WorldNormal,
 	        input.TextureCoordinates,
 			cameraDirection,

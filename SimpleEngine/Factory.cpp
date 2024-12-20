@@ -277,7 +277,7 @@ void Factory::CalculateTangents(SHARED_PTR_MESH& mesh, bool recalculateNormals)
 		Vector3 bitangent = bitangents[i];
 
 		Vector3 normalisedTangent = (tangent - normal * normal.Dot(tangent)).Normalise();
-		Vector3 normalisedBitangent = (tangent - normal * normal.Dot(tangent)).Normalise();
+		Vector3 normalisedBitangent = (bitangent - normal * normal.Dot(bitangent)).Normalise();
 
 		float handedness = Vector3::Cross(normal, tangent).Dot(bitangent) > 0 ? 1.0f : -1.0f;
 

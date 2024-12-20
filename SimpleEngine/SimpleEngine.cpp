@@ -512,6 +512,7 @@ HRESULT SimpleEngine::InitialiseBuffers()
 	_context->PSSetConstantBuffers(2, 1, Buffers::CBTextures.Buffer.GetAddressOf());
 #pragma endregion
 
+	//TODO: Convert Lighting to an SRV/RWStructuredBuffer
 #pragma region CBLighting
 	bufferDescription.ByteWidth = sizeof(CBLighting);
 	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBLighting.Buffer.GetAddressOf());

@@ -343,7 +343,7 @@
           "TexturePaths": {
             "Diffuse": {
               "Path": "Assets/Textures/Crate/Crate_DIFFUSE.dds",
-              "Slot": 2
+              "Slot": 0
             },
             "Specular": {
               "Path": "Assets/Textures/Crate/Crate_SPECULAR.dds",
@@ -355,7 +355,7 @@
             },
             "Normal": {
               "Path": "Assets/Textures/Crate/Crate_NORMAL.dds",
-              "Slot": 0
+              "Slot": 2
             }
           },
           "Stencil": ""
