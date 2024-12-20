@@ -113,8 +113,7 @@ HRESULT SimpleEngine::CreateD3DDevice()
 	HRESULT hr = S_OK;
 
 	D3D_FEATURE_LEVEL featureLevels[] = {
-			D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0,
-			D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0
+			D3D_FEATURE_LEVEL_11_1
 	};
 
 	ID3D11Device* baseDevice;
@@ -512,7 +511,6 @@ HRESULT SimpleEngine::InitialiseBuffers()
 	_context->PSSetConstantBuffers(2, 1, Buffers::CBTextures.Buffer.GetAddressOf());
 #pragma endregion
 
-	//TODO: Convert Lighting to an SRV/RWStructuredBuffer
 #pragma region CBLighting
 	bufferDescription.ByteWidth = sizeof(CBLighting);
 	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBLighting.Buffer.GetAddressOf());
@@ -520,6 +518,26 @@ HRESULT SimpleEngine::InitialiseBuffers()
 
 	_context->VSSetConstantBuffers(3, 1, Buffers::CBLighting.Buffer.GetAddressOf());
 	_context->PSSetConstantBuffers(3, 1, Buffers::CBLighting.Buffer.GetAddressOf());
+#pragma endregion
+
+#pragma region SRVLighting
+	bufferDescription.ByteWidth = sizeof(LightData) * MAX_LIGHTS;
+	bufferDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	bufferDescription.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	bufferDescription.StructureByteStride = sizeof(LightData);
+
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVLighting.Buffer.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvDesc.Buffer.NumElements = MAX_LIGHTS;
+
+	hr = _device->CreateShaderResourceView(Buffers::SRVLighting.Buffer.Get(), &srvDesc, Buffers::SRVLighting.Resource.GetAddressOf());
+
+	_context->VSSetShaderResources(8, 1, Buffers::SRVLighting.Resource.GetAddressOf());
+	_context->PSSetShaderResources(8, 1, Buffers::SRVLighting.Resource.GetAddressOf());
 #pragma endregion
 
 	return hr;
@@ -661,10 +679,11 @@ void SimpleEngine::Update()
 	}
 
 	auto lightComponents = SceneGraph::GetComponentsFromObjects<LightComponent>();
-	Buffers::CBLighting.BufferData.ActiveLightCount = lightComponents.size();
+	Buffers::CBLighting.BufferData.TotalLights = lightComponents.size();
+	Buffers::CBLighting.BufferData.MaxLights = MAX_LIGHTS;
 	for (int i = 0; i < lightComponents.size() && i < MAX_LIGHTS; i++)
 	{
-		Buffers::CBLighting.BufferData.PointLights[i] = lightComponents[i].lock()->Light;
+		Buffers::SRVLighting.BufferData.PointLights[i] = lightComponents[i].lock()->Light;
 	}
 
 	//BIG HACK NEED TO GET A CONCRETE WAY TO GET THE SKYBOX!

@@ -3,10 +3,13 @@
 #include "Functions/TangentSpaceConverter.hlsli"
 #include "Structs/VS_BaseIn.hlsli"
 #include "Structs/VS_BaseOut.hlsli"
+#include "Structured Resources/T8_Lighting.hlsli"
 
 VS_BaseOut VS_Main(VS_BaseIn input)
 {
     VS_BaseOut output = (VS_BaseOut) 0;
+
+    //http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/
 
     float4 pos4 = float4(input.Position, 1.0f);
     output.Position = mul(pos4, World);
@@ -20,14 +23,16 @@ VS_BaseOut VS_Main(VS_BaseIn input)
     float4 t = normalize(mul(input.Tangent, World));
     float4 b = normalize(mul(input.Bitangent, World));
     float4 n = normalize(mul(float4(input.Normal, 0), World));
-    float4x4 inverseTBN = transpose(float4x4(t, b, n, float4(0, 0, 0, 1)));
+    float3x3 inverseTBN = transpose(float3x3(t.xyz, b.xyz, n.xyz));
+    output.InverseTBN = inverseTBN;
 
-    //for (uint i = 0; i < ActiveLightCount; i++)
+    //output.LightTangentPosition = VectorToTangentSpace(T8_LightData[0].Position - output.WorldPosition, inverseTBN);
+    //for (uint i = 0; i < TotalLights; i++)
     //{
-	   // PointLights[i].LightVertexPosition = VectorToTangentSpace(PointLights[i].Position - output.WorldPosition, inverseTBN);
+    //    output.LightTangentPositions[i] = VectorToTangentSpace(T8_LightData[i].Position - output.WorldPosition, inverseTBN);
     //}
 
-    output.TangentEye = VectorToTangentSpace(CameraPosition - output.WorldPosition, inverseTBN);
+    output.TangentEye = float4(VectorToTangentSpace(CameraPosition - output.WorldPosition, inverseTBN), 0);
     output.WorldNormal = n;
 
     return output;

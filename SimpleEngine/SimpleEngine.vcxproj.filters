@@ -372,6 +372,12 @@
     <ClInclude Include="VertexIndices.h">
       <Filter>Header Files\Structs</Filter>
     </ClInclude>
+    <ClInclude Include="SRVBufferPair.h">
+      <Filter>Header Files\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="SRVLighting.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
@@ -465,9 +471,14 @@
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
     <None Include="packages.config" />
-    <None Include="Assets\Shaders\Structs\VS_BaseIn.hlsli" />
     <None Include="Assets\Shaders\Functions\TangentSpaceConverter.hlsli">
       <Filter>Resource Files\Shaders\Functions</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\VS_BaseIn.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T8_Lighting.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

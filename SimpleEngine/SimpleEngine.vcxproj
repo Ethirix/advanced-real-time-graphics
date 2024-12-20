@@ -233,8 +233,10 @@
     <ClInclude Include="ShaderType.h" />
     <ClInclude Include="SimpleEngine.h" />
     <ClInclude Include="SphereColliderComponent.h" />
+    <ClInclude Include="SRVLighting.h" />
     <ClInclude Include="Storage.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="SRVBufferPair.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformComponentConfig.h" />
@@ -261,6 +263,7 @@
     <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T8_Lighting.hlsli" />
     <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
       <FileType>Document</FileType>
     </None>

@@ -7,11 +7,12 @@
 #include "Structured Resources/T0_DiffuseTexture.hlsli"
 #include "Structured Resources/T1_SpecularTexture.hlsli"
 #include "Structured Resources/T2_NormalTexture.hlsli"
+#include "Structured Resources/T8_Lighting.hlsli"
 
 float4 PS_Main(VS_BaseOut input) : SV_TARGET
 {
     input.WorldNormal = normalize(input.WorldNormal);
-    float3 cameraDirection = normalize(CameraPosition - input.WorldPosition);
+    float4 cameraDirection = normalize(CameraPosition - input.WorldPosition);
 
     float4 ambient = float4(0, 0, 0, 0);
     float4 diffuse = float4(0, 0, 0, 0);
@@ -23,14 +24,16 @@ float4 PS_Main(VS_BaseOut input) : SV_TARGET
 
     //TODO: Convert Pixel Shader to use Tangent Space lighting.
     //Potentially pass a Boolean to the CalculatePointLight to determine what Space to use for calculations.
-    for (uint i = 0; i < ActiveLightCount; i++)
+    for (uint i = 0; i < TotalLights; i++)
     {
         LightingOut light = CalculatePointLight(
-	        PointLights[i],
+	        T8_LightData[i],
 	        input.WorldPosition,
 	        input.WorldNormal,
 	        input.TextureCoordinates,
+			input.InverseTBN,
 			cameraDirection,
+			input.TangentEye,
 			textures,
 			material
         );

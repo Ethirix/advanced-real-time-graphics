@@ -14,6 +14,9 @@ struct VS_BaseOut
     float2 TextureCoordinates : TEXCOORD;
 
     float4 TangentEye : TANGENTEYE;
+
+    float3x3 InverseTBN : TBN;
+	//float4 LightTangentPosition : LIGHTTANGENT;
 };
 
 #endif

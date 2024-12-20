@@ -155,7 +155,7 @@
             },
             "Normal": {
               "Path": "Assets/Textures/Crate/Crate_NORMAL.dds",
-              "Slot": -1
+              "Slot": 2
             }
           },
           "Stencil": ""

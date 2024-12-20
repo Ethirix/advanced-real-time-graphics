@@ -3,7 +3,7 @@
 
 struct CBLighting
 {
-	LightData PointLights[32];
-	unsigned ActiveLightCount;
-	DirectX::XMFLOAT3 ___CB3Pad0;
+	unsigned MaxLights;
+	unsigned TotalLights;
+	DirectX::XMFLOAT2 ___CB3Pad0;
 };
