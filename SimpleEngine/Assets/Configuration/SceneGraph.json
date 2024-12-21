@@ -335,18 +335,18 @@
       "Components": [
         {
           "Type": "MeshComponent",
-          "MeshPath": "Assets/Meshes/cube2.obj",
-          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "MeshPath": "Assets/Meshes/artgcube.obj",
+          "MaterialPath": "Assets/Materials/artgcube.mtl",
           "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
           "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
             "Diffuse": {
-              "Path": "Assets/Textures/Crate/Crate_DIFFUSE.dds",
+              "Path": "Assets/Textures/Stone/Stone_DIFFUSE.dds",
               "Slot": 0
             },
             "Specular": {
-              "Path": "Assets/Textures/Crate/Crate_SPECULAR.dds",
+              "Path": "",
               "Slot": 1
             },
             "Displacement": {
@@ -354,7 +354,7 @@
               "Slot": -1
             },
             "Normal": {
-              "Path": "Assets/Textures/Crate/Crate_NORMAL.dds",
+              "Path": "Assets/Textures/Stone/Stone_NORMAL.dds",
               "Slot": 2
             }
           },

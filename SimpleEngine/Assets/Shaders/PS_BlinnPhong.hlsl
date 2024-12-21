@@ -12,7 +12,7 @@
 float4 PS_Main(VS_BaseOut input) : SV_TARGET
 {
     input.WorldNormal = normalize(input.WorldNormal);
-    float4 cameraDirection = normalize(CameraPosition - input.WorldPosition);
+    float3 cameraDirection = normalize(CameraPosition.xyz - input.WorldPosition);
 
     float4 ambient = float4(0, 0, 0, 0);
     float4 diffuse = float4(0, 0, 0, 0);
@@ -29,9 +29,11 @@ float4 PS_Main(VS_BaseOut input) : SV_TARGET
         LightingOut light = CalculatePointLight(
 	        T8_LightData[i],
 	        input.WorldPosition,
-	        input.WorldNormal,
+	        input.Normal,
 	        input.TextureCoordinates,
-			input.InverseTBN,
+			input.Tangent,
+            input.Bitangent,
+            input.WorldNormal,
 			cameraDirection,
 			input.TangentEye,
 			textures,

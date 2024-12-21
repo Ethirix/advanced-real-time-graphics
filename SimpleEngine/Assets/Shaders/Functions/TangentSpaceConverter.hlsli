@@ -3,7 +3,7 @@
 
 float3 VectorToTangentSpace(float3 input, float3x3 invTBN)
 {
-    return normalize(mul(invTBN, input));
+    return normalize(mul(input, invTBN));
 }
 
 #endif
