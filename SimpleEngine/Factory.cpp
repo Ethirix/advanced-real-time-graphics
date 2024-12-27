@@ -246,19 +246,22 @@ void Factory::CalculateTangents(SHARED_PTR_MESH& mesh, bool recalculateNormals)
 
 		float result = 1.0f / (uv0.x * uv1.y - uv0.y * uv1.x);
 
-		DirectX::XMFLOAT3 tangent
+		Vector3 tangent
 		{
 			(edge0.x * uv1.y - edge1.x * uv0.y) * result,
 			(edge0.y * uv1.y - edge1.y * uv0.y) * result,
 			(edge0.z * uv1.y - edge1.z * uv0.y) * result
 		};
 
-		DirectX::XMFLOAT3 biTangent
+		Vector3 biTangent =
 		{
 			(edge0.x * uv1.x - edge1.x * uv0.x) * result,
 			(edge0.y * uv1.x - edge1.y * uv0.x) * result,
 			(edge0.z * uv1.x - edge1.z * uv0.x) * result
 		};
+
+		tangent = tangent.Normalise();
+		biTangent = biTangent.Normalise();
 
 		//Additive to get an 'average' as vertices are deduplicated
 		tangents[index0] += tangent;

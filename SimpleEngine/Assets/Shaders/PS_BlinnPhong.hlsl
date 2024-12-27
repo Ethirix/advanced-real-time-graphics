@@ -12,7 +12,7 @@
 float4 PS_Main(VS_BaseOut input) : SV_TARGET
 {
     input.WorldNormal = normalize(input.WorldNormal);
-    float3 cameraDirection = normalize(CameraPosition.xyz - input.WorldPosition);
+    float3 eyeDirection = normalize(Eye.xyz - input.WorldPosition);
 
     float4 ambient = float4(0, 0, 0, 0);
     float4 diffuse = float4(0, 0, 0, 0);
@@ -31,11 +31,8 @@ float4 PS_Main(VS_BaseOut input) : SV_TARGET
 	        input.WorldPosition,
 	        input.Normal,
 	        input.TextureCoordinates,
-			input.Tangent,
-            input.Bitangent,
             input.WorldNormal,
-			cameraDirection,
-			input.TangentEye,
+			eyeDirection,
 			textures,
 			material
         );

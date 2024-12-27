@@ -9,13 +9,9 @@ struct VS_BaseOut
     float3 WorldPosition : POSITION;
 
     float3 Normal : NORMAL;
-    float3 Tangent : TANGENT;
-    float3 Bitangent : BITANGENT;
     float3 WorldNormal : WORLDNORMAL;
 
     float2 TextureCoordinates : TEXCOORD;
-    
-    float3 TangentEye : TANGENTEYE;
 };
 
 #endif
