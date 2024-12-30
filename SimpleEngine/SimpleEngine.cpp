@@ -15,7 +15,8 @@
 #include "GlobalDefines.h"
 #include "Helpers.h"
 #include "imgui.h"
-#include "LightComponent.h"
+#include "LightManager.h"
+#include "PointLightComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
 
@@ -520,24 +521,65 @@ HRESULT SimpleEngine::InitialiseBuffers()
 	_context->PSSetConstantBuffers(3, 1, Buffers::CBLighting.Buffer.GetAddressOf());
 #pragma endregion
 
-#pragma region SRVLighting
-	bufferDescription.ByteWidth = sizeof(LightData) * MAX_LIGHTS;
+#pragma region SRVDirectionalLights
+	bufferDescription.ByteWidth = sizeof(DirectionalLightData) * MAX_DIRECTIONAL_LIGHTS;
 	bufferDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	bufferDescription.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	bufferDescription.StructureByteStride = sizeof(LightData);
+	bufferDescription.StructureByteStride = sizeof(DirectionalLightData);
 
-	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVLighting.Buffer.GetAddressOf());
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVDirectionalLights.Buffer.GetAddressOf());
 	if (FAILED(hr)) return hr;
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-	srvDesc.Buffer.NumElements = MAX_LIGHTS;
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDirectionalLightDesc{};
+	srvDirectionalLightDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDirectionalLightDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvDirectionalLightDesc.Buffer.NumElements = MAX_DIRECTIONAL_LIGHTS;
 
-	hr = _device->CreateShaderResourceView(Buffers::SRVLighting.Buffer.Get(), &srvDesc, Buffers::SRVLighting.Resource.GetAddressOf());
+	hr = _device->CreateShaderResourceView(Buffers::SRVDirectionalLights.Buffer.Get(), &srvDirectionalLightDesc, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
 
-	_context->VSSetShaderResources(8, 1, Buffers::SRVLighting.Resource.GetAddressOf());
-	_context->PSSetShaderResources(8, 1, Buffers::SRVLighting.Resource.GetAddressOf());
+	_context->VSSetShaderResources(8, 1, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
+	_context->PSSetShaderResources(8, 1, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
+#pragma endregion
+
+
+#pragma region SRVPointLights
+	bufferDescription.ByteWidth = sizeof(PointLightData) * MAX_POINT_LIGHTS;
+	bufferDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	bufferDescription.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	bufferDescription.StructureByteStride = sizeof(PointLightData);
+
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVPointLights.Buffer.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvPointLightDesc{};
+	srvPointLightDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvPointLightDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvPointLightDesc.Buffer.NumElements = MAX_POINT_LIGHTS;
+
+	hr = _device->CreateShaderResourceView(Buffers::SRVPointLights.Buffer.Get(), &srvPointLightDesc, Buffers::SRVPointLights.Resource.GetAddressOf());
+
+	_context->VSSetShaderResources(9, 1, Buffers::SRVPointLights.Resource.GetAddressOf());
+	_context->PSSetShaderResources(9, 1, Buffers::SRVPointLights.Resource.GetAddressOf());
+#pragma endregion
+
+#pragma region SRVSpotLights
+	bufferDescription.ByteWidth = sizeof(SpotLightData) * MAX_SPOT_LIGHTS;
+	bufferDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	bufferDescription.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	bufferDescription.StructureByteStride = sizeof(SpotLightData);
+
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVSpotLights.Buffer.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvSpotLightDesc{};
+	srvSpotLightDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvSpotLightDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvSpotLightDesc.Buffer.NumElements = MAX_SPOT_LIGHTS;
+
+	hr = _device->CreateShaderResourceView(Buffers::SRVSpotLights.Buffer.Get(), &srvSpotLightDesc, Buffers::SRVSpotLights.Resource.GetAddressOf());
+
+	_context->VSSetShaderResources(10, 1, Buffers::SRVSpotLights.Resource.GetAddressOf());
+	_context->PSSetShaderResources(10, 1, Buffers::SRVSpotLights.Resource.GetAddressOf());
 #pragma endregion
 
 	return hr;
@@ -678,17 +720,7 @@ void SimpleEngine::Update()
 			_camera = cameraComponent.value();
 	}
 
-	auto lightComponents = SceneGraph::GetComponentsFromObjects<LightComponent>();
-	Buffers::CBLighting.BufferData.TotalLights = lightComponents.size();
-	Buffers::CBLighting.BufferData.MaxLights = MAX_LIGHTS;
-	for (int i = 0; i < lightComponents.size() && i < MAX_LIGHTS; i++)
-	{
-		Buffers::SRVLighting.BufferData.PointLights[i] = lightComponents[i].lock()->Light;
-	}
-
-	//BIG HACK NEED TO GET A CONCRETE WAY TO GET THE SKYBOX!
-	if (auto skybox = SceneGraph::GetObjectAtPosition(4); !skybox.expired())
-		skybox.lock()->Transform->SetPosition(_camera.lock()->GameObject.lock()->Transform->GetPosition());
+	LightManager::UpdateLights(_context);
 
 	SceneGraph::Update(deltaTime);
 }

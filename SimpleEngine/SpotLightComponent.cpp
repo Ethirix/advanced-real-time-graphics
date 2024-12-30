@@ -1,0 +1,19 @@
+#include "SpotLightComponent.h"
+
+SpotLightComponent::SpotLightComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json)
+	: LightComponent(owningGameObject)
+{
+	nlohmann::json diffuseColour = json["DiffuseColour"];
+	nlohmann::json specularColour = json["SpecularColour"];
+	nlohmann::json ambientColour = json["AmbientColour"];
+	nlohmann::json direction = json["LightDirection"];
+
+	Direction  = DirectX::XMFLOAT3(direction["X"], direction["Y"], direction["Z"]);
+	InnerAngle = std::clamp(static_cast<float>(json["InnerAngle"]), 0.0f, 90.0f);
+	OuterAngle = std::clamp(static_cast<float>(json["OuterAngle"]), 0.0f, 90.0f);
+	DiffuseColor = DirectX::XMFLOAT3(diffuseColour["R"], diffuseColour["G"], diffuseColour["B"]);
+	DiffusePower = json["DiffusePower"];
+	SpecularColor = DirectX::XMFLOAT3(specularColour["R"], specularColour["G"], specularColour["B"]);
+	SpecularPower = json["SpecularPower"];
+	AmbientColor = DirectX::XMFLOAT3(ambientColour["R"], ambientColour["G"], ambientColour["B"]);
+}

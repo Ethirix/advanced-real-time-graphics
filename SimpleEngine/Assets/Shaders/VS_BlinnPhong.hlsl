@@ -19,7 +19,5 @@ VS_BaseOut VS_Main(VS_BaseIn input)
     output.TextureCoordinates = input.TextureCoordinates;
 	output.WorldNormal = normalize(mul(float4(input.Normal, 0), World));
 
-    
-
     return output;
 }

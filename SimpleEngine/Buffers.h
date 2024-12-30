@@ -4,8 +4,10 @@
 #include "CBMaterial.h"
 #include "CBObjectCameraData.h"
 #include "CBTextures.h"
-#include "SRVLighting.h"
 #include "SRVBufferPair.h"
+#include "SRVDirectionalLights.h"
+#include "SRVPointLights.h"
+#include "SRVSpotLights.h"
 
 struct Buffers
 {
@@ -14,5 +16,7 @@ struct Buffers
 	inline static BufferPair<CBTextures> CBTextures = {}; //Constant Buffer Slot 2
 	inline static BufferPair<CBLighting> CBLighting = {}; //Constant Buffer Slot 3
 
-	inline static SRVBufferPair<SRVLighting> SRVLighting = {}; //Texture Buffer Slot 8
+	inline static SRVBufferPair<SRVDirectionalLights> SRVDirectionalLights = {}; //Texture Buffer Slot 8
+	inline static SRVBufferPair<SRVPointLights> SRVPointLights = {}; //Texture Buffer Slot 9
+	inline static SRVBufferPair<SRVSpotLights> SRVSpotLights = {}; //Texture Buffer Slot 10
 };

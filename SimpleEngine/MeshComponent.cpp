@@ -91,8 +91,7 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 	if (depthStencilState != DepthStencil)
 		context->OMSetDepthStencilState(DepthStencil.Get(), 0);
 
-
-	D3D11_MAPPED_SUBRESOURCE objectCameraData, materialData, texturesData, lightingData, lightingSRVData;
+	D3D11_MAPPED_SUBRESOURCE objectCameraData, materialData, texturesData;
 	Buffers::CBObjectCameraData.BufferData.World = XMMatrixTranspose(
 		XMLoadFloat4x4(&GameObject.lock()->Transform->WorldMatrix));
 	context->Map(Buffers::CBObjectCameraData.Buffer.Get(),
@@ -108,14 +107,6 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 	context->Map(Buffers::CBTextures.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &texturesData);
 	memcpy(texturesData.pData, &Buffers::CBTextures.BufferData, sizeof(Buffers::CBTextures.BufferData));
 	context->Unmap(Buffers::CBTextures.Buffer.Get(), 0);
-
-	context->Map(Buffers::CBLighting.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &lightingData);
-	memcpy(lightingData.pData, &Buffers::CBLighting.BufferData, sizeof(Buffers::CBLighting.BufferData));
-	context->Unmap(Buffers::CBLighting.Buffer.Get(), 0);
-
-	context->Map(Buffers::SRVLighting.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &lightingSRVData);
-	memcpy(lightingSRVData.pData, &Buffers::SRVLighting.BufferData, sizeof(Buffers::SRVLighting.BufferData));
-	context->Unmap(Buffers::SRVLighting.Buffer.Get(), 0);
 
 	context->DrawIndexed(Mesh->VertexIndices.Length, 0, 0);
 }

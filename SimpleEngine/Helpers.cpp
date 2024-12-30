@@ -19,16 +19,17 @@ void Helpers::UpdateTitleBar(double deltaTime, const std::weak_ptr<GameObject>& 
 	static double time = 0;
 	time += deltaTime;
 
-	if (time >= 0.25)
+	if (constexpr double updateTime = 0.1; time >= updateTime)
 	{
-		std::string title = "SimpleEngine";// - FPS: ";
+		std::string title = "SimpleEngine";
+		// - FPS: ";
 	    //title.append(std::to_string(static_cast<int>(1 / deltaTime)));
 
 		if (!obj.expired())
 		{
 			title.append(" - Selected: [" + obj.lock()->Name + "]");
 
-			auto pos = obj.lock()->Transform->GetPosition();
+			auto pos = obj.lock()->Transform->GetWorldPosition();
 			title.append(" Pos: " 
 				+ std::to_string(pos.x) + " " 
 				+ std::to_string(pos.y) + " " 
@@ -59,6 +60,6 @@ void Helpers::UpdateTitleBar(double deltaTime, const std::weak_ptr<GameObject>& 
 	    SetWindowText(hwnd, wTitle);
 	    delete[] wTitle;
 
-		time = 0;
+		time -= updateTime;
 	}
 }

@@ -37,7 +37,56 @@
           "RotationSpeed": 2.0
         }
       ],
-      "Children": []
+      "Children": [
+        {
+          "Name": "Skybox",
+          "Position": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "Scale": {
+            "X": 1,
+            "Y": 1,
+            "Z": 1
+          },
+          "Rotation": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "Components": [
+            {
+              "Type": "MeshComponent",
+              "MeshPath": "Assets/Meshes/InvertedCube2.obj",
+              "MaterialPath": "",
+              "VertexShaderPath": "Assets/Shaders/VS_Skybox.hlsl",
+              "PixelShaderPath": "Assets/Shaders/PS_Skybox.hlsl",
+              "MeshType": 1,
+              "TexturePaths": {
+                "Diffuse": {
+                  "Path": "Assets/Textures/Skybox/Skybox_DIFFUSE.dds",
+                  "Slot": 64
+                },
+                "Specular": {
+                  "Path": "",
+                  "Slot": -1
+                },
+                "Displacement": {
+                  "Path": "",
+                  "Slot": -1
+                },
+                "Normal": {
+                  "Path": "",
+                  "Slot": -1
+                }
+              },
+              "Stencil": "DSSkybox"
+            }
+          ],
+          "Children": []
+        }
+      ]
     },
     {
       "Name": "Suzanne",
@@ -268,54 +317,6 @@
       "Children": []
     },
     {
-      "Name": "Skybox",
-      "Position": {
-        "X": 0,
-        "Y": 0,
-        "Z": 0
-      },
-      "Scale": {
-        "X": 1,
-        "Y": 1,
-        "Z": 1
-      },
-      "Rotation": {
-        "X": 0,
-        "Y": 0,
-        "Z": 0
-      },
-      "Components": [
-        {
-          "Type": "MeshComponent",
-          "MeshPath": "Assets/Meshes/InvertedCube2.obj",
-          "MaterialPath": "",
-          "VertexShaderPath": "Assets/Shaders/VS_Skybox.hlsl",
-          "PixelShaderPath": "Assets/Shaders/PS_Skybox.hlsl",
-          "MeshType": 1,
-          "TexturePaths": {
-            "Diffuse": {
-              "Path": "Assets/Textures/Skybox/Skybox_DIFFUSE.dds",
-              "Slot": 64
-            },
-            "Specular": {
-              "Path": "",
-              "Slot": -1
-            },
-            "Displacement": {
-              "Path": "",
-              "Slot": -1
-            },
-            "Normal": {
-              "Path": "",
-              "Slot": -1
-            }
-          },
-          "Stencil": "DSSkybox"
-        }
-      ],
-      "Children": []
-    },
-    {
       "Name": "NormalMappingTest",
       "Position": {
         "X": -15,
@@ -335,8 +336,8 @@
       "Components": [
         {
           "Type": "MeshComponent",
-          "MeshPath": "Assets/Meshes/artgcube.obj",
-          "MaterialPath": "Assets/Materials/artgcube.mtl",
+          "MeshPath": "Assets/Meshes/cube2.obj",
+          "MaterialPath": "Assets/Materials/cube2.mtl",
           "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
           "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
@@ -452,9 +453,9 @@
     {
       "Name": "GlobalLight",
       "Position": {
-        "X": -20,
-        "Y": -20,
-        "Z": -20
+        "X": 0,
+        "Y": 0,
+        "Z": 0
       },
       "Scale": {
         "X": 1,
@@ -468,7 +469,12 @@
       },
       "Components": [
         {
-          "Type": "LightComponent",
+          "Type": "DirectionalLightComponent",
+          "LightDirection": {
+            "X": -20,
+            "Y": -20,
+            "Z": -20
+          },
           "DiffuseColour": {
             "R": 0.9,
             "G": 0.80,
@@ -485,11 +491,7 @@
             "R": 0.50,
             "G": 0.4,
             "B": 0.55
-          },
-          "ConstantAttenuation": 1,
-          "LinearAttenuation": 0,
-          "QuadraticAttenuation": 0,
-          "LightRadius": 0
+          }
         }
       ],
       "Children": []
@@ -513,7 +515,7 @@
       },
       "Components": [
         {
-          "Type": "LightComponent",
+          "Type": "PointLightComponent",
           "DiffuseColour": {
             "R": 0,
             "G": 1,
@@ -601,7 +603,7 @@
       },
       "Components": [
         {
-          "Type": "LightComponent",
+          "Type": "PointLightComponent",
           "DiffuseColour": {
             "R": 1,
             "G": 0,
@@ -673,7 +675,7 @@
       },
       "Components": [
         {
-          "Type": "LightComponent",
+          "Type": "PointLightComponent",
           "DiffuseColour": {
             "R": 1,
             "G": 0.45,
@@ -727,7 +729,7 @@
       "Children": []
     },
     {
-      "Name": "PointLightCyan",
+      "Name": "SpotLightCyan",
       "Position": {
         "X": 100,
         "Y": 10,
@@ -745,7 +747,14 @@
       },
       "Components": [
         {
-          "Type": "LightComponent",
+          "Type": "SpotLightComponent",
+          "LightDirection": {
+            "X": 20,
+            "Y": 20,
+            "Z": 20
+          },
+          "InnerAngle": 0.0,
+          "OuterAngle": 90.0,
           "DiffuseColour": {
             "R": 0,
             "G": 1,
@@ -762,11 +771,7 @@
             "R": 0,
             "G": 0,
             "B": 0
-          },
-          "ConstantAttenuation": 1,
-          "LinearAttenuation": 0.1,
-          "QuadraticAttenuation": 0.1,
-          "LightRadius": 128
+          }
         },
         {
           "Type": "MeshComponent",

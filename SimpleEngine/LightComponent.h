@@ -1,18 +1,20 @@
 #pragma once
-#include <nlohmann/json.hpp>
+#include <DirectXMath.h>
 
 #include "ComponentBase.h"
-#include "LightData.h"
+#include "GameObject.h"
 
-class LightComponent :
-    public ComponentBase
+class LightComponent : public ComponentBase
 {
+protected:
+	explicit LightComponent(WP_GAMEOBJECT owningGameObject) : ComponentBase(owningGameObject) {}
+
 public:
-	explicit LightComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json);
+	virtual ~LightComponent() = 0;
 
-	void Update(double deltaTime) override;
-	void FixedUpdate(double fixedDeltaTime) override {}
-	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override {}
-
-	LightData Light;
+	DirectX::XMFLOAT3 DiffuseColor	= {};
+	float DiffusePower				= {};
+	DirectX::XMFLOAT3 SpecularColor = {};
+	float SpecularPower				= {};
+	DirectX::XMFLOAT3 AmbientColor	= {};
 };

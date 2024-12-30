@@ -3,11 +3,13 @@
 
 #include "AABBColliderComponent.h"
 #include "CameraComponent.h"
-#include "LightComponent.h"
+#include "DirectionalLightComponent.h"
+#include "PointLightComponent.h"
 #include "MeshComponent.h"
 #include "PhysicsComponent.h"
 #include "PlaneColliderComponent.h"
 #include "SphereColliderComponent.h"
+#include "SpotLightComponent.h"
 
 void SceneGraph::Initialize(const std::string& path, const Microsoft::WRL::ComPtr<ID3D11Device>& device)
 {
@@ -68,9 +70,23 @@ std::shared_ptr<GameObject> SceneGraph::RunInitialisationRecursive(
 
 			obj->AddComponent(cameraComponent);
 		}
-		else if (type == "LightComponent")
+		else if (type == "DirectionalLightComponent")
 		{
-			auto lightComponent = std::make_shared<LightComponent>(
+			auto lightComponent = std::make_shared<DirectionalLightComponent>(
+				obj, component);
+
+			obj->AddComponent(lightComponent);
+		}
+		else if (type == "PointLightComponent")
+		{
+			auto lightComponent = std::make_shared<PointLightComponent>(
+				obj, component);
+
+			obj->AddComponent(lightComponent);
+		}
+		else if (type == "SpotLightComponent")
+		{
+			auto lightComponent = std::make_shared<SpotLightComponent>(
 				obj, component);
 
 			obj->AddComponent(lightComponent);
@@ -147,7 +163,7 @@ std::list<CollisionResponse> SceneGraph::CheckColliders(const std::shared_ptr<Co
 	case COLLIDER_SPHERE:
 		{
 			std::shared_ptr<SphereColliderComponent> sphere =
-			std::dynamic_pointer_cast<SphereColliderComponent>(collider);
+				std::dynamic_pointer_cast<SphereColliderComponent>(collider);
 		
 			for (std::weak_ptr<ColliderComponent> coll: GetComponentsFromObjects<ColliderComponent>())
 			{
