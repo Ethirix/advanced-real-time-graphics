@@ -21,6 +21,11 @@ struct SpotLightData
 		SpecularPower = spotLight->SpecularPower;
 		AmbientColor = spotLight->AmbientColor;
 
+		ConstantAttenuation = spotLight->ConstantAttenuation;
+		LinearAttenuation = spotLight->LinearAttenuation;
+		QuadraticAttenuation = spotLight->QuadraticAttenuation;
+		LightRadius = spotLight->LightRadius;
+
 		InnerAngle = spotLight->InnerAngle;
 		OuterAngle = spotLight->OuterAngle;
 		Direction = spotLight->Direction;
@@ -32,6 +37,10 @@ struct SpotLightData
 	DirectX::XMFLOAT3 SpecularColor;
 	float SpecularPower;
 	DirectX::XMFLOAT3 AmbientColor;
+	float ConstantAttenuation;
+	float LinearAttenuation;
+	float QuadraticAttenuation;
+	float LightRadius;
 
 	float InnerAngle;
 	float OuterAngle;

@@ -1,7 +1,10 @@
 #include "Buffers/CB1_Material.hlsli"
 #include "Buffers/CB2_Textures.hlsli"
+
 #include "Functions/Lighting.hlsli"
+
 #include "Structs/VS_BaseOut.hlsli"
+
 #include "Structured Resources/T0_DiffuseTexture.hlsli"
 #include "Structured Resources/T1_SpecularTexture.hlsli"
 #include "Structured Resources/T2_NormalTexture.hlsli"

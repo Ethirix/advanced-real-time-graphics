@@ -521,21 +521,21 @@
             "G": 1,
             "B": 0
           },
-          "DiffusePower": 5,
+          "DiffusePower": 32,
           "SpecularColour": {
             "R": 0,
             "G": 1,
             "B": 0
           },
-          "SpecularPower": 4,
+          "SpecularPower": 32,
           "AmbientColour": {
             "R": 0,
             "G": 0,
             "B": 0
           },
           "ConstantAttenuation": 1,
-          "LinearAttenuation": 0,
-          "QuadraticAttenuation": 0.1,
+          "LinearAttenuation": 0.1,
+          "QuadraticAttenuation": 0.00001,
           "LightRadius": 32
         },
         {
@@ -609,21 +609,21 @@
             "G": 0,
             "B": 0
           },
-          "DiffusePower": 4,
+          "DiffusePower": 128,
           "SpecularColour": {
             "R": 1,
             "G": 0,
             "B": 0
           },
-          "SpecularPower": 3.2,
+          "SpecularPower": 128,
           "AmbientColour": {
             "R": 0,
             "G": 0,
             "B": 0
           },
           "ConstantAttenuation": 1,
-          "LinearAttenuation": 0,
-          "QuadraticAttenuation": 0.05,
+          "LinearAttenuation": 0.1,
+          "QuadraticAttenuation": 0.00001,
           "LightRadius": 128
         },
         {
@@ -681,21 +681,21 @@
             "G": 0.45,
             "B": 0
           },
-          "DiffusePower": 2,
+          "DiffusePower": 64,
           "SpecularColour": {
             "R": 1,
             "G": 0.45,
             "B": 0
           },
-          "SpecularPower": 1.6,
+          "SpecularPower": 64,
           "AmbientColour": {
             "R": 0,
             "G": 0,
             "B": 0
           },
           "ConstantAttenuation": 1,
-          "LinearAttenuation": 0,
-          "QuadraticAttenuation": 0.1,
+          "LinearAttenuation": 0.1,
+          "QuadraticAttenuation": 0.00001,
           "LightRadius": 128
         },
         {
@@ -732,7 +732,7 @@
       "Name": "SpotLightCyan",
       "Position": {
         "X": 100,
-        "Y": 10,
+        "Y": 5,
         "Z": 0
       },
       "Scale": {
@@ -749,29 +749,33 @@
         {
           "Type": "SpotLightComponent",
           "LightDirection": {
-            "X": 20,
-            "Y": 20,
-            "Z": 20
+            "X": -2,
+            "Y": -1,
+            "Z": 0
           },
-          "InnerAngle": 0.0,
-          "OuterAngle": 90.0,
+          "InnerAngle": 10,
+          "OuterAngle": 45,
           "DiffuseColour": {
             "R": 0,
             "G": 1,
             "B": 1
           },
-          "DiffusePower": 5,
+          "DiffusePower": 64,
           "SpecularColour": {
             "R": 0,
             "G": 1,
             "B": 1
           },
-          "SpecularPower": 4,
+          "SpecularPower": 64,
           "AmbientColour": {
             "R": 0,
             "G": 0,
             "B": 0
-          }
+          },
+          "ConstantAttenuation": 1,
+          "LinearAttenuation": 0.01,
+          "QuadraticAttenuation": 0.00001,
+          "LightRadius": 128
         },
         {
           "Type": "MeshComponent",

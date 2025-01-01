@@ -3,10 +3,11 @@
 #include <d3d11_4.h>
 #include <d3dcompiler.h>
 #include <filesystem>
-#include <nlohmann/json.hpp>
-
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
+
+#include <nlohmann/json.hpp>
+
 #include "Buffers.h"
 #include "CBObjectCameraData.h"
 #include "Configuration.h"
@@ -16,7 +17,6 @@
 #include "Helpers.h"
 #include "imgui.h"
 #include "LightManager.h"
-#include "PointLightComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
 

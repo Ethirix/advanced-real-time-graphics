@@ -1,7 +1,7 @@
 #pragma once
 #include <nlohmann/json.hpp>
 
-#include "LightComponent.h"
+#include "PointLightComponent.h"
 
 class SpotLightComponent :
     public LightComponent
@@ -13,6 +13,11 @@ public:
 	void Update(double deltaTime) override {}
 	void FixedUpdate(double fixedDeltaTime) override {}
 	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override {}
+
+	float ConstantAttenuation;
+	float LinearAttenuation;
+	float QuadraticAttenuation;
+	float LightRadius;
 
     float InnerAngle;
 	float OuterAngle;
