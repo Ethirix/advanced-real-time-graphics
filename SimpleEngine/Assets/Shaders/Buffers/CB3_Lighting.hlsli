@@ -3,9 +3,16 @@
 
 cbuffer CB3_Lighting : register(b3)
 {
-    uint MaxLights;
-	uint TotalLights;
-    float2 ___CB3Pad0;
+    uint MaxDirectionalLights;
+    uint TotalDirectionalLights;
+
+    uint MaxPointLights;
+	uint TotalPointLights;
+
+	uint MaxSpotLights;
+	uint TotalSpotLights;
+
+    int2 ___CB3Pad0;
 }
 
 #endif
