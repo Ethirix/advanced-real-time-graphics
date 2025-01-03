@@ -477,8 +477,8 @@
           },
           "DiffuseColour": {
             "R": 0.9,
-            "G": 0.80,
-            "B": 0.85
+            "G": 0.8,
+            "B": 0.8
           },
           "DiffusePower": 1,
           "SpecularColour": {
@@ -490,7 +490,7 @@
           "AmbientColour": {
             "R": 0.50,
             "G": 0.4,
-            "B": 0.55
+            "B": 0.4
           }
         }
       ],

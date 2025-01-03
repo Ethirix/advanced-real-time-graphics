@@ -13,9 +13,24 @@
 #include "Structured Resources/T9_PointLights.hlsli"
 #include "Structured Resources/T10_SpotLights.hlsli"
 
-float CalculateAttenuation(float d, float cA, float lA, float qA)
+float CalculateAttenuation(float distance, float constantAttenuation, float linearAttenuation,
+                           float quadraticAttenuation, float radius)
 {
-    return 1 / (cA + abs(lA * d) + (abs(qA) * d * d));
+    float att = 1 / (constantAttenuation + abs(linearAttenuation * distance) + (abs(quadraticAttenuation) * distance * distance));
+    if (radius > 0)
+        att *= saturate(1.0 - (distance * distance) / (radius * radius));
+
+    return att;
+}
+
+float CalculateSpotLightIntensity(float3 lD, float innerAngle, float outerAngle)
+{
+    float cosInner = cos(radians(innerAngle));
+    float cosOuter = cos(radians(outerAngle));
+
+    float theta = dot(normalize(lD), -lD);
+    float epsilon = cosInner - cosOuter;
+    return saturate((theta - cosOuter) / epsilon);
 }
 
 LightingOut CalculateTextures(LightingOut lighting, float2 textureCoordinates, Textures textures, Material material)
@@ -44,29 +59,44 @@ LightingOut CalculateTextures(LightingOut lighting, float2 textureCoordinates, T
     return lighting;
 }
 
+LightingOut CalculateBlinnPhong(
+	float3 fragmentPosition, 
+	float3 normal, 
+	float3 lightDirection, 
+	float distance,
+	float3 ambient, 
+	float4 diffuse, 
+	float4 specular, 
+	float specularExponent)
+{
+    LightingOut lighting = (LightingOut) 0;
+
+    lighting.AmbientOut = ambient;
+
+    float diffuseIntensity = saturate(dot(normal, lightDirection));
+    lighting.DiffuseOut = diffuseIntensity * diffuse.rgb * diffuse.a / distance;
+
+    if (diffuseIntensity == 0)
+        return lighting;
+
+    float3 eyeDirection = normalize(Eye.xyz - fragmentPosition);
+    float3 halfVector = normalize(lightDirection + eyeDirection);
+    float specularIntensity = pow(saturate(dot(normal, halfVector)), specularExponent);
+    lighting.SpecularOut = specularIntensity * specular.rgb * specular.a / distance;
+
+    return lighting;
+}
+
 LightingOut CalculateDirectionalLight(
 	DirectionalLightData light, 
 	float3 fragmentPosition,
 	float3 normal,
 	Material material)
 {
-    LightingOut lighting = (LightingOut) 0;
-
-    lighting.AmbientOut = light.AmbientColor;
-
-    float3 rayDirection = normalize(reflect(normalize(light.Direction), normal));
-    float diffuseIntensity = saturate(dot(normal, rayDirection));
-    lighting.DiffuseOut = diffuseIntensity * light.DiffuseColor * light.DiffusePower;
-
-    if (diffuseIntensity == 0)
-        return lighting;
-    
-    float3 eyeDirection = normalize(Eye.xyz - fragmentPosition);
-	float3 halfVector = normalize(rayDirection + eyeDirection);
-    float specularIntensity = saturate(dot(halfVector, eyeDirection));
-    lighting.SpecularOut = light.SpecularColor * light.SpecularPower * pow(specularIntensity, material.SpecularExponent);
-
-    return lighting;
+    float3 lightDirection = normalize(-light.Direction);
+    return CalculateBlinnPhong(fragmentPosition, normal, lightDirection, 1, light.AmbientColor,
+                               float4(light.DiffuseColor, light.DiffusePower),
+                               float4(light.SpecularColor, light.SpecularPower), material.SpecularExponent);
 }
 
 LightingOut CalculatePointLight(
@@ -75,30 +105,16 @@ LightingOut CalculatePointLight(
 	float3 normal,
 	Material material)
 {
-    LightingOut lighting = (LightingOut) 0;
-
-    float3 lightDir = normalize(light.Position - fragmentPosition);
+    float3 lightDirection = normalize(light.Position - fragmentPosition);
     float distance = length(light.Position - fragmentPosition);
+    LightingOut lighting = CalculateBlinnPhong(fragmentPosition, normal, lightDirection, distance, light.AmbientColor,
+                               float4(light.DiffuseColor, light.DiffusePower),
+                               float4(light.SpecularColor, light.SpecularPower), material.SpecularExponent);
 
     float attenuation = CalculateAttenuation(distance, light.ConstantAttenuation, light.LinearAttenuation,
-                                             light.QuadraticAttenuation);
+                                             light.QuadraticAttenuation, light.LightRadius);
 
-    if (light.LightRadius > 0)
-        attenuation *= saturate(1.0 - pow(distance, 2) / pow(light.LightRadius, 2.0));
-
-    lighting.AmbientOut = light.AmbientColor * attenuation;
-
-    float diffuseIntensity = saturate(dot(normal, lightDir));
-    lighting.DiffuseOut = diffuseIntensity * light.DiffuseColor * light.DiffusePower / distance;
     lighting.DiffuseOut *= attenuation;
-
-    if (diffuseIntensity == 0)
-        return lighting;
-
-    float3 eyeDirection = normalize(Eye.xyz - fragmentPosition);
-    float3 halfVector = normalize(lightDir + eyeDirection);
-    float specularIntensity = pow(max(dot(normal, halfVector), 0.0f), material.SpecularExponent);
-    lighting.SpecularOut = specularIntensity * light.SpecularColor * light.SpecularPower / distance;
     lighting.SpecularOut *= attenuation;
 
     return lighting;
@@ -110,37 +126,19 @@ LightingOut CalculateSpotLight(
 	float3 normal,
 	Material material)
 {
-    LightingOut lighting = (LightingOut) 0;
 
-    float3 lightDir = normalize(light.Position - fragmentPosition);
+    float3 lightDirection = normalize(light.Position - fragmentPosition);
     float distance = length(light.Position - fragmentPosition);
-
-    float cosInner = cos(radians(light.InnerAngle));
-    float cosOuter = cos(radians(light.OuterAngle));
-
-    float theta = dot(normalize(light.Direction), -lightDir);
-    float epsilon = cosInner - cosOuter;
-    float intensity = saturate((theta - cosOuter) / epsilon);
+    LightingOut lighting = CalculateBlinnPhong(fragmentPosition, normal, lightDirection, distance, light.AmbientColor,
+                               float4(light.DiffuseColor, light.DiffusePower),
+                               float4(light.SpecularColor, light.SpecularPower), material.SpecularExponent);
 
     float attenuation = CalculateAttenuation(distance, light.ConstantAttenuation, light.LinearAttenuation,
-                                             light.QuadraticAttenuation);
+                                             light.QuadraticAttenuation, light.LightRadius);
+    float intensity = CalculateSpotLightIntensity(lightDirection, light.InnerAngle, light.OuterAngle);
 
-    if (light.LightRadius > 0)
-        attenuation *= saturate(1.0 - pow(distance, 2) / pow(light.LightRadius, 2.0));
-
-    lighting.AmbientOut = light.AmbientColor * attenuation;
-
-    float diffuseIntensity = saturate(dot(normal, lightDir));
-    lighting.DiffuseOut = diffuseIntensity * light.DiffuseColor * light.DiffusePower / distance;
+    lighting.AmbientOut *= attenuation;
     lighting.DiffuseOut *= attenuation * intensity;
-
-    if (diffuseIntensity == 0)
-        return lighting;
-
-    float3 eyeDirection = normalize(Eye.xyz - fragmentPosition);
-    float3 halfVector = normalize(lightDir + eyeDirection);
-    float specularIntensity = pow(max(dot(normal, halfVector), 0.0f), material.SpecularExponent);
-    lighting.SpecularOut = specularIntensity * light.SpecularColor * light.SpecularPower / distance;
     lighting.SpecularOut *= attenuation * intensity;
 
     return lighting;
