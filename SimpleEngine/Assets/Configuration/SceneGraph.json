@@ -338,8 +338,8 @@
           "Type": "MeshComponent",
           "MeshPath": "Assets/Meshes/cube2.obj",
           "MaterialPath": "Assets/Materials/cube2.mtl",
-          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
-          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "VertexShaderPath": "Assets/Shaders/VS_NormalMapping.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_NormalMapping.hlsl",
           "MeshType": 1,
           "TexturePaths": {
             "Diffuse": {

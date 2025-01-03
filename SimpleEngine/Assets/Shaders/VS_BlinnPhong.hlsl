@@ -7,8 +7,6 @@ VS_BaseOut VS_Main(VS_BaseIn input)
 {
     VS_BaseOut output = (VS_BaseOut) 0;
 
-    //http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/
-
     float4 pos4 = float4(input.Position, 1.0f);
     output.Position = mul(pos4, World);
     output.WorldPosition = output.Position;
