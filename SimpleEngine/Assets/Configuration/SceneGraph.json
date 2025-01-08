@@ -336,8 +336,8 @@
       "Components": [
         {
           "Type": "MeshComponent",
-          "MeshPath": "Assets/Meshes/cube2.obj",
-          "MaterialPath": "Assets/Materials/cube2.mtl",
+          "MeshPath": "Assets/Meshes/artgcube.obj",
+          "MaterialPath": "Assets/Materials/artgcube.mtl",
           "VertexShaderPath": "Assets/Shaders/VS_NormalMapping.hlsl",
           "PixelShaderPath": "Assets/Shaders/PS_NormalMapping.hlsl",
           "MeshType": 1,
@@ -521,9 +521,9 @@
             "G": 1,
             "B": 0
           },
-          "DiffusePower": 32,
+          "DiffusePower": 2,
           "SpecularColour": {
-            "R": 0,
+            "R": 1,
             "G": 1,
             "B": 0
           },
