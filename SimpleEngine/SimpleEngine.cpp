@@ -3,10 +3,11 @@
 #include <d3d11_4.h>
 #include <d3dcompiler.h>
 #include <filesystem>
-#include <nlohmann/json.hpp>
-
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
+
+#include <nlohmann/json.hpp>
+
 #include "Buffers.h"
 #include "CBObjectCameraData.h"
 #include "Configuration.h"
@@ -15,7 +16,7 @@
 #include "GlobalDefines.h"
 #include "Helpers.h"
 #include "imgui.h"
-#include "LightComponent.h"
+#include "LightManager.h"
 #include "SceneGraph.h"
 #include "Screen.h"
 
@@ -113,8 +114,7 @@ HRESULT SimpleEngine::CreateD3DDevice()
 	HRESULT hr = S_OK;
 
 	D3D_FEATURE_LEVEL featureLevels[] = {
-			D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0,
-			D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0
+			D3D_FEATURE_LEVEL_11_1
 	};
 
 	ID3D11Device* baseDevice;
@@ -324,7 +324,9 @@ HRESULT SimpleEngine::InitialiseVertexShaderLayout(ID3DBlob* vsBlob)
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
-		{ "TEXCOORDS", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 }
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+		{ "BINORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 }
 	};
 
 	return _device->CreateInputLayout(
@@ -519,6 +521,67 @@ HRESULT SimpleEngine::InitialiseBuffers()
 	_context->PSSetConstantBuffers(3, 1, Buffers::CBLighting.Buffer.GetAddressOf());
 #pragma endregion
 
+#pragma region SRVDirectionalLights
+	bufferDescription.ByteWidth = sizeof(DirectionalLightData) * MAX_DIRECTIONAL_LIGHTS;
+	bufferDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	bufferDescription.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	bufferDescription.StructureByteStride = sizeof(DirectionalLightData);
+
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVDirectionalLights.Buffer.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDirectionalLightDesc{};
+	srvDirectionalLightDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDirectionalLightDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvDirectionalLightDesc.Buffer.NumElements = MAX_DIRECTIONAL_LIGHTS;
+
+	hr = _device->CreateShaderResourceView(Buffers::SRVDirectionalLights.Buffer.Get(), &srvDirectionalLightDesc, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
+
+	_context->VSSetShaderResources(8, 1, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
+	_context->PSSetShaderResources(8, 1, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
+#pragma endregion
+
+
+#pragma region SRVPointLights
+	bufferDescription.ByteWidth = sizeof(PointLightData) * MAX_POINT_LIGHTS;
+	bufferDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	bufferDescription.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	bufferDescription.StructureByteStride = sizeof(PointLightData);
+
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVPointLights.Buffer.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvPointLightDesc{};
+	srvPointLightDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvPointLightDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvPointLightDesc.Buffer.NumElements = MAX_POINT_LIGHTS;
+
+	hr = _device->CreateShaderResourceView(Buffers::SRVPointLights.Buffer.Get(), &srvPointLightDesc, Buffers::SRVPointLights.Resource.GetAddressOf());
+
+	_context->VSSetShaderResources(9, 1, Buffers::SRVPointLights.Resource.GetAddressOf());
+	_context->PSSetShaderResources(9, 1, Buffers::SRVPointLights.Resource.GetAddressOf());
+#pragma endregion
+
+#pragma region SRVSpotLights
+	bufferDescription.ByteWidth = sizeof(SpotLightData) * MAX_SPOT_LIGHTS;
+	bufferDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	bufferDescription.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	bufferDescription.StructureByteStride = sizeof(SpotLightData);
+
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVSpotLights.Buffer.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvSpotLightDesc{};
+	srvSpotLightDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvSpotLightDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvSpotLightDesc.Buffer.NumElements = MAX_SPOT_LIGHTS;
+
+	hr = _device->CreateShaderResourceView(Buffers::SRVSpotLights.Buffer.Get(), &srvSpotLightDesc, Buffers::SRVSpotLights.Resource.GetAddressOf());
+
+	_context->VSSetShaderResources(10, 1, Buffers::SRVSpotLights.Resource.GetAddressOf());
+	_context->PSSetShaderResources(10, 1, Buffers::SRVSpotLights.Resource.GetAddressOf());
+#pragma endregion
+
 	return hr;
 }
 
@@ -657,16 +720,7 @@ void SimpleEngine::Update()
 			_camera = cameraComponent.value();
 	}
 
-	auto lightComponents = SceneGraph::GetComponentsFromObjects<LightComponent>();
-	Buffers::CBLighting.BufferData.ActiveLightCount = lightComponents.size();
-	for (int i = 0; i < lightComponents.size() && i < MAX_LIGHTS; i++)
-	{
-		Buffers::CBLighting.BufferData.PointLights[i] = lightComponents[i].lock()->Light;
-	}
-
-	//BIG HACK NEED TO GET A CONCRETE WAY TO GET THE SKYBOX!
-	if (auto skybox = SceneGraph::GetObjectAtPosition(4); !skybox.expired())
-		skybox.lock()->Transform->SetPosition(_camera.lock()->GameObject.lock()->Transform->GetPosition());
+	LightManager::UpdateLights(_context);
 
 	SceneGraph::Update(deltaTime);
 }
@@ -757,21 +811,12 @@ void SimpleEngine::FixedUpdate(double fixedDeltaTime)
 
 void SimpleEngine::Draw()
 {
-	if (_camera.expired())
-	{
-		float errorColour[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
-		_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
-		_context->ClearRenderTargetView(_frameBufferView.Get(), errorColour);
-		_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+	constexpr float backgroundColour[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
+	constexpr float errorColour[4]      = { 1.0f, 0.0f, 1.0f, 1.0f };
 
-		_swapChain->Present(0,0);
-		return;
-	}
-
-	float backgroundColour[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
-	_context->ClearRenderTargetView(_frameBufferView.Get(), backgroundColour);
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
 
 	SceneGraph::Draw(_context);
 

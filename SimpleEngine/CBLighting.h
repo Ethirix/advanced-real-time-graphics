@@ -1,9 +1,17 @@
 ﻿#pragma once
-#include "LightData.h"
+
+#include <DirectXMath.h>
 
 struct CBLighting
 {
-	LightData PointLights[32];
-	unsigned ActiveLightCount;
-	DirectX::XMFLOAT3 ___CB3Pad0;
+	unsigned MaxDirectionalLights;
+    unsigned TotalDirectionalLights;
+	
+    unsigned MaxPointLights;
+	unsigned TotalPointLights;
+
+	unsigned MaxSpotLights;
+	unsigned TotalSpotLights;
+
+	DirectX::XMFLOAT2 ___CB3Pad0;
 };

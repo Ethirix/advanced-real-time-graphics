@@ -1,7 +1,7 @@
-#ifndef __VS_BASEOUT_HLSLI__
-#define __VS_BASEOUT_HLSLI__
+#ifndef __VS_NORMALMAPPINGOUT_HLSLI__
+#define __VS_NORMALMAPPINGOUT_HLSLI__
 
-struct VS_BaseOut
+struct VS_NormalMappingOut
 {
     float3 Color : COLOR;
 
@@ -12,6 +12,9 @@ struct VS_BaseOut
     float3 WorldNormal : WORLDNORMAL;
 
     float2 TextureCoordinates : TEXCOORD;
+
+    float3 TangentEye : TANGENTEYE;
+    float3 TangentPointLight : TANGENTDIRECTIONALLIGHT;
 };
 
 #endif

@@ -5,7 +5,9 @@ constexpr float AIR_DENSITY = 1.225f;
 
 #define GRAVITY Vector3(0, -9.81, 0)
 
-constexpr int MAX_LIGHTS = 32;
+constexpr int MAX_DIRECTIONAL_LIGHTS = 1;
+constexpr int MAX_POINT_LIGHTS = 8;
+constexpr int MAX_SPOT_LIGHTS = 8;
 
 #define FILL_STATE_KEY "RSFillState"
 #define REVERSE_FILL_STATE_KEY "RSReverseFillState"

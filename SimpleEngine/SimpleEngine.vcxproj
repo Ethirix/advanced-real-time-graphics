@@ -154,6 +154,7 @@
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="ColliderComponent.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="DirectionalLightComponent.cpp" />
     <ClCompile Include="Factory.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Helpers.cpp" />
@@ -166,6 +167,8 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="LightComponent.cpp" />
+    <ClCompile Include="LightManager.cpp" />
+    <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
@@ -176,6 +179,7 @@
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
     <ClCompile Include="SphereColliderComponent.cpp" />
+    <ClCompile Include="SpotLightComponent.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
@@ -199,6 +203,8 @@
     <ClInclude Include="DataStore.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="DirectionalLightComponent.h" />
+    <ClInclude Include="DirectionalLightData.h" />
     <ClInclude Include="Factory.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GlobalDefines.h" />
@@ -213,7 +219,9 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="LightComponent.h" />
-    <ClInclude Include="LightData.h" />
+    <ClInclude Include="LightManager.h" />
+    <ClInclude Include="PointLightComponent.h" />
+    <ClInclude Include="PointLightData.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Maths.h" />
     <ClInclude Include="Mesh.h" />
@@ -233,13 +241,20 @@
     <ClInclude Include="ShaderType.h" />
     <ClInclude Include="SimpleEngine.h" />
     <ClInclude Include="SphereColliderComponent.h" />
+    <ClInclude Include="SpotLightComponent.h" />
+    <ClInclude Include="SpotLightData.h" />
+    <ClInclude Include="SRVDirectionalLights.h" />
+    <ClInclude Include="SRVPointLights.h" />
+    <ClInclude Include="SRVSpotLights.h" />
     <ClInclude Include="Storage.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="SRVBufferPair.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformComponentConfig.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VertexIndices.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Configuration\RasterizerStateConfig.json" />
@@ -249,15 +264,23 @@
     <None Include="Assets\Materials\suzanne.mtl" />
     <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli" />
     <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli" />
+    <None Include="Assets\Shaders\Functions\VectorSpaceConverter.hlsli" />
     <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli" />
-    <None Include="Assets\Shaders\Structs\LightData.hlsli" />
+    <None Include="Assets\Shaders\Structs\DirectionalLightData.hlsli" />
+    <None Include="Assets\Shaders\Structs\PointLightData.hlsli" />
     <None Include="Assets\Shaders\Structs\LightingOut.hlsli" />
     <None Include="Assets\Shaders\Structs\Material.hlsli" />
+    <None Include="Assets\Shaders\Structs\SpotLightData.hlsli" />
     <None Include="Assets\Shaders\Structs\Textures.hlsli" />
     <None Include="Assets\Shaders\Structs\VS_BaseOut.hlsli" />
     <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli" />
+    <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T10_SpotLights.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T8_DirectionalLights.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T9_PointLights.hlsli" />
     <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
       <FileType>Document</FileType>
     </None>
@@ -265,9 +288,10 @@
       <FileType>Document</FileType>
     </None>
     <None Include="imgui\imgui.natstepfilter" />
-    <None Include="packages.config" />
-    <None Include="Assets\Shaders\Structured Resources\T2_SkyboxTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli" />
     <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli" />
+    <None Include="packages.config" />
+    <None Include="Assets\Shaders\Structs\VS_BaseIn.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli" />
@@ -301,6 +325,22 @@
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="imgui\imgui.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\PS_NormalMapping.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Assets\Shaders\VS_NormalMapping.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
