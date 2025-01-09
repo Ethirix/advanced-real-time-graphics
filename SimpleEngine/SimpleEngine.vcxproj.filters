@@ -107,6 +107,33 @@
     <Filter Include="Header Files\Structs\Lighting">
       <UniqueIdentifier>{a5a49f81-5486-493e-a5ef-9f76d17608f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Textures\Asphalt">
+      <UniqueIdentifier>{41af9b6a-cd56-4419-94cb-d20c5f9a647f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures\Cone">
+      <UniqueIdentifier>{7d3399f9-2682-472e-bb18-0b1699962813}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures\Crate">
+      <UniqueIdentifier>{d12f8b75-4439-45e6-a3c1-6bf4534e934d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures\Light">
+      <UniqueIdentifier>{d68d85c1-56bb-4e21-aea5-0996d88615f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures\PineTree">
+      <UniqueIdentifier>{7e1d8f97-eacb-4c23-b92e-13b57e12cd21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures\Skybox">
+      <UniqueIdentifier>{f27b2ea2-7748-4569-ae33-e9b15d6da853}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures\Plane">
+      <UniqueIdentifier>{5ff1399e-4c33-44c8-b542-5fcb7280dcd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures\Stone">
+      <UniqueIdentifier>{d155fff0-fa77-4b13-aa3c-3151705d5459}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures\Torus">
+      <UniqueIdentifier>{e4866997-7bd8-4d8c-af7c-c28ddfcf2eab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -422,50 +449,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
-      <Filter>Resource Files\Shaders\Buffers</Filter>
+    <None Include="imgui\imgui.natstepfilter">
+      <Filter>ImGUI</Filter>
     </None>
-    <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
+    <None Include="packages.config" />
+    <None Include="Assets\Shaders\VS_Skybox.hlsl">
       <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Assets\Shaders\PS_BlinnPhong.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli">
-      <Filter>Resource Files\Shaders\Buffers</Filter>
-    </None>
-    <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli">
-      <Filter>Resource Files\Shaders\Samplers</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structs\Material.hlsli">
-      <Filter>Resource Files\Shaders\Structs</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structs\Textures.hlsli">
-      <Filter>Resource Files\Shaders\Structs</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structs\VS_BaseOut.hlsli">
-      <Filter>Resource Files\Shaders\Structs</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structs\Texture.hlsli">
-      <Filter>Resource Files\Shaders\Structs</Filter>
-    </None>
-    <None Include="Assets\Shaders\Functions\Lighting.hlsli">
-      <Filter>Resource Files\Shaders\Functions</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structs\LightingOut.hlsli">
-      <Filter>Resource Files\Shaders\Structs</Filter>
-    </None>
-    <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli">
-      <Filter>Resource Files\Shaders\Buffers</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli">
-      <Filter>Resource Files\Shaders\Structured Resources</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli">
-      <Filter>Resource Files\Shaders\Structured Resources</Filter>
-    </None>
-    <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli">
-      <Filter>Resource Files\Shaders\Buffers</Filter>
     </None>
     <None Include="Assets\Configuration\RasterizerStateConfig.json">
       <Filter>Resource Files\Configuration</Filter>
@@ -473,16 +462,13 @@
     <None Include="Assets\Configuration\SceneGraph.json">
       <Filter>Resource Files\Configuration</Filter>
     </None>
-    <None Include="Assets\Materials\suzanne.mtl">
-      <Filter>Resource Files\Materials</Filter>
-    </None>
-    <None Include="Assets\Meshes\suzanne.obj">
-      <Filter>Resource Files\Meshes</Filter>
-    </None>
     <None Include="Assets\Materials\cube2.mtl">
       <Filter>Resource Files\Materials</Filter>
     </None>
     <None Include="Assets\Materials\Icosphere3.mtl">
+      <Filter>Resource Files\Materials</Filter>
+    </None>
+    <None Include="Assets\Materials\suzanne.mtl">
       <Filter>Resource Files\Materials</Filter>
     </None>
     <None Include="Assets\Meshes\cube2.obj">
@@ -491,57 +477,149 @@
     <None Include="Assets\Meshes\Icosphere3.obj">
       <Filter>Resource Files\Meshes</Filter>
     </None>
-    <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli">
-      <Filter>Resource Files\Shaders\Structs</Filter>
+    <None Include="Assets\Meshes\suzanne.obj">
+      <Filter>Resource Files\Meshes</Filter>
     </None>
-    <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli">
-      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
     </None>
-    <None Include="Assets\Shaders\VS_Skybox.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
     </None>
-    <None Include="Assets\Shaders\PS_Skybox.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
     </None>
-    <None Include="imgui\imgui.natstepfilter">
-      <Filter>ImGUI</Filter>
+    <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
     </None>
-    <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli">
-      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    <None Include="Assets\Shaders\Functions\Lighting.hlsli">
+      <Filter>Resource Files\Shaders\Functions</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="Assets\Shaders\Functions\VectorSpaceConverter.hlsli">
       <Filter>Resource Files\Shaders\Functions</Filter>
     </None>
-    <None Include="Assets\Shaders\Structs\VS_BaseIn.hlsli">
-      <Filter>Resource Files\Shaders\Structs</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T9_PointLights.hlsli">
-      <Filter>Resource Files\Shaders\Structured Resources</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structs\PointLightData.hlsli">
-      <Filter>Resource Files\Shaders\Structs\Lighting</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T8_DirectionalLights.hlsli">
-      <Filter>Resource Files\Shaders\Structured Resources</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T10_SpotLights.hlsli">
-      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli">
+      <Filter>Resource Files\Shaders\Samplers</Filter>
     </None>
     <None Include="Assets\Shaders\Structs\DirectionalLightData.hlsli">
+      <Filter>Resource Files\Shaders\Structs\Lighting</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\PointLightData.hlsli">
       <Filter>Resource Files\Shaders\Structs\Lighting</Filter>
     </None>
     <None Include="Assets\Shaders\Structs\SpotLightData.hlsli">
       <Filter>Resource Files\Shaders\Structs\Lighting</Filter>
     </None>
+    <None Include="Assets\Shaders\Structs\LightingOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\Material.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\Texture.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\Textures.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\VS_BaseIn.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\VS_BaseOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T8_DirectionalLights.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T9_PointLights.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T10_SpotLights.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_BlinnPhong.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
     <None Include="Assets\Shaders\PS_NormalMapping.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="Assets\Shaders\VS_NormalMapping.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli">
-      <Filter>Resource Files\Shaders\Structs</Filter>
+    <None Include="Assets\Textures\Torus\Torus_DIFFUSE.dds">
+      <Filter>Resource Files\Textures\Torus</Filter>
+    </None>
+    <None Include="Assets\Textures\Asphalt\Asphalt_DIFFUSE.dds">
+      <Filter>Resource Files\Textures\Asphalt</Filter>
+    </None>
+    <None Include="Assets\Textures\Asphalt\Asphalt_DISPLACEMENT.dds">
+      <Filter>Resource Files\Textures\Asphalt</Filter>
+    </None>
+    <None Include="Assets\Textures\Asphalt\asphalt_NORMAL.dds">
+      <Filter>Resource Files\Textures\Asphalt</Filter>
+    </None>
+    <None Include="Assets\Textures\Asphalt\Asphalt_SPECULAR.dds">
+      <Filter>Resource Files\Textures\Asphalt</Filter>
+    </None>
+    <None Include="Assets\Textures\Cone\Cone_DIFFUSE.dds">
+      <Filter>Resource Files\Textures\Cone</Filter>
+    </None>
+    <None Include="Assets\Textures\Cone\Cone_SPECULAR.dds">
+      <Filter>Resource Files\Textures\Cone</Filter>
+    </None>
+    <None Include="Assets\Textures\Crate\Crate_DIFFUSE.dds">
+      <Filter>Resource Files\Textures\Crate</Filter>
+    </None>
+    <None Include="Assets\Textures\Crate\Crate_NORMAL.dds">
+      <Filter>Resource Files\Textures\Crate</Filter>
+    </None>
+    <None Include="Assets\Textures\Crate\Crate_SPECULAR.dds">
+      <Filter>Resource Files\Textures\Crate</Filter>
+    </None>
+    <None Include="Assets\Textures\Light\Light_DIFFUSE.dds">
+      <Filter>Resource Files\Textures\Light</Filter>
+    </None>
+    <None Include="Assets\Textures\PineTree\PineTree_DIFFUSE.dds">
+      <Filter>Resource Files\Textures\PineTree</Filter>
+    </None>
+    <None Include="Assets\Textures\Plane\Plane_SPECULAR.dds">
+      <Filter>Resource Files\Textures\Plane</Filter>
+    </None>
+    <None Include="Assets\Textures\Skybox\Skybox_DIFFUSE.dds">
+      <Filter>Resource Files\Textures\Skybox</Filter>
+    </None>
+    <None Include="Assets\Textures\Stone\Stone_DIFFUSE.dds">
+      <Filter>Resource Files\Textures\Stone</Filter>
+    </None>
+    <None Include="Assets\Textures\Stone\Stone_NORMAL.dds">
+      <Filter>Resource Files\Textures\Stone</Filter>
+    </None>
+    <None Include="Assets\Textures\Plane\Plane_DIFFUSE.dds">
+      <Filter>Resource Files\Textures\Plane</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
