@@ -543,6 +543,12 @@
     <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli">
       <Filter>Resource Files\Shaders\Structs</Filter>
     </None>
+    <None Include="Assets\Shaders\PS_GeometryPass.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_GeometryPass.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="imgui\imgui.natvis">

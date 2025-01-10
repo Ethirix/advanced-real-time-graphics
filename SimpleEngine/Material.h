@@ -7,7 +7,7 @@
 class Material
 {
 public:
-	std::string Name = "";
+	std::string Name;
 	DirectX::XMFLOAT4 Ambient = {}; //Ka
 	DirectX::XMFLOAT4 Diffuse = {}; //Kd
 	DirectX::XMFLOAT4 Specular = {}; //Ks

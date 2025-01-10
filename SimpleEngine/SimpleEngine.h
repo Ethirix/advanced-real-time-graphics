@@ -53,9 +53,14 @@ private:
 	ComPtr<IDXGIDevice> _dxgiDevice;
 	ComPtr<IDXGIFactory2> _dxgiFactory;
 	ComPtr<IDXGISwapChain1> _swapChain;
+
+	ComPtr<ID3D11RenderTargetView> _albedoFrameBufferView;
+	ComPtr<ID3D11RenderTargetView> _normalFrameBufferView;
+
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
+
 	ComPtr<ID3D11InputLayout> _inputLayout;
 	D3D11_VIEWPORT _viewport;
 

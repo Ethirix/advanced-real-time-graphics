@@ -203,9 +203,11 @@ HRESULT SimpleEngine::CreateFrameBuffer()
 	hr = _device->CreateRenderTargetView(frameBuffer, &frameBufferDesc, _frameBufferView.GetAddressOf());
 	if (FAILED(hr)) return hr;
 
+	
+
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
 	frameBuffer->GetDesc(&depthBufferDesc);
-	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
 	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf());
@@ -540,7 +542,6 @@ HRESULT SimpleEngine::InitialiseBuffers()
 	_context->VSSetShaderResources(8, 1, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
 	_context->PSSetShaderResources(8, 1, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
 #pragma endregion
-
 
 #pragma region SRVPointLights
 	bufferDescription.ByteWidth = sizeof(PointLightData) * MAX_POINT_LIGHTS;
