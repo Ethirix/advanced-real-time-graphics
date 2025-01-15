@@ -3,7 +3,7 @@
 struct PSGeoPassOut
 {
     float4 Albedo : SV_TARGET0;
-    float4 Normal : SV_TARGET1;
+    float4 Normal : SV_TARGET1; //rgb - normal a - specular
 };
 
 PSGeoPassOut PS_Main(VS_BaseOut input)
