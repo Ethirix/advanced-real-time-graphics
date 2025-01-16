@@ -416,6 +416,8 @@
     <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T10_SpotLights.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T16_DeferredAlbedoTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T17_DeferredNormalTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T8_DirectionalLights.hlsli" />

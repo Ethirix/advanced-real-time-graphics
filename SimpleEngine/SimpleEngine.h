@@ -54,8 +54,14 @@ private:
 	ComPtr<IDXGIFactory2> _dxgiFactory;
 	ComPtr<IDXGISwapChain1> _swapChain;
 
+#ifdef _DEFERRED_RENDER
+	ComPtr<ID3D11Texture2D> _albedoTexture;
+	ComPtr<ID3D11Texture2D> _normalTexture;
+	ComPtr<ID3D11ShaderResourceView> _albedoShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _normalShaderResourceView;
 	ComPtr<ID3D11RenderTargetView> _albedoFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _normalFrameBufferView;
+#endif
 
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
@@ -66,7 +72,6 @@ private:
 
 	std::chrono::time_point<std::chrono::steady_clock> _lastFrameTime = std::chrono::high_resolution_clock::now();
 	double _timeSinceLastFixedUpdate = 0;
-	std::map<std::string, Shaders> _shaders = {};
 	std::weak_ptr<CameraComponent> _camera = {};
 
 	int _selectedObject = -1;

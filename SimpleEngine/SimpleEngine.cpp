@@ -191,34 +191,68 @@ HRESULT SimpleEngine::CreateFrameBuffer()
 {
 	HRESULT hr = S_OK;
 
-	ID3D11Texture2D* frameBuffer = nullptr;
+	ID3D11Texture2D* frameBuffer  = nullptr;
 
-	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&frameBuffer));
-    if (FAILED(hr)) return hr;
+	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&frameBuffer)); FAIL_CHECK
 
 	D3D11_RENDER_TARGET_VIEW_DESC frameBufferDesc = {};
 	frameBufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	frameBufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
-	hr = _device->CreateRenderTargetView(frameBuffer, &frameBufferDesc, _frameBufferView.GetAddressOf());
-	if (FAILED(hr)) return hr;
-
-	
+	hr = _device->CreateRenderTargetView(frameBuffer, &frameBufferDesc, _frameBufferView.GetAddressOf()); FAIL_CHECK
 
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
 	frameBuffer->GetDesc(&depthBufferDesc);
 	depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf());
-    if (FAILED(hr)) return hr;
-    hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), nullptr, _depthStencilView.GetAddressOf());
-    if (FAILED(hr)) return hr;
+	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf()); FAIL_CHECK
+    hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), nullptr, _depthStencilView.GetAddressOf()); FAIL_CHECK
 
     frameBuffer->Release();
 
-	hr = _dxgiFactory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_ALT_ENTER);
-    if (FAILED(hr)) return hr;
+#ifdef _DEFERRED_RENDER
+	D3D11_TEXTURE2D_DESC textureDesc{};
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc{};
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
+
+	textureDesc.Width = Screen::Width;
+	textureDesc.Height = Screen::Height;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+
+	renderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, _albedoTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_albedoTexture.Get(), &renderTargetViewDesc, _albedoFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_albedoTexture.Get(), &shaderResourceViewDesc, _albedoShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	_context->VSSetShaderResources(16, 1, _albedoShaderResourceView.GetAddressOf());
+	_context->PSSetShaderResources(16, 1, _albedoShaderResourceView.GetAddressOf());
+
+#ifdef _WIN64
+	textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	renderTargetViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+#endif
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_normalTexture); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_normalTexture.Get(), &renderTargetViewDesc, _normalFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_normalTexture.Get(), &shaderResourceViewDesc, _normalShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	_context->VSSetShaderResources(17, 1, _normalShaderResourceView.GetAddressOf());
+	_context->PSSetShaderResources(17, 1, _normalShaderResourceView.GetAddressOf());
+#endif
+
+	hr = _dxgiFactory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_ALT_ENTER); FAIL_CHECK
 
 	return hr;
 }
@@ -810,14 +844,24 @@ void SimpleEngine::FixedUpdate(double fixedDeltaTime)
 	SceneGraph::FixedUpdate(fixedDeltaTime);
 }
 
+#ifdef _DEFERRED_RENDER
 void SimpleEngine::Draw()
 {
-	constexpr float backgroundColour[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
+	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	constexpr float errorColour[4]      = { 1.0f, 0.0f, 1.0f, 1.0f };
 
-	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+	_context->ClearRenderTargetView(_albedoFrameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+	_context->ClearRenderTargetView(_normalFrameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+
+	ID3D11RenderTargetView* rtvs[2] = {_albedoFrameBufferView.Get(), _normalFrameBufferView.Get()};
+	_context->OMSetRenderTargets(2, rtvs, _depthStencilView.Get());
+
+	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_GeometryPass.hlsl").value().Shader.Get(),
+	                      nullptr, 0);
+	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_GeometryPass.hlsl").value().Shader.Get(),
+		nullptr, 0);
 
 	SceneGraph::Draw(_context);
 
@@ -826,3 +870,24 @@ void SimpleEngine::Draw()
 
 	_swapChain->Present(0, 0);
 }
+#else
+
+void SimpleEngine::Draw()
+{
+	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	constexpr float errorColour[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
+
+	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+
+	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
+
+	SceneGraph::Draw(_context);
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+	_swapChain->Present(0, 0);
+}
+
+#endif

@@ -549,6 +549,12 @@
     <None Include="Assets\Shaders\VS_GeometryPass.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Assets\Shaders\Structured Resources\T17_DeferredNormalTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T16_DeferredAlbedoTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="imgui\imgui.natvis">
