@@ -205,6 +205,9 @@
     <ClCompile Include="SpotLightComponent.cpp">
       <Filter>Components\Light</Filter>
     </ClCompile>
+    <ClCompile Include="ScreenQuad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SimpleEngine.h">
@@ -419,6 +422,9 @@
     </ClInclude>
     <ClInclude Include="SpotLightData.h">
       <Filter>Header Files\Structs\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenQuad.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

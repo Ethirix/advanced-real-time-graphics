@@ -192,20 +192,17 @@ HRESULT SimpleEngine::CreateFrameBuffer()
 	HRESULT hr = S_OK;
 
 	ID3D11Texture2D* frameBuffer  = nullptr;
-
 	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&frameBuffer)); FAIL_CHECK
 
 	D3D11_RENDER_TARGET_VIEW_DESC frameBufferDesc = {};
 	frameBufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	frameBufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-
 	hr = _device->CreateRenderTargetView(frameBuffer, &frameBufferDesc, _frameBufferView.GetAddressOf()); FAIL_CHECK
 
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
 	frameBuffer->GetDesc(&depthBufferDesc);
 	depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
 	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf()); FAIL_CHECK
     hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), nullptr, _depthStencilView.GetAddressOf()); FAIL_CHECK
 
@@ -235,9 +232,6 @@ HRESULT SimpleEngine::CreateFrameBuffer()
 	hr = _device->CreateRenderTargetView(_albedoTexture.Get(), &renderTargetViewDesc, _albedoFrameBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_albedoTexture.Get(), &shaderResourceViewDesc, _albedoShaderResourceView.GetAddressOf()); FAIL_CHECK
 
-	_context->VSSetShaderResources(16, 1, _albedoShaderResourceView.GetAddressOf());
-	_context->PSSetShaderResources(16, 1, _albedoShaderResourceView.GetAddressOf());
-
 #ifdef _WIN64
 	textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	renderTargetViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -247,9 +241,6 @@ HRESULT SimpleEngine::CreateFrameBuffer()
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_normalTexture); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_normalTexture.Get(), &renderTargetViewDesc, _normalFrameBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_normalTexture.Get(), &shaderResourceViewDesc, _normalShaderResourceView.GetAddressOf()); FAIL_CHECK
-
-	_context->VSSetShaderResources(17, 1, _normalShaderResourceView.GetAddressOf());
-	_context->PSSetShaderResources(17, 1, _normalShaderResourceView.GetAddressOf());
 #endif
 
 	hr = _dxgiFactory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_ALT_ENTER); FAIL_CHECK
@@ -855,21 +846,41 @@ void SimpleEngine::Draw()
 	_context->ClearRenderTargetView(_albedoFrameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
 	_context->ClearRenderTargetView(_normalFrameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
 
-	ID3D11RenderTargetView* rtvs[2] = {_albedoFrameBufferView.Get(), _normalFrameBufferView.Get()};
-	_context->OMSetRenderTargets(2, rtvs, _depthStencilView.Get());
+#pragma region G-Buffer Pass
+	ID3D11RenderTargetView* rTVs[2] = {_albedoFrameBufferView.Get(), _normalFrameBufferView.Get()};
+	_context->OMSetRenderTargets(2, rTVs, _depthStencilView.Get());
 
 	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_GeometryPass.hlsl").value().Shader.Get(),
 	                      nullptr, 0);
 	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_GeometryPass.hlsl").value().Shader.Get(),
-		nullptr, 0);
-
+						  nullptr, 0);
 	SceneGraph::Draw(_context);
+
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
+
+#pragma region Lighting Pass
+	_context->OMSetRenderTargets(2, rTVs, _depthStencilView.Get());
+
+	//Rebind RTVs as SRVs
+	ID3D11ShaderResourceView* sRVs[2] = { _albedoShaderResourceView.Get(), _normalShaderResourceView.Get() };
+	_context->VSSetShaderResources(16, 2, sRVs);
+	_context->PSSetShaderResources(16, 2, sRVs);
+#pragma endregion
+
+#pragma region Output
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
+	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
+
+
+#pragma endregion
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	_swapChain->Present(0, 0);
 }
+
 #else
 
 void SimpleEngine::Draw()
@@ -889,5 +900,4 @@ void SimpleEngine::Draw()
 
 	_swapChain->Present(0, 0);
 }
-
 #endif

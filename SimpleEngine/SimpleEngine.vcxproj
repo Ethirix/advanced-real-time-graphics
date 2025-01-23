@@ -316,6 +316,7 @@
     <ClCompile Include="PlaneColliderComponent.cpp" />
     <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
+    <ClCompile Include="ScreenQuad.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
     <ClCompile Include="SphereColliderComponent.cpp" />
     <ClCompile Include="SpotLightComponent.cpp" />
@@ -375,6 +376,7 @@
     <ClInclude Include="SafePointerArray.h" />
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="Screen.h" />
+    <ClInclude Include="ScreenQuad.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="ShaderData.h" />
     <ClInclude Include="ShaderType.h" />
