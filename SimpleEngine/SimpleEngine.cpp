@@ -328,9 +328,9 @@ HRESULT SimpleEngine::InitialiseRunTimeData()
 
 	OnWindowSizeChangeComplete();
 
-//#ifdef _DEFERRED_RENDER
+#ifdef _DEFERRED_RENDER
 	_screenQuad = std::make_unique<ScreenQuad>(_device);
-//#endif
+#endif
 
 	return S_OK;
 }
@@ -902,9 +902,6 @@ void SimpleEngine::Draw()
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 
 	SceneGraph::Draw(_context);
-
-	_context->PSSetShaderResources(24, 1, DataStore::Resources.Retrieve("Assets/Textures/Crate/Crate_DIFFUSE.dds").value().GetAddressOf());
-	_screenQuad->Draw(_context);
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

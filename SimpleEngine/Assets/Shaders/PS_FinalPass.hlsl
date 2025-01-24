@@ -4,7 +4,5 @@
 
 float4 PS_Main(VS_FinalPassOut input) : SV_TARGET
 {
-    return float4(1 * input.Position.y, 0, 0, 1);
-
     return T24_FinalPass.Sample(S0_BilinearSampler, input.TextureCoordinates);
 }

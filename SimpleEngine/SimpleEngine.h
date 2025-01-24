@@ -71,9 +71,9 @@ private:
 	ComPtr<ID3D11InputLayout> _inputLayout;
 	D3D11_VIEWPORT _viewport;
 
-//#ifdef _DEFERRED_RENDER
+#ifdef _DEFERRED_RENDER
 	std::unique_ptr<ScreenQuad> _screenQuad = nullptr;
-//#endif
+#endif
 
 	std::chrono::time_point<std::chrono::steady_clock> _lastFrameTime = std::chrono::high_resolution_clock::now();
 	double _timeSinceLastFixedUpdate = 0;
