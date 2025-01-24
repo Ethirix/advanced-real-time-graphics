@@ -328,6 +328,10 @@ HRESULT SimpleEngine::InitialiseRunTimeData()
 
 	OnWindowSizeChangeComplete();
 
+//#ifdef _DEFERRED_RENDER
+	_screenQuad = std::make_unique<ScreenQuad>(_device);
+//#endif
+
 	return S_OK;
 }
 
@@ -695,8 +699,6 @@ void SimpleEngine::OnWindowSizeChangeComplete()
 
 	buffer->Release();
 
-	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
-
 	_viewport.Width = static_cast<float>(Screen::Width);
 	_viewport.Height = static_cast<float>(Screen::Height);
     _viewport.MinDepth = 0.0f;
@@ -854,31 +856,37 @@ void SimpleEngine::Draw()
 	                      nullptr, 0);
 	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_GeometryPass.hlsl").value().Shader.Get(),
 						  nullptr, 0);
+
 	SceneGraph::Draw(_context);
 
 	_context->OMSetRenderTargets(0, nullptr, nullptr);
 #pragma endregion
 
 #pragma region Lighting Pass
-	_context->OMSetRenderTargets(2, rTVs, _depthStencilView.Get());
-
 	//Rebind RTVs as SRVs
-	ID3D11ShaderResourceView* sRVs[2] = { _albedoShaderResourceView.Get(), _normalShaderResourceView.Get() };
-	_context->VSSetShaderResources(16, 2, sRVs);
-	_context->PSSetShaderResources(16, 2, sRVs);
+	//ID3D11ShaderResourceView* sRVs[2] = { _albedoShaderResourceView.Get(), _normalShaderResourceView.Get() };
+	//_context->VSSetShaderResources(16, 2, sRVs);
+	//_context->PSSetShaderResources(16, 2, sRVs);
+
+	//_context->OMSetRenderTargets(0, nullptr, nullptr);
 #pragma endregion
 
 #pragma region Output
-	_context->OMSetRenderTargets(0, nullptr, nullptr);
-	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
+	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), nullptr);
+	_context->PSSetShaderResources(24, 1, _normalShaderResourceView.GetAddressOf());
 
+	_screenQuad->Draw(_context);
 
-#pragma endregion
+	ID3D11ShaderResourceView* unbind = nullptr;
+	_context->PSSetShaderResources(24, 1, &unbind);
+	
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	_swapChain->Present(0, 0);
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
 }
 
 #else
@@ -894,6 +902,9 @@ void SimpleEngine::Draw()
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 
 	SceneGraph::Draw(_context);
+
+	_context->PSSetShaderResources(24, 1, DataStore::Resources.Retrieve("Assets/Textures/Crate/Crate_DIFFUSE.dds").value().GetAddressOf());
+	_screenQuad->Draw(_context);
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

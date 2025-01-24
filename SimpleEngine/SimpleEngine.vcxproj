@@ -415,12 +415,14 @@
     <None Include="Assets\Shaders\Structs\Textures.hlsli" />
     <None Include="Assets\Shaders\Structs\VS_BaseOut.hlsli" />
     <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli" />
+    <None Include="Assets\Shaders\Structs\VS_FinalPassOut.hlsli" />
     <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T10_SpotLights.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T16_DeferredAlbedoTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T17_DeferredNormalTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T24_FinalPass.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T8_DirectionalLights.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T9_PointLights.hlsli" />
@@ -517,6 +519,30 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\PS_FinalPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Assets\Shaders\VS_FinalPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Vertex</ShaderType>
       <FileType>Document</FileType>
     </None>

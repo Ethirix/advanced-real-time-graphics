@@ -8,7 +8,7 @@ class ScreenQuad
 public:
 	ScreenQuad(const Microsoft::WRL::ComPtr<ID3D11Device>& device);
 
-	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context, Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv);
+	void Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context);
 
 private:
 	Mesh _mesh;

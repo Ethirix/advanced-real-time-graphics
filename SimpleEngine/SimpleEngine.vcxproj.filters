@@ -561,6 +561,18 @@
     <None Include="Assets\Shaders\Structured Resources\T16_DeferredAlbedoTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
+    <None Include="Assets\Shaders\Structured Resources\T24_FinalPass.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_FinalPass.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_FinalPass.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\VS_FinalPassOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="imgui\imgui.natvis">
