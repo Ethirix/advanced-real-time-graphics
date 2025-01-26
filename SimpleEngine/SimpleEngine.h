@@ -2,16 +2,13 @@
 #include <chrono>
 #include <d3d11.h>
 #include <dxgi1_2.h>
-#include <map>
 #include <memory>
-#include <string>
 #include <windows.h>
 #include <wrl.h>
 
 #include "CameraComponent.h"
 #include "SceneGraph.h"
 #include "ScreenQuad.h"
-#include "Shaders.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -33,13 +30,13 @@ private:
 	HRESULT CreateWindowHandle(HINSTANCE hInstance);
 	HRESULT CreateD3DDevice();
 	HRESULT CreateSwapChain();
-	HRESULT CreateFrameBuffer();
+	HRESULT CreateFrameBuffers();
 	HRESULT InitialiseShaders();
 	HRESULT InitialisePipeline();
 	HRESULT InitialiseRunTimeData();
 	HRESULT InitialiseImGUI();
 
-	HRESULT InitialiseVertexShaderLayout(ID3DBlob* vsBlob);
+	HRESULT InitialiseVertexShaderLayout(const ComPtr<ID3DBlob>& vsBlob);
 	ComPtr<ID3D11VertexShader> CompileVertexShader(LPCWSTR path);
 	ComPtr<ID3D11PixelShader> CompilePixelShader(LPCWSTR path);
 	HRESULT InitialiseRasterizerStates();
