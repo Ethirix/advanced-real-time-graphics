@@ -15,6 +15,11 @@ VS_BaseOut VS_Main(VS_BaseIn input)
     output.Normal = float4(input.Normal, 0);
     output.TextureCoordinates = input.TextureCoordinates;
     output.WorldNormal = normalize(mul(float4(input.Normal, 0), World));
+    
+    //MAKE TBN MATRIX
+    //PASS TO PIXEL SHADER
+    //CONVERT NORMAL MAPS TO WORLD SPACE WITH TBN MATRIX
+    //INVERSED MATRIX IS TANGENT SPACE 
 
 	return output;
 }

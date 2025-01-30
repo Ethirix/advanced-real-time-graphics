@@ -33,11 +33,11 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
 
     if (textures.Normal.HasTexture)
     {
-        output.Normal.rgb = textures.Normal.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates).xyz;
+        output.Normal.rgb = normalize(textures.Normal.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates).xyz);
     }
 	else
 	{
-        output.Normal.rgb = input.WorldNormal;
+        output.Normal.rgb = normalize(float3(input.WorldNormal));
     }
 
     if (textures.Specular.HasTexture)
