@@ -37,7 +37,7 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
     }
 	else
 	{
-        output.Normal.rgb = normalize(float3(input.WorldNormal));
+        output.Normal.rgb = normalize(float3(input.TBNMatrix._m02_m12_m22));
     }
 
     if (textures.Specular.HasTexture)

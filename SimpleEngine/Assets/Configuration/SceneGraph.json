@@ -338,8 +338,8 @@
           "Type": "MeshComponent",
           "MeshPath": "Assets/Meshes/artgcube.obj",
           "MaterialPath": "Assets/Materials/artgcube.mtl",
-          "VertexShaderPath": "Assets/Shaders/VS_NormalMapping.hlsl",
-          "PixelShaderPath": "Assets/Shaders/PS_NormalMapping.hlsl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
             "Diffuse": {

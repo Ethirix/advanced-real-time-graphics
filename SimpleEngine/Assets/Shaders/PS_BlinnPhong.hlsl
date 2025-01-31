@@ -11,14 +11,16 @@
 
 float4 PS_Main(VS_BaseOut input) : SV_TARGET
 {
-    input.Normal = normalize(input.Normal);
-    input.WorldNormal = normalize(input.WorldNormal);
+	input.TBNMatrix._m02_m12_m22 = normalize(input.TBNMatrix._m02_m12_m22);
+	input.TBNMatrix._m01_m11_m21 = normalize(input.TBNMatrix._m01_m11_m21);
+	input.TBNMatrix._m00_m10_m20 = normalize(input.TBNMatrix._m00_m10_m20);
 
-    Textures textures = CreateTexturesFromTextures(T0_DiffuseTexture, HasDiffuseTexture, T1_SpecularTexture,
+	Textures textures = CreateTexturesFromTextures(T0_DiffuseTexture, HasDiffuseTexture, T1_SpecularTexture,
                                                    HasSpecularTexture, T2_NormalTexture, HasNormalTexture);
     Material material = CreateMaterial(DiffuseMaterial, AmbientMaterial, SpecularMaterial, SpecularExponent);
 
-    LightingOut lighting = CalculateLighting(input.WorldPosition, input.TextureCoordinates, input.WorldNormal, textures, material);
+    LightingOut lighting = CalculateLighting(input.WorldPosition, input.TextureCoordinates, input.TBNMatrix, 
+											 input.TextureCoordinates, textures, material);
 
 	float4 color = float4(input.Color, 0);
 	color += float4(lighting.AmbientOut, 0);

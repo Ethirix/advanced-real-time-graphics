@@ -13,8 +13,7 @@ struct VS_NormalMappingOut
 
     float2 TextureCoordinates : TEXCOORD;
 
-    float3 TangentEye : TANGENTEYE;
-    float3 TangentPointLight : TANGENTDIRECTIONALLIGHT;
+    float3x3 TBNMatrix : TBNMATRIX;
 };
 
 #endif
