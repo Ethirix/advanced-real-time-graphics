@@ -150,9 +150,7 @@ LightingOut CalculateSpotLight(
 
 LightingOut CalculateLighting(
 	float3 fragmentPosition,
-	float2 textureCoordinates,
 	float3 worldNormal,
-	Textures textures,
 	Material material)
 {
     LightingOut lighting;
@@ -186,8 +184,6 @@ LightingOut CalculateLighting(
         lighting.SpecularOut += light.SpecularOut;
         lighting.AmbientOut += light.AmbientOut;
     }
-
-    lighting = CalculateTextures(lighting, textureCoordinates, textures, material);
 
     return lighting;
 }
@@ -273,8 +269,6 @@ LightingOut CalculateLighting(
         lighting.SpecularOut += light.SpecularOut;
         lighting.AmbientOut += light.AmbientOut;
     }
-
-    lighting = CalculateTextures(lighting, textureCoordinates, textures, material);
 
     return lighting;
 }

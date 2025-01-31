@@ -14,7 +14,7 @@ struct PSGeoPassOut
     float4 Normal : SV_TARGET1; //rgb - normal a - specular
 };
 
-PSGeoPassOut PS_Main(VS_BaseOut input)
+PSGeoPassOut PS_Main(VS_GeoOut input)
 {
     PSGeoPassOut output = (PSGeoPassOut) 0;
 
@@ -33,7 +33,7 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
 
     if (textures.Normal.HasTexture)
     {
-        output.Normal.rgb = normalize(textures.Normal.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates).xyz);
+        output.Normal.rgb = normalize(mul(textures.Normal.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates).xyz * 2.0f - 1.0f, input.TBNMatrix));
     }
 	else
 	{

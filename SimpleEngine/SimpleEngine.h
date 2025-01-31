@@ -55,10 +55,16 @@ private:
 #ifdef _DEFERRED_RENDER
 	ComPtr<ID3D11Texture2D> _albedoTexture;
 	ComPtr<ID3D11Texture2D> _normalTexture;
+	ComPtr<ID3D11Texture2D> _lightingDiffuseTexture;
+	ComPtr<ID3D11Texture2D> _lightingSpecularTexture;
 	ComPtr<ID3D11ShaderResourceView> _albedoShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _normalShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _lightingDiffuseShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _lightingSpecularShaderResourceView;
 	ComPtr<ID3D11RenderTargetView> _albedoFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _normalFrameBufferView;
+	ComPtr<ID3D11RenderTargetView> _lightingDiffuseFrameBufferView;
+	ComPtr<ID3D11RenderTargetView> _lightingSpecularFrameBufferView;
 #endif
 
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;

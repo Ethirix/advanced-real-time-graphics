@@ -2,9 +2,9 @@
 #include "Structs/VS_BaseIn.hlsli"
 #include "Structs/VS_BaseOut.hlsli"
 
-VS_GeoOut VS_Main(VS_BaseIn input)
+VS_BaseOut VS_Main(VS_BaseIn input)
 {
-    VS_GeoOut output = (VS_GeoOut) 0;
+    VS_BaseOut output = (VS_BaseOut) 0;
 
     float4 pos4 = float4(input.Position, 1.0f);
     output.Position = mul(pos4, World);
@@ -16,11 +16,5 @@ VS_GeoOut VS_Main(VS_BaseIn input)
     output.TextureCoordinates = input.TextureCoordinates;
     output.WorldNormal = normalize(mul(float4(input.Normal, 0), World));
 
-    float3 T = normalize(mul(input.Tangent, World));
-    float3 B = normalize(mul(input.Tangent, World));
-    float3 N = output.WorldNormal;
-
-    output.TBNMatrix = float3x3(T, B, N);
-
-	return output;
+    return output;
 }
