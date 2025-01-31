@@ -14,10 +14,9 @@ VS_BaseOut VS_Main(VS_BaseIn input)
     output.Position = mul(output.Position, Projection);
     output.TextureCoordinates = input.TextureCoordinates;
 
-    float3 T = normalize(mul(input.Tangent.xyz, World));
-    float3 B = normalize(mul(input.Bitangent.xyz, World));
-    float3 N = normalize(mul(float4(input.Normal, 0), World));
-    output.TBNMatrix = transpose(float3x3(T, B, N));
+    output.Tangent = normalize(mul(input.Tangent, World));
+    output.Bitangent = normalize(mul(input.Bitangent, World));
+    output.Normal = normalize(mul(float4(input.Normal, 0), World));
 
     return output;
 }

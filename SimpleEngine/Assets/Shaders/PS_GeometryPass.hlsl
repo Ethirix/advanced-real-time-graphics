@@ -18,6 +18,8 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
 {
     PSGeoPassOut output = (PSGeoPassOut) 0;
 
+    float3x3 tbn = transpose(float3x3(normalize(input.Tangent), normalize(input.Bitangent), normalize(input.Normal)));
+
     Textures textures = CreateTexturesFromTextures(T0_DiffuseTexture, HasDiffuseTexture, T1_SpecularTexture,
                                                    HasSpecularTexture, T2_NormalTexture, HasNormalTexture);
     Material material = CreateMaterial(DiffuseMaterial, AmbientMaterial, SpecularMaterial, SpecularExponent);
@@ -37,7 +39,7 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
     }
 	else
 	{
-        output.Normal.rgb = normalize(float3(input.TBNMatrix._m02_m12_m22));
+        output.Normal.rgb = normalize(float3(input.Normal));
     }
 
     if (textures.Specular.HasTexture)

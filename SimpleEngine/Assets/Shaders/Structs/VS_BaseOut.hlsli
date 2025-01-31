@@ -10,7 +10,9 @@ struct VS_BaseOut
 
     float2 TextureCoordinates : TEXCOORD;
 
-    float3x3 TBNMatrix : TBNMATRIX;
+    float3 Tangent : TANGENT;
+    float3 Bitangent : BITANGENT;
+    float3 Normal : NORMAL;
 };
 
 #endif
