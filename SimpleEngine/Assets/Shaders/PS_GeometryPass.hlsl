@@ -1,5 +1,8 @@
 #include "Buffers/CB1_Material.hlsli"
 #include "Buffers/CB2_Textures.hlsli"
+
+#include "Functions/Lighting.hlsli"
+
 #include "Samplers/S0_BilinearSampler.hlsli"
 #include "Structs/Material.hlsli"
 #include "Structs/Textures.hlsli"
@@ -18,8 +21,6 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
 {
     PSGeoPassOut output = (PSGeoPassOut) 0;
 
-    float3x3 tbn = transpose(float3x3(normalize(input.Tangent), normalize(input.Bitangent), normalize(input.Normal)));
-
     Textures textures = CreateTexturesFromTextures(T0_DiffuseTexture, HasDiffuseTexture, T1_SpecularTexture,
                                                    HasSpecularTexture, T2_NormalTexture, HasNormalTexture);
     Material material = CreateMaterial(DiffuseMaterial, AmbientMaterial, SpecularMaterial, SpecularExponent);
@@ -33,14 +34,7 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
         output.Albedo = material.Diffuse;
     }
 
-    if (textures.Normal.HasTexture)
-    {
-        output.Normal.rgb = normalize(textures.Normal.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates).xyz);
-    }
-	else
-	{
-        output.Normal.rgb = normalize(float3(input.Normal));
-    }
+    output.Normal.rgb = CalculateNormal(input.TBNMatrix, input.TextureCoordinates, input.Normal, textures.Normal);
 
     if (textures.Specular.HasTexture)
     {

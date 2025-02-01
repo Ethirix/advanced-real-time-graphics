@@ -12,16 +12,12 @@ VS_BaseOut VS_Main(VS_BaseIn input)
     output.Position = mul(output.Position, View);
     output.Position = mul(output.Position, Projection);
     output.TextureCoordinates = input.TextureCoordinates;
+	output.Normal = normalize(mul(input.Normal, (float3x3)World));
 
-    output.Tangent = normalize(mul(input.Tangent.xyz, World));
-    output.Bitangent = normalize(mul(input.Bitangent.xyz, World));
-    output.Normal = normalize(mul(float4(input.Normal, 0), World));
-    //output.TBNMatrix = transpose(float3x3(T, B, N));
-    
-    //MAKE TBN MATRIX
-    //PASS TO PIXEL SHADER
-    //CONVERT NORMAL MAPS TO WORLD SPACE WITH TBN MATRIX
-    //INVERSED MATRIX IS TANGENT SPACE 
+    float3 t = normalize(mul(input.Tangent, (float3x3)World));
+    float3 b = normalize(mul(input.Bitangent, (float3x3)World));
+    float3 n = output.Normal;
+    output.TBNMatrix = float3x3(t, b, n);
 
 	return output;
 }

@@ -35,29 +35,19 @@ float CalculateSpotLightIntensity(float3 lD, float innerAngle, float outerAngle)
     return saturate((theta - cosOuter) / epsilon);
 }
 
-float3 CalculateNormal(float3x3 tbnMatrix, float2 uv, Texture normalTexture)
+float3 GetNormalMap(Texture normalTexture, float2 uv)
 {
-    if (!normalTexture.HasTexture)
-        return normalize(tbnMatrix._m02_m12_m22);
-
     float4 normalMap = normalTexture.Texture.Sample(S0_BilinearSampler, uv);
-    return normalize((normalMap.xyz * 2.0f) - 1.0f);
+    return normalize(normalMap.rgb * 2.0f - 1.0f) * normalMap.a;
 }
 
-float3 CalculateEye(float3x3 tbnMatrix, float3 eye, float3 fragmentPosition, Texture normalTexture)
+float3 CalculateNormal(float3x3 tbnMatrix, float2 uv, float3 normal, Texture normalTexture)
 {
     if (!normalTexture.HasTexture)
-        return eye;
+        return normalize(normal);
 
-    return ConvertVectorToSpace(eye - fragmentPosition, tbnMatrix);
-}
-
-float3 CalculateLightDirection(float3x3 tbnMatrix, float3 direction, Texture normalTexture)
-{
-    if (!normalTexture.HasTexture)
-        return normalize(direction);
-
-    return normalize(ConvertVectorToSpace(direction, tbnMatrix));
+    float3 normalMap = GetNormalMap(normalTexture, uv);
+    return normalize(ConvertVectorToSpace(normalMap, tbnMatrix));
 }
 
 LightingOut CalculateTextures(LightingOut lighting, float2 textureCoordinates, Textures textures, Material material)
@@ -87,14 +77,14 @@ LightingOut CalculateTextures(LightingOut lighting, float2 textureCoordinates, T
 }
 
 LightingOut CalculateBlinnPhong(
-	float3 fragmentPosition, 
+	float3 fragmentPosition,
 	float3 normal,
 	float3 eye,
-	float3 lightDirection, 
+	float3 lightDirection,
 	float distance,
-	float3 ambient, 
-	float4 diffuse, 
-	float4 specular, 
+	float3 ambient,
+	float4 diffuse,
+	float4 specular,
 	float specularExponent)
 {
     LightingOut lighting = (LightingOut) 0;
@@ -103,9 +93,6 @@ LightingOut CalculateBlinnPhong(
 
     float diffuseIntensity = saturate(dot(normal, lightDirection));
     lighting.DiffuseOut = diffuseIntensity * diffuse.rgb * diffuse.a / distance;
-
-    if (diffuseIntensity == 0)
-        return lighting;
 
     float3 eyeDirection = normalize(eye - fragmentPosition);
     float3 halfVector = normalize(lightDirection + eyeDirection);
@@ -116,22 +103,14 @@ LightingOut CalculateBlinnPhong(
 }
 
 LightingOut CalculateDirectionalLight(
-	DirectionalLightData light, 
+	DirectionalLightData light,
 	float3 fragmentPosition,
-	float3x3 tbnMatrix,
-	float2 uv,
+	float3 normal,
 	float3 eye,
-	Texture normalTexture,
 	Material material)
 {
-    float3 lightDirection = CalculateLightDirection(tbnMatrix, -light.Direction, normalTexture);
-    float3 normal = CalculateNormal(tbnMatrix, uv, normalTexture);
-
-    return CalculateBlinnPhong(fragmentPosition, normal, 
-							   //CalculateEye(tbnMatrix, eye, float3(0, 0, 0), normalTexture), 
-							   CalculateEye(tbnMatrix, eye, fragmentPosition, normalTexture), 
-							   //eye,
-							   lightDirection, 1, light.AmbientColor,
+    float3 lightDirection = normalize(-light.Direction);
+    return CalculateBlinnPhong(fragmentPosition, normal, eye, lightDirection, 1, light.AmbientColor,
                                float4(light.DiffuseColor, light.DiffusePower),
                                float4(light.SpecularColor, light.SpecularPower), material.SpecularExponent);
 }
@@ -139,25 +118,19 @@ LightingOut CalculateDirectionalLight(
 LightingOut CalculatePointLight(
 	PointLightData light,
 	float3 fragmentPosition,
-	float3x3 tbnMatrix,
-	float2 uv,
+	float3 normal,
 	float3 eye,
-	Texture normalTexture,
 	Material material)
 {
-    float3 lightDirection = CalculateLightDirection(tbnMatrix, light.Position - fragmentPosition, normalTexture);
-    float3 normal = CalculateNormal(tbnMatrix, uv, normalTexture);
-    float distance = length(light.Position - fragmentPosition);
-
-    LightingOut lighting = CalculateBlinnPhong(fragmentPosition, normal, 
-							   CalculateEye(tbnMatrix, eye, fragmentPosition, normalTexture), lightDirection, distance, light.AmbientColor,
+    float3 lightDirection = normalize(light.Position.xyz - fragmentPosition);
+    float distance = length(light.Position.xyz - fragmentPosition);
+    LightingOut lighting = CalculateBlinnPhong(fragmentPosition, normal, eye, lightDirection, distance, light.AmbientColor,
                                float4(light.DiffuseColor, light.DiffusePower),
                                float4(light.SpecularColor, light.SpecularPower), material.SpecularExponent);
 
     float attenuation = CalculateAttenuation(distance, light.ConstantAttenuation, light.LinearAttenuation,
                                              light.QuadraticAttenuation, light.LightRadius);
 
-	lighting.AmbientOut *= attenuation;
     lighting.DiffuseOut *= attenuation;
     lighting.SpecularOut *= attenuation;
 
@@ -167,19 +140,14 @@ LightingOut CalculatePointLight(
 LightingOut CalculateSpotLight(
 	SpotLightData light,
 	float3 fragmentPosition,
-	float3x3 tbnMatrix,
-	float2 uv,
+	float3 normal,
 	float3 eye,
-	Texture normalTexture,
 	Material material)
 {
 
-    float3 lightDirection = CalculateLightDirection(tbnMatrix, light.Position - fragmentPosition, normalTexture);
-    float3 normal = CalculateNormal(tbnMatrix, uv, normalTexture);
-    float distance = length(light.Position - fragmentPosition);
-
-    LightingOut lighting = CalculateBlinnPhong(fragmentPosition, normal,
-							   CalculateEye(tbnMatrix, eye, fragmentPosition, normalTexture), lightDirection, distance, light.AmbientColor,
+    float3 lightDirection = normalize(light.Position.xyz - fragmentPosition);
+    float distance = length(light.Position.xyz - fragmentPosition);
+    LightingOut lighting = CalculateBlinnPhong(fragmentPosition, normal, eye, lightDirection, distance, light.AmbientColor,
                                float4(light.DiffuseColor, light.DiffusePower),
                                float4(light.SpecularColor, light.SpecularPower), material.SpecularExponent);
 
@@ -196,8 +164,7 @@ LightingOut CalculateSpotLight(
 
 LightingOut CalculateLighting(
 	float3 fragmentPosition,
-	float2 textureCoordinates,
-	float3x3 tbnMatrix,
+	float3 normal,
 	float2 uv,
 	Textures textures,
 	Material material)
@@ -209,8 +176,7 @@ LightingOut CalculateLighting(
 
     for (uint i = 0; i < TotalDirectionalLights && i < MaxDirectionalLights; i++)
     {
-        LightingOut light = CalculateDirectionalLight(T8_DirectionalLights[i], fragmentPosition, tbnMatrix, uv, 
-													  Eye.xyz, textures.Normal, material);
+        LightingOut light = CalculateDirectionalLight(T8_DirectionalLights[i], fragmentPosition, normal, Eye.xyz, material);
 
         lighting.DiffuseOut += light.DiffuseOut;
         lighting.SpecularOut += light.SpecularOut;
@@ -219,8 +185,7 @@ LightingOut CalculateLighting(
 
     for (uint i = 0; i < TotalPointLights && i < MaxPointLights; i++)
     {
-        LightingOut light = CalculatePointLight(T9_PointLights[i], fragmentPosition, tbnMatrix, uv,
-													  Eye.xyz, textures.Normal, material);
+        LightingOut light = CalculatePointLight(T9_PointLights[i], fragmentPosition, normal, Eye.xyz, material);
 
         lighting.DiffuseOut += light.DiffuseOut;
         lighting.SpecularOut += light.SpecularOut;
@@ -229,15 +194,14 @@ LightingOut CalculateLighting(
 
     for (uint i = 0; i < TotalSpotLights && i < MaxSpotLights; i++)
     {
-        LightingOut light = CalculateSpotLight(T10_SpotLights[i], fragmentPosition, tbnMatrix, uv,
-													  Eye.xyz, textures.Normal, material);
+        LightingOut light = CalculateSpotLight(T10_SpotLights[i], fragmentPosition, normal, Eye.xyz, material);
 
         lighting.DiffuseOut += light.DiffuseOut;
         lighting.SpecularOut += light.SpecularOut;
         lighting.AmbientOut += light.AmbientOut;
     }
 
-    lighting = CalculateTextures(lighting, textureCoordinates, textures, material);
+    lighting = CalculateTextures(lighting, uv, textures, material);
 
     return lighting;
 }
