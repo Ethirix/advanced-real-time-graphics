@@ -540,12 +540,6 @@
     <None Include="Assets\Shaders\Structs\SpotLightData.hlsli">
       <Filter>Resource Files\Shaders\Structs\Lighting</Filter>
     </None>
-    <None Include="Assets\Shaders\PS_NormalMapping.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Assets\Shaders\VS_NormalMapping.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli">
       <Filter>Resource Files\Shaders\Structs</Filter>
     </None>

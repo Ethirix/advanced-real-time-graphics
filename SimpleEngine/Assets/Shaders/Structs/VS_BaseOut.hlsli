@@ -9,9 +9,9 @@ struct VS_BaseOut
     float3 WorldPosition : POSITION;
 
     float3 Normal : NORMAL;
-    float3 WorldNormal : WORLDNORMAL;
-
     float2 TextureCoordinates : TEXCOORD;
+
+    float3x3 TBNMatrix : TBNMATRIX;
 };
 
 struct VS_GeoOut

@@ -338,8 +338,8 @@
           "Type": "MeshComponent",
           "MeshPath": "Assets/Meshes/artgcube.obj",
           "MaterialPath": "Assets/Materials/artgcube.mtl",
-          "VertexShaderPath": "Assets/Shaders/VS_NormalMapping.hlsl",
-          "PixelShaderPath": "Assets/Shaders/PS_NormalMapping.hlsl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
             "Diffuse": {
@@ -356,6 +356,82 @@
             },
             "Normal": {
               "Path": "Assets/Textures/Stone/Stone_NORMAL.dds",
+              "Slot": 2
+            }
+          },
+          "Stencil": ""
+        },
+        {
+          "Type": "PhysicsComponent",
+          "Mass": 20,
+          "DragCoefficient": 1.4,
+          "FrictionCoefficient": 0.8,
+          "Restitution": 0.2,
+          "AngularDamping": 0.2,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": true
+        },
+        {
+          "Type": "AABBColliderComponent",
+          "Bounds": {
+            "Min": {
+              "X": -1,
+              "Y": -1,
+              "Z": -1
+            },
+            "Max": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
+            }
+          },
+          "UseMeshBounds": true,
+          "Collideable": true
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "NormalMappingTestSphere",
+      "Position": {
+        "X": -30,
+        "Y": 30,
+        "Z": 30
+      },
+      "Scale": {
+        "X": 2,
+        "Y": 2,
+        "Z": 2
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/sphere.obj",
+          "MaterialPath": "Assets/Materials/sphere.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/SlateTile/SlateTile_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "Assets/Textures/SlateTile/SlateTile_NORMAL.dds",
               "Slot": 2
             }
           },
@@ -527,7 +603,7 @@
             "G": 1,
             "B": 0
           },
-          "SpecularPower": 32,
+          "SpecularPower": 4,
           "AmbientColour": {
             "R": 0,
             "G": 0,

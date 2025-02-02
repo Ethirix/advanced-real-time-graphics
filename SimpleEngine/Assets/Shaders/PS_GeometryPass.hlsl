@@ -1,5 +1,8 @@
 #include "Buffers/CB1_Material.hlsli"
 #include "Buffers/CB2_Textures.hlsli"
+
+#include "Functions/Lighting.hlsli"
+
 #include "Samplers/S0_BilinearSampler.hlsli"
 #include "Structs/Material.hlsli"
 #include "Structs/Textures.hlsli"
@@ -31,14 +34,7 @@ PSGeoPassOut PS_Main(VS_GeoOut input)
         output.Albedo = material.Diffuse;
     }
 
-    if (textures.Normal.HasTexture)
-    {
-        output.Normal.rgb = normalize(mul(textures.Normal.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates).xyz * 2.0f - 1.0f, input.TBNMatrix));
-    }
-	else
-	{
-        output.Normal.rgb = normalize(float3(input.WorldNormal));
-    }
+    output.Normal.rgb = CalculateNormal(input.TBNMatrix, input.TextureCoordinates, input.Normal, textures.Normal);
 
     if (textures.Specular.HasTexture)
     {
