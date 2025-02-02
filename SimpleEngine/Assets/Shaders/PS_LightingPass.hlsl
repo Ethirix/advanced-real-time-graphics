@@ -14,10 +14,10 @@ PSLightPassOut PS_Main(VS_BaseOut input) : SV_TARGET
     PSLightPassOut output = (PSLightPassOut) 0;
 
     Material material = CreateMaterial(DiffuseMaterial, AmbientMaterial, SpecularMaterial, SpecularExponent);
-    LightingOut lighting = CalculateLighting(input.WorldPosition, input.WorldNormal, material);
+	//LightingOut lighting = CalculateLighting(input.WorldPosition, input.Normal, material);
 
-    output.Diffuse = float4(lighting.DiffuseOut, 1);
-    output.Specular = float4(lighting.SpecularOut, 1);
+    //output.Diffuse = float4(lighting.DiffuseOut, 1);
+    //output.Specular = float4(lighting.SpecularOut, 1);
 
     return output;
 }

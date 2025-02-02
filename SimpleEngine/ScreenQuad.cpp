@@ -64,10 +64,5 @@ void ScreenQuad::Draw(const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& context
 	context->IASetVertexBuffers(0, 1, _mesh.VertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(_mesh.IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, offset);
 
-	context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_FinalPass.hlsl").value().Shader.Get(),
-		nullptr, 0);
-	context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_FinalPass.hlsl").value().Shader.Get(),
-		nullptr, 0);
-
 	context->DrawIndexed(_mesh.VertexIndices.Length, 0, 0);
 }
