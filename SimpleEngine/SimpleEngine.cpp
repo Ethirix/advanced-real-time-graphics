@@ -219,9 +219,26 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
+	//RELEASE_RESOURCE(_albedoTexture);
+	//RELEASE_RESOURCE(_albedoFrameBufferView);
+	//RELEASE_RESOURCE(_albedoShaderResourceView);
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, _albedoTexture.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_albedoTexture.Get(), &renderTargetViewDesc, _albedoFrameBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_albedoTexture.Get(), &shaderResourceViewDesc, _albedoShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	//RELEASE_RESOURCE(_lightingDiffuseTexture);
+	//RELEASE_RESOURCE(_lightingDiffuseFrameBufferView);
+	//RELEASE_RESOURCE(_lightingDiffuseShaderResourceView);
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_lightingDiffuseTexture); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_lightingDiffuseTexture.Get(), &renderTargetViewDesc, _lightingDiffuseFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_lightingDiffuseTexture.Get(), &shaderResourceViewDesc, _lightingDiffuseShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	//RELEASE_RESOURCE(_lightingSpecularTexture);
+	//RELEASE_RESOURCE(_lightingSpecularFrameBufferView);
+	//RELEASE_RESOURCE(_lightingSpecularShaderResourceView);
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_lightingSpecularTexture); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_lightingSpecularTexture.Get(), &renderTargetViewDesc, _lightingSpecularFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_lightingSpecularTexture.Get(), &shaderResourceViewDesc, _lightingSpecularShaderResourceView.GetAddressOf()); FAIL_CHECK
 
 #ifdef _WIN64
 	textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -229,9 +246,13 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 #endif
 
+	//RELEASE_RESOURCE(_normalTexture);
+	//RELEASE_RESOURCE(_normalFrameBufferView);
+	//RELEASE_RESOURCE(_normalShaderResourceView);
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_normalTexture); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_normalTexture.Get(), &renderTargetViewDesc, _normalFrameBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_normalTexture.Get(), &shaderResourceViewDesc, _normalShaderResourceView.GetAddressOf()); FAIL_CHECK
+
 #endif
 
 	return hr;
@@ -769,12 +790,13 @@ void SimpleEngine::Draw()
 
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
-	_context->ClearRenderTargetView(_albedoFrameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
-	_context->ClearRenderTargetView(_normalFrameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+	_context->ClearRenderTargetView(_albedoFrameBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_normalFrameBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_lightingDiffuseFrameBufferView.Get(), backgroundColour);
 
 #pragma region G-Buffer Pass
-	ID3D11RenderTargetView* rTVs[2] = {_albedoFrameBufferView.Get(), _normalFrameBufferView.Get()};
-	_context->OMSetRenderTargets(2, rTVs, _depthStencilView.Get());
+	ID3D11RenderTargetView* rTVsGPass[2] = {_albedoFrameBufferView.Get(), _normalFrameBufferView.Get()};
+	_context->OMSetRenderTargets(2, rTVsGPass, _depthStencilView.Get());
 
 	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_GeometryPass.hlsl").value().Shader.Get(),
 	                      nullptr, 0);
@@ -784,20 +806,34 @@ void SimpleEngine::Draw()
 	SceneGraph::Draw(_context);
 
 	_context->OMSetRenderTargets(0, nullptr, nullptr);
+	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 #pragma endregion
 
 #pragma region Lighting Pass
 	//Rebind RTVs as SRVs
-	//ID3D11ShaderResourceView* sRVs[2] = { _albedoShaderResourceView.Get(), _normalShaderResourceView.Get() };
-	//_context->VSSetShaderResources(16, 2, sRVs);
-	//_context->PSSetShaderResources(16, 2, sRVs);
+	ID3D11RenderTargetView* rTVsLPass[2] = { _lightingDiffuseFrameBufferView.Get(), _lightingSpecularFrameBufferView.Get() };
+	ID3D11ShaderResourceView* sRVsLPass[2] = { _albedoShaderResourceView.Get(), _normalShaderResourceView.Get() };
+	_context->VSSetShaderResources(16, 2, sRVsLPass);
+	_context->PSSetShaderResources(16, 2, sRVsLPass);
+	_context->OMSetRenderTargets(2, rTVsLPass, _depthStencilView.Get());
 
-	//_context->OMSetRenderTargets(0, nullptr, nullptr);
+	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_LightingPass.hlsl").value().Shader.Get(),
+		nullptr, 0);
+	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_LightingPass.hlsl").value().Shader.Get(),
+		nullptr, 0);
+
+	SceneGraph::Draw(_context);
+
+	ID3D11ShaderResourceView* sRVsNull[2] = { nullptr, nullptr };
+	_context->VSSetShaderResources(16, 2, sRVsNull);
+	_context->PSSetShaderResources(16, 2, sRVsNull);
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
+	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 #pragma endregion
 
 #pragma region Output
-	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), nullptr);
-	_context->PSSetShaderResources(24, 1, _normalShaderResourceView.GetAddressOf());
+	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
+	_context->PSSetShaderResources(24, 1, _lightingDiffuseShaderResourceView.GetAddressOf());
 
 	_screenQuad->Draw(_context);
 

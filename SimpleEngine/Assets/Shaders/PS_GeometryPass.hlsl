@@ -17,7 +17,7 @@ struct PSGeoPassOut
     float4 Normal : SV_TARGET1; //rgb - normal a - specular
 };
 
-PSGeoPassOut PS_Main(VS_BaseOut input)
+PSGeoPassOut PS_Main(VS_GeoOut input)
 {
     PSGeoPassOut output = (PSGeoPassOut) 0;
 

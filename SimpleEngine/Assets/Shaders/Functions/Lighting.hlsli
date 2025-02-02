@@ -166,7 +166,6 @@ LightingOut CalculateLighting(
 	float3 fragmentPosition,
 	float3 normal,
 	float2 uv,
-	Textures textures,
 	Material material)
 {
     LightingOut lighting;
@@ -200,8 +199,6 @@ LightingOut CalculateLighting(
         lighting.SpecularOut += light.SpecularOut;
         lighting.AmbientOut += light.AmbientOut;
     }
-
-    lighting = CalculateTextures(lighting, uv, textures, material);
 
     return lighting;
 }

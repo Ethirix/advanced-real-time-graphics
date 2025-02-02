@@ -2,9 +2,9 @@
 #include "Structs/VS_BaseIn.hlsli"
 #include "Structs/VS_BaseOut.hlsli"
 
-VS_BaseOut VS_Main(VS_BaseIn input)
+VS_GeoOut VS_Main(VS_BaseIn input)
 {
-    VS_BaseOut output = (VS_BaseOut) 0;
+    VS_GeoOut output = (VS_GeoOut) 0;
 
     float4 pos4 = float4(input.Position, 1.0f);
     output.Position = mul(pos4, World);

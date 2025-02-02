@@ -92,10 +92,12 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 	Buffers::CBMaterial.BufferData.Specular = Material ? Material->Specular : DirectX::XMFLOAT4{};
 	Buffers::CBMaterial.BufferData.SpecularExponent = Material ? Material->SpecularExponent : 0;
 
+#ifndef _DEFERRED_RENDER
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState = nullptr;
 	context->OMGetDepthStencilState(depthStencilState.GetAddressOf(), nullptr);
 	if (depthStencilState != DepthStencil)
 		context->OMSetDepthStencilState(DepthStencil.Get(), 0);
+#endif
 
 	D3D11_MAPPED_SUBRESOURCE objectCameraData, materialData, texturesData;
 	Buffers::CBObjectCameraData.BufferData.World = XMMatrixTranspose(
