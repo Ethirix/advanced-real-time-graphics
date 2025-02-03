@@ -190,12 +190,25 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	frameBufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	hr = _device->CreateRenderTargetView(frameBuffer, &frameBufferDesc, _frameBufferView.GetAddressOf()); FAIL_CHECK
 
-	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
-	frameBuffer->GetDesc(&depthBufferDesc);
-	depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	D3D11_TEXTURE2D_DESC depthBufferDesc{};
+	depthBufferDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+#ifdef _DEFERRED_RENDER
+	depthBufferDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+#endif
+	depthBufferDesc.MipLevels = 1;
+	depthBufferDesc.ArraySize = 1;
+	depthBufferDesc.SampleDesc.Count = 1;
+	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthBufferDesc.Width = Screen::Width;
+	depthBufferDesc.Height = Screen::Height;
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilDesc{};
+	depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthStencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
 	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf()); FAIL_CHECK
-    hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), nullptr, _depthStencilView.GetAddressOf()); FAIL_CHECK
+    hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), &depthStencilDesc, _depthStencilView.GetAddressOf()); FAIL_CHECK
 
     frameBuffer->Release();
 
@@ -215,9 +228,13 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	renderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	hr = _device->CreateShaderResourceView(_depthStencilBuffer.Get(), &shaderResourceViewDesc, _depthShaderResourceView.GetAddressOf());
+
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, _albedoTexture.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_albedoTexture.Get(), &renderTargetViewDesc, _albedoFrameBufferView.GetAddressOf()); FAIL_CHECK

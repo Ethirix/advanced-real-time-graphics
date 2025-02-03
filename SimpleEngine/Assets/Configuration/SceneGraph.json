@@ -31,8 +31,8 @@
             "Y": 1,
             "Z": 0
           },
-          "NearPlane": 0.01,
-          "FarPlane": 100000.0,
+          "NearPlane": 0.1,
+          "FarPlane": 1000.0,
           "MovementSpeed": 16.0,
           "RotationSpeed": 2.0
         }
