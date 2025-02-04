@@ -107,6 +107,9 @@
     <Filter Include="Header Files\Structs\Lighting">
       <UniqueIdentifier>{a5a49f81-5486-493e-a5ef-9f76d17608f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\_ForwardShaders">
+      <UniqueIdentifier>{2cd21c40-b2bc-4ce7-a90a-7c289b144c6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -431,12 +434,6 @@
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
       <Filter>Resource Files\Shaders\Buffers</Filter>
     </None>
-    <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Assets\Shaders\PS_BlinnPhong.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli">
       <Filter>Resource Files\Shaders\Buffers</Filter>
     </None>
@@ -503,19 +500,12 @@
     <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
-    <None Include="Assets\Shaders\VS_Skybox.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Assets\Shaders\PS_Skybox.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="imgui\imgui.natstepfilter">
       <Filter>ImGUI</Filter>
     </None>
     <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="Assets\Shaders\Functions\VectorSpaceConverter.hlsli">
       <Filter>Resource Files\Shaders\Functions</Filter>
     </None>
@@ -540,9 +530,6 @@
     <None Include="Assets\Shaders\Structs\SpotLightData.hlsli">
       <Filter>Resource Files\Shaders\Structs\Lighting</Filter>
     </None>
-    <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli">
-      <Filter>Resource Files\Shaders\Structs</Filter>
-    </None>
     <None Include="Assets\Shaders\PS_GeometryPass.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
@@ -558,20 +545,30 @@
     <None Include="Assets\Shaders\Structured Resources\T24_FinalPass.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
-    <None Include="Assets\Shaders\PS_FinalPass.hlsl">
+    <None Include="Assets\Shaders\PS_LineariseDepth.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="Assets\Shaders\VS_FinalPass.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structs\VS_FinalPassOut.hlsli">
+    <None Include="Assets\Shaders\Structs\VS_ScreenQuadOut.hlsli">
       <Filter>Resource Files\Shaders\Structs</Filter>
     </None>
     <None Include="Assets\Shaders\PS_LightingPass.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="Assets\Shaders\VS_LightingPass.hlsl">
+    <None Include="Assets\Shaders\VS_ScreenQuad.hlsl">
       <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Assets\Shaders\VS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_BlinnPhong.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

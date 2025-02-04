@@ -821,7 +821,7 @@ void SimpleEngine::Draw()
 	_context->PSSetShaderResources(16, 2, sRVsLPass);
 	_context->OMSetRenderTargets(2, rTVsLPass, nullptr);
 
-	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_LightingPass.hlsl").value().Shader.Get(),
+	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
 		nullptr, 0);
 	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_LightingPass.hlsl").value().Shader.Get(),
 		nullptr, 0);
@@ -838,9 +838,9 @@ void SimpleEngine::Draw()
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), nullptr);
 	_context->PSSetShaderResources(24, 1, _depthShaderResourceView.GetAddressOf());
 
-	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_FinalPass.hlsl").value().Shader.Get(),
+	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
 		nullptr, 0);
-	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_FinalPass.hlsl").value().Shader.Get(),
+	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_LineariseDepth.hlsl").value().Shader.Get(),
 		nullptr, 0);
 
 	_screenQuad->Draw(_context);

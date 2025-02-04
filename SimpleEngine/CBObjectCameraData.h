@@ -6,6 +6,8 @@ struct CBObjectCameraData
 	DirectX::XMMATRIX Projection;
 	DirectX::XMMATRIX View;
 	DirectX::XMMATRIX World;
-	DirectX::XMFLOAT4 Eye;
-	DirectX::XMFLOAT4 At;
+	DirectX::XMFLOAT3 Eye;
+	float NearZ;
+	DirectX::XMFLOAT3 At;
+	float FarZ;
 };

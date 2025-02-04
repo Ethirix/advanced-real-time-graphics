@@ -1,7 +1,7 @@
 #include "Buffers/CB1_Material.hlsli"
 #include "Functions/Lighting.hlsli"
 #include "Structs/LightingOut.hlsli"
-#include "Structs/VS_BaseOut.hlsli"
+#include "Structs/VS_ScreenQuadOut.hlsli"
 
 struct PSLightPassOut
 {
@@ -9,7 +9,7 @@ struct PSLightPassOut
     float4 Specular : SV_TARGET1;
 };
 
-PSLightPassOut PS_Main(VS_BaseOut input) : SV_TARGET
+PSLightPassOut PS_Main(VS_ScreenQuadOut input) : SV_TARGET
 {
     PSLightPassOut output = (PSLightPassOut) 0;
 

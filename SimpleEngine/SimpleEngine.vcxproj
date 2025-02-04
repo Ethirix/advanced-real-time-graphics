@@ -415,8 +415,7 @@
     <None Include="Assets\Shaders\Structs\Textures.hlsli" />
     <None Include="Assets\Shaders\Structs\VS_BaseOut.hlsli" />
     <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli" />
-    <None Include="Assets\Shaders\Structs\VS_FinalPassOut.hlsli" />
-    <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli" />
+    <None Include="Assets\Shaders\Structs\VS_ScreenQuadOut.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T10_SpotLights.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T16_DeferredAlbedoTexture.hlsli" />
@@ -435,8 +434,8 @@
     <None Include="imgui\imgui.natstepfilter" />
     <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli" />
     <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli" />
-    <None Include="packages.config" />
     <None Include="Assets\Shaders\Structs\VS_BaseIn.hlsli" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli" />
@@ -500,7 +499,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shaders\PS_FinalPass.hlsl">
+    <None Include="Assets\Shaders\PS_LineariseDepth.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Pixel</ShaderType>
@@ -509,17 +508,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Pixel</ShaderType>
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\VS_FinalPass.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Vertex</ShaderType>
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
@@ -535,7 +523,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Pixel</ShaderType>
       <FileType>Document</FileType>
     </None>
-    <None Include="Assets\Shaders\VS_LightingPass.hlsl">
+    <None Include="Assets\Shaders\VS_ScreenQuad.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Vertex</ShaderType>
@@ -549,12 +537,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets" Condition="Exists('packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets')" />
+    <Import Project="packages\nlohmann.json.3.11.3\build\native\nlohmann.json.targets" Condition="Exists('packages\nlohmann.json.3.11.3\build\native\nlohmann.json.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets'))" />
+    <Error Condition="!Exists('packages\nlohmann.json.3.11.3\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\nlohmann.json.3.11.3\build\native\nlohmann.json.targets'))" />
   </Target>
 </Project>

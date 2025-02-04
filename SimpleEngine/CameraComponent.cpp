@@ -121,8 +121,10 @@ void CameraComponent::Update(double deltaTime)
 	GameObject.lock()->Transform->SetPosition(_eye);
 	XMStoreFloat4x4(&_view, XMMatrixInverse(nullptr, cameraWorld));
 
-	Buffers::CBObjectCameraData.BufferData.Eye = {_eye.x, _eye.y, _eye.z, 1};
-	Buffers::CBObjectCameraData.BufferData.At = {_at.x, _at.y, _at.z, 1};
+	Buffers::CBObjectCameraData.BufferData.Eye = { _eye.x, _eye.y, _eye.z };
+	Buffers::CBObjectCameraData.BufferData.At = { _at.x, _at.y, _at.z };
+	Buffers::CBObjectCameraData.BufferData.NearZ = _nearDepth;
+	Buffers::CBObjectCameraData.BufferData.FarZ = _farDepth;
 	Buffers::CBObjectCameraData.BufferData.View = XMMatrixTranspose(XMLoadFloat4x4(&GetView()));
 	Buffers::CBObjectCameraData.BufferData.Projection = XMMatrixTranspose(XMLoadFloat4x4(&GetProjection()));
 }
