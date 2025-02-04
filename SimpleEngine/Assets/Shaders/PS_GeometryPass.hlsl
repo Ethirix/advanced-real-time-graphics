@@ -25,25 +25,12 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
                                                    HasSpecularTexture, T2_NormalTexture, HasNormalTexture);
     Material material = CreateMaterial(DiffuseMaterial, AmbientMaterial, SpecularMaterial, SpecularExponent);
 
-    if (textures.Diffuse.HasTexture)
-    {
-        output.Albedo = textures.Diffuse.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates);
-    }
-	else
-	{
-        output.Albedo = material.Diffuse;
-    }
 
+    output.Albedo = textures.Diffuse.HasTexture ? textures.Diffuse.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates)
+												: material.Diffuse;
     output.Normal.rgb = CalculateNormal(input.TBNMatrix, input.TextureCoordinates, input.Normal, textures.Normal);
-
-    if (textures.Specular.HasTexture)
-    {
-        output.Normal.a = length(textures.Specular.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates).rgb) / 3.0f;
-    }
-    else
-    {
-        output.Normal.a = length(material.Specular.rgb) / 3.0f;
-    }
+    output.Normal.a = textures.Specular.HasTexture ? length(textures.Specular.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates).rgb) / 3.0f
+												   : length(material.Specular.rgb) / 3.0f;
 
     return output;
 }
