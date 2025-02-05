@@ -542,7 +542,7 @@
     <None Include="Assets\Shaders\Structured Resources\T16_DeferredAlbedoTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
-    <None Include="Assets\Shaders\Structured Resources\T24_FinalPass.hlsli">
+    <None Include="Assets\Shaders\Structured Resources\T24_GenericTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
     <None Include="Assets\Shaders\Structs\VS_ScreenQuadOut.hlsli">
@@ -572,6 +572,18 @@
     </None>
     <None Include="Assets\Shaders\Structured Resources\T18_DeferredDepthTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T19_DeferredWorldPositionTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T20_DeferredDiffuseLightingTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T21_DeferredSpecularLightingTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_CombineGeometryLighting.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

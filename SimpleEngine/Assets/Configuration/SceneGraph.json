@@ -57,7 +57,7 @@
           },
           "Components": [
             {
-              "Type": "MeshComponent",
+              "Type": "Mesh Component",
               "MeshPath": "Assets/Meshes/InvertedCube2.obj",
               "MaterialPath": "",
               "VertexShaderPath": "Assets/Shaders/VS_Skybox.hlsl",
@@ -564,9 +564,9 @@
           },
           "SpecularPower": 1,
           "AmbientColour": {
-            "R": 0.50,
-            "G": 0.4,
-            "B": 0.4
+            "R": 0.0,
+            "G": 0.0,
+            "B": 0.0
           }
         }
       ],
