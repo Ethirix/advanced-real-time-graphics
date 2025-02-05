@@ -125,6 +125,12 @@ void CameraComponent::Update(double deltaTime)
 	Buffers::CBObjectCameraData.BufferData.At = { _at.x, _at.y, _at.z };
 	Buffers::CBObjectCameraData.BufferData.NearZ = _nearDepth;
 	Buffers::CBObjectCameraData.BufferData.FarZ = _farDepth;
+
 	Buffers::CBObjectCameraData.BufferData.View = XMMatrixTranspose(XMLoadFloat4x4(&GetView()));
+	Buffers::CBObjectCameraData.BufferData.InverseView = XMMatrixTranspose(XMMatrixInverse(nullptr, 
+																		   XMLoadFloat4x4(&GetView())));
+
 	Buffers::CBObjectCameraData.BufferData.Projection = XMMatrixTranspose(XMLoadFloat4x4(&GetProjection()));
+	Buffers::CBObjectCameraData.BufferData.InverseProjection = XMMatrixTranspose(XMMatrixInverse(nullptr, 
+																				 XMLoadFloat4x4(&GetProjection())));
 }

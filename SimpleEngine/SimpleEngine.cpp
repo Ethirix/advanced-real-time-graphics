@@ -845,7 +845,7 @@ void SimpleEngine::Draw()
 
 #pragma region Output
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), nullptr);
-	_context->PSSetShaderResources(24, 1, _depthLinearShaderResourceView.GetAddressOf());
+	_context->PSSetShaderResources(24, 1, _lightingDiffuseShaderResourceView.GetAddressOf());
 
 	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
 		nullptr, 0);
