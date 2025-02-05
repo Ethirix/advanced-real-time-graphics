@@ -31,7 +31,7 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
 	output.Normal.rgb = CalculateNormal(input.TBNMatrix, input.TextureCoordinates, input.Normal, textures.Normal);
     output.Normal.a = textures.Specular.HasTexture ? length(textures.Specular.Texture.Sample(S0_BilinearSampler, input.TextureCoordinates).rgb) / 3.0f
 												   : length(material.Specular.rgb) / 3.0f;
-    output.Depth = (input.Position.w - NearZ) / (FarZ - NearZ);
-    //output.Depth = input.Position.z / input.Position.w;
+    //output.Depth = (input.Position.w - NearZ) / (FarZ - NearZ);
+    output.Depth = input.Position.z / input.Position.w;
     return output;
 }

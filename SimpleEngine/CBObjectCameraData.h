@@ -3,10 +3,8 @@
 
 struct CBObjectCameraData
 {
-	DirectX::XMMATRIX Projection;
-	DirectX::XMMATRIX View;
-	DirectX::XMMATRIX InverseProjection;
-	DirectX::XMMATRIX InverseView;
+	DirectX::XMMATRIX ViewProjection;
+	DirectX::XMMATRIX InverseViewProjection;
 	DirectX::XMMATRIX World;
 	DirectX::XMFLOAT3 Eye;
 	float NearZ;

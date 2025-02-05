@@ -68,9 +68,6 @@ private:
 	ComPtr<ID3D11RenderTargetView> _depthLinearFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _lightingDiffuseFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _lightingSpecularFrameBufferView;
-
-	ComPtr<ID3D11ShaderResourceView> _depthShaderResourceView;
-
 #endif
 
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;

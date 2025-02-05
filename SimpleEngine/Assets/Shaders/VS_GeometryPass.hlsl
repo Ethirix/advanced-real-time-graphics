@@ -9,8 +9,7 @@ VS_BaseOut VS_Main(VS_BaseIn input)
     float4 pos4 = float4(input.Position, 1.0f);
     output.Position = mul(pos4, World);
     output.WorldPosition = output.Position;
-    output.Position = mul(output.Position, View);
-    output.Position = mul(output.Position, Projection);
+    output.Position = mul(output.Position, ViewProjection);
     output.TextureCoordinates = input.TextureCoordinates;
 	output.Normal = normalize(mul(input.Normal, (float3x3)World));
 

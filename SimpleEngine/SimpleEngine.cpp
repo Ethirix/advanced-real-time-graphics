@@ -209,6 +209,7 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 
 	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf()); FAIL_CHECK
     hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), &depthStencilDesc, _depthStencilView.GetAddressOf()); FAIL_CHECK
+	//hr = _device->CreateShaderResourceView(_depthStencilBuffer.Get(), &shaderResourceViewDesc, _depthShaderResourceView.GetAddressOf()); FAIL_CHECK
 
     frameBuffer->Release();
 
@@ -233,7 +234,6 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 	renderTargetViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	hr = _device->CreateShaderResourceView(_depthStencilBuffer.Get(), &shaderResourceViewDesc, _depthShaderResourceView.GetAddressOf());
 
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, _depthLinearTexture.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_depthLinearTexture.Get(), &renderTargetViewDesc, _depthLinearFrameBufferView.GetAddressOf()); FAIL_CHECK
@@ -826,8 +826,8 @@ void SimpleEngine::Draw()
 	//Rebind RTVs as SRVs
 	ID3D11RenderTargetView* rTVsLPass[2] = { _lightingDiffuseFrameBufferView.Get(), _lightingSpecularFrameBufferView.Get() };
 	ID3D11ShaderResourceView* sRVsLPass[3] = { _albedoShaderResourceView.Get(), _normalShaderResourceView.Get(), _depthLinearShaderResourceView.Get() };
-	_context->VSSetShaderResources(16, 2, sRVsLPass);
-	_context->PSSetShaderResources(16, 2, sRVsLPass);
+	_context->VSSetShaderResources(16, 3, sRVsLPass);
+	_context->PSSetShaderResources(16, 3, sRVsLPass);
 	_context->OMSetRenderTargets(2, rTVsLPass, nullptr);
 
 	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
