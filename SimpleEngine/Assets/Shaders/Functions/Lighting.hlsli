@@ -165,7 +165,6 @@ LightingOut CalculateSpotLight(
 LightingOut CalculateLighting(
 	float3 fragmentPosition,
 	float3 normal,
-	float2 uv,
 	Material material)
 {
     LightingOut lighting;

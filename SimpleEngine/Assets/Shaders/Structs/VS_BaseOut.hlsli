@@ -6,7 +6,7 @@ struct VS_BaseOut
     float3 Color : COLOR;
 
     float4 Position : SV_POSITION;
-    float3 WorldPosition : POSITION;
+    float4 WorldPosition : POSITION;
 
     float3 Normal : NORMAL;
     float2 TextureCoordinates : TEXCOORD;
