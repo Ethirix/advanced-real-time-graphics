@@ -18,7 +18,7 @@ float4 PS_Main(VS_BaseOut input) : SV_TARGET
     Material material = CreateMaterial(DiffuseMaterial, AmbientMaterial, SpecularMaterial, SpecularExponent);
 
 	float3 normal = CalculateNormal(input.TBNMatrix, input.TextureCoordinates, input.Normal, textures.Normal);
-    LightingOut lighting = CalculateLighting(input.WorldPosition, normal, material);
+    LightingOut lighting = CalculateLighting(input.WorldPosition, normal, SpecularExponent);
     lighting = CalculateTextures(lighting, input.TextureCoordinates, textures, material);
 
 	float4 color = float4(input.Color, 1);

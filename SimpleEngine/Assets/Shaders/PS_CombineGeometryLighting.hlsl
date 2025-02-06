@@ -7,11 +7,12 @@
 
 float4 PS_Main(VS_ScreenQuadOut input) : SV_TARGET
 {
-    float4 diffuse = T16_DeferredAlbedoTexture.Sample(S0_BilinearSampler, input.TextureCoordinates)
-					* T20_DeferredDiffuseLightingTexture.Sample(S0_BilinearSampler, input.TextureCoordinates);
-    float4 specular = T21_DeferredSpecularLightingTexture.Sample(S0_BilinearSampler, input.TextureCoordinates)
-					* T17_DeferredNormalTexture.Sample(S0_BilinearSampler, input.TextureCoordinates).a;
-    float4 output = diffuse + specular;
+    float4 albedo = float4(T16_DeferredAlbedoTexture.Sample(S0_BilinearSampler, input.TextureCoordinates).rgb, 1);
+    float4 diffuse = T20_DeferredDiffuseLightingTexture.Sample(S0_BilinearSampler, input.TextureCoordinates);
+    float4 specular = float4(T21_DeferredSpecularLightingTexture.Sample(S0_BilinearSampler, input.TextureCoordinates).rgb, 1);
+    float specularMult = T16_DeferredAlbedoTexture.Sample(S0_BilinearSampler, input.TextureCoordinates).a;
+
+    float4 output = (albedo * diffuse) + (specular * specularMult);
 
     return output;
 }

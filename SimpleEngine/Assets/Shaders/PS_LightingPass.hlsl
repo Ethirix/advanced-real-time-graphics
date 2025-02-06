@@ -20,8 +20,8 @@ PSLightPassOut PS_Main(VS_ScreenQuadOut input) : SV_TARGET
 
     float4 position = T19_DeferredWorldPositionTexture.Sample(S0_BilinearSampler, input.TextureCoordinates);
     float4 normal = T17_DeferredNormalTexture.Sample(S0_BilinearSampler, input.TextureCoordinates);
-
-    Material material = CreateMaterial(0, 0, 0, T16_DeferredAlbedoTexture.Sample(S0_BilinearSampler, input.TextureCoordinates).a);
+    float specularExponent = T17_DeferredNormalTexture.Sample(S0_BilinearSampler, input.TextureCoordinates).a;
+	
     //float depth = T18_DeferredDepthTexture.Sample(S0_BilinearSampler, input.TextureCoordinates).x;
 
     //float4 pos = float4(input.TextureCoordinates.x * 2.0f - 1.0f, 
@@ -37,7 +37,7 @@ PSLightPassOut PS_Main(VS_ScreenQuadOut input) : SV_TARGET
     //output.Diffuse = pos;
     //return output;
 	
-    LightingOut lighting = CalculateLighting(position, normal.rgb, material);
+    LightingOut lighting = CalculateLighting(position.xyz, normalize(normal.rgb), specularExponent);
 
     output.Diffuse = float4(lighting.DiffuseOut, 1);
     output.Specular = float4(lighting.SpecularOut, 1);
