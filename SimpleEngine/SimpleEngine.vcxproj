@@ -231,6 +231,9 @@
 
 (ROBOCOPY "$(ProjectDir)Assets" "$(OutputPath)Assets" /E /MIR /DCOPY:DA /COPY:DAT) ^&amp; IF %ERRORLEVEL% LEQ 1 EXIT 0</Command>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Message />
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">
     <ClCompile>
@@ -287,6 +290,9 @@
 
 (ROBOCOPY "$(ProjectDir)Assets" "$(OutputPath)Assets" /E /MIR /DCOPY:DA /COPY:DAT) ^&amp; IF %ERRORLEVEL% LEQ 1 EXIT 0</Command>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Message />
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AABBColliderComponent.cpp" />
@@ -442,9 +448,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli" />
-    <None Include="Assets\Shaders\Functions\Lighting.hlsli" />
-    <None Include="Assets\Shaders\Structs\Texture.hlsli" />
+    <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Assets\Shaders\Functions\Lighting.hlsli">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Assets\Shaders\Structs\Texture.hlsli">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Meshes\suzanne.obj">
@@ -551,6 +563,25 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Pixel</ShaderType>
       <FileType>Document</FileType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Textures\Asphalt\Asphalt_DIFFUSE.dds" />
+    <None Include="Assets\Textures\Asphalt\Asphalt_DISPLACEMENT.dds" />
+    <None Include="Assets\Textures\Asphalt\asphalt_NORMAL.dds" />
+    <None Include="Assets\Textures\Asphalt\Asphalt_SPECULAR.dds" />
+    <None Include="Assets\Textures\Cone\Cone_DIFFUSE.dds" />
+    <None Include="Assets\Textures\Cone\Cone_SPECULAR.dds" />
+    <None Include="Assets\Textures\Crate\Crate_DIFFUSE.dds" />
+    <None Include="Assets\Textures\Crate\Crate_NORMAL.dds" />
+    <None Include="Assets\Textures\Crate\Crate_SPECULAR.dds" />
+    <None Include="Assets\Textures\Light\Light_DIFFUSE.dds" />
+    <None Include="Assets\Textures\PineTree\PineTree_DIFFUSE.dds" />
+    <None Include="Assets\Textures\Plane\Plane_DIFFUSE.dds" />
+    <None Include="Assets\Textures\Plane\Plane_SPECULAR.dds" />
+    <None Include="Assets\Textures\Skybox\Skybox_DIFFUSE.dds" />
+    <None Include="Assets\Textures\Stone\Stone_DIFFUSE.dds" />
+    <None Include="Assets\Textures\Stone\Stone_NORMAL.dds" />
+    <None Include="Assets\Textures\Torus\Torus_DIFFUSE.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

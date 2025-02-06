@@ -25,12 +25,12 @@ float CalculateAttenuation(float distance, float constantAttenuation, float line
     return att;
 }
 
-float CalculateSpotLightIntensity(float3 lD, float innerAngle, float outerAngle)
+float CalculateSpotLightIntensity(float3 lD, float3 lF, float innerAngle, float outerAngle)
 {
     float cosInner = cos(radians(innerAngle));
     float cosOuter = cos(radians(outerAngle));
 
-    float theta = dot(normalize(lD), -lD);
+    float theta = dot(normalize(lD), -lF);
     float epsilon = cosInner - cosOuter;
     return saturate((theta - cosOuter) / epsilon);
 }
@@ -153,7 +153,7 @@ LightingOut CalculateSpotLight(
 
     float attenuation = CalculateAttenuation(distance, light.ConstantAttenuation, light.LinearAttenuation,
                                              light.QuadraticAttenuation, light.LightRadius);
-    float intensity = CalculateSpotLightIntensity(lightDirection, light.InnerAngle, light.OuterAngle);
+    float intensity = CalculateSpotLightIntensity(light.Direction, lightDirection, light.InnerAngle, light.OuterAngle);
 
     lighting.AmbientOut *= attenuation;
     lighting.DiffuseOut *= attenuation * intensity;
