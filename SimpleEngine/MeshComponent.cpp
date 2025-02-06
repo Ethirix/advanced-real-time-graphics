@@ -17,8 +17,10 @@ MeshComponent::MeshComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json
 
 	STR meshPath = json["MeshPath"];
 	STR materialPath = json["MaterialPath"];
+#ifndef _DEFERRED_RENDER
 	STR vertexShaderPath = json["VertexShaderPath"];
 	STR pixelShaderPath = json["PixelShaderPath"];
+#endif
 	MeshType meshType = json["MeshType"];
 	std::pair<std::string, int> diffuse = std::make_pair(static_cast<std::string>(diffuseData["Path"]), diffuseData["Slot"]);
 	std::pair<std::string, int> specular = std::make_pair(static_cast<std::string>(specularData["Path"]), specularData["Slot"]);
@@ -36,8 +38,10 @@ MeshComponent::MeshComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json
 	else
 		Material = std::make_shared<class Material>();
 
+#ifndef _DEFERRED_RENDER
 	Factory::LoadVertexShader(vertexShaderPath, Material);
 	Factory::LoadPixelShader(pixelShaderPath, Material);
+#endif
 
 	Textures = std::make_shared<struct Textures>();
 	if (auto diffuseResource = Factory::CreateTexture(diffuse.first, device); diffuseResource.has_value())
@@ -62,13 +66,15 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 	UINT stride = {sizeof(struct Vertex)};
 	UINT offset = 0;
 
-	context->IASetVertexBuffers(0, 1, Mesh->VertexBuffer.GetAddressOf(), &stride, &offset);
+	context->IASetVertexBuffers(0, 1, Mesh->VertexBuffer.GetAddressOf(),&stride, &offset);
 	context->IASetIndexBuffer(Mesh->IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, offset);
 
+#ifndef _DEFERRED_RENDER
 	context->VSSetShader(Material->Shader.VertexShader.Shader.Get(),
 	                     nullptr, 0);
 	context->PSSetShader(Material->Shader.PixelShader.Shader.Get(),
 	                     nullptr, 0);
+#endif
 
 	Buffers::CBTextures.BufferData.HasDiffuseTexture = Textures->Diffuse.Resource ? true : false;
 	Buffers::CBTextures.BufferData.HasSpecularTexture = Textures->Specular.Resource ? true : false;
@@ -86,10 +92,12 @@ void MeshComponent::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 	Buffers::CBMaterial.BufferData.Specular = Material ? Material->Specular : DirectX::XMFLOAT4{};
 	Buffers::CBMaterial.BufferData.SpecularExponent = Material ? Material->SpecularExponent : 0;
 
+#ifndef _DEFERRED_RENDER
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState = nullptr;
 	context->OMGetDepthStencilState(depthStencilState.GetAddressOf(), nullptr);
 	if (depthStencilState != DepthStencil)
 		context->OMSetDepthStencilState(DepthStencil.Get(), 0);
+#endif
 
 	D3D11_MAPPED_SUBRESOURCE objectCameraData, materialData, texturesData;
 	Buffers::CBObjectCameraData.BufferData.World = XMMatrixTranspose(

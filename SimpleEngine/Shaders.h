@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include "ShaderData.h"
 
 class Shaders
