@@ -266,6 +266,10 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	hr = _device->CreateRenderTargetView(_normalTexture.Get(), &renderTargetViewDesc, _normalFrameBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_normalTexture.Get(), &shaderResourceViewDesc, _normalShaderResourceView.GetAddressOf()); FAIL_CHECK
 
+	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	renderTargetViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_worldPositionTexture); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_worldPositionTexture.Get(), &renderTargetViewDesc, _worldPositionFrameBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_worldPositionTexture.Get(), &shaderResourceViewDesc, _worldPositionShaderResourceView.GetAddressOf()); FAIL_CHECK
@@ -702,7 +706,6 @@ void SimpleEngine::Update()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	ImGui::ShowDemoWindow(); //TEST
 
 	if (_camera.expired())
 	{
@@ -799,7 +802,7 @@ void SimpleEngine::FixedUpdate(double fixedDeltaTime)
 	SceneGraph::FixedUpdate(fixedDeltaTime);
 }
 
-#ifdef _DEFERRED_RENDER
+
 void SimpleEngine::Draw()
 {
 	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -807,6 +810,8 @@ void SimpleEngine::Draw()
 
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+
+#ifdef _DEFERRED_RENDER
 	_context->ClearRenderTargetView(_albedoFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_normalFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_depthLinearFrameBufferView.Get(), backgroundColour);
@@ -873,33 +878,37 @@ void SimpleEngine::Draw()
 	_context->PSSetShaderResources(17, 1, &unbind);
 	_context->PSSetShaderResources(20, 1, &unbind);
 	_context->PSSetShaderResources(21, 1, &unbind);
-	
+#pragma endregion
+
+#else
+
+	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
+
+	SceneGraph::Draw(_context);
+
+#endif
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	_swapChain->Present(0, 0);
 	_context->OMSetRenderTargets(0, nullptr, nullptr);
-#pragma endregion
+
 }
 
-#else
 
-void SimpleEngine::Draw()
-{
-	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	constexpr float errorColour[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
-
-	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
-	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
-
-	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
-
-	SceneGraph::Draw(_context);
-
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-	_swapChain->Present(0, 0);
-}
-#endif
+//void SimpleEngine::Draw()
+//{
+//	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+//	constexpr float errorColour[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
+//
+//	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+//	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+//
+//
+//
+//	ImGui::Render();
+//	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+//
+//	_swapChain->Present(0, 0);
+//}
