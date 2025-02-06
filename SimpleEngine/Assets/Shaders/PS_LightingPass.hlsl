@@ -1,4 +1,3 @@
-#include "Buffers/CB1_Material.hlsli"
 #include "Functions/Lighting.hlsli"
 #include "Structs/LightingOut.hlsli"
 #include "Structs/VS_ScreenQuadOut.hlsli"
@@ -10,8 +9,8 @@
 
 struct PSLightPassOut
 {
-    float4 Diffuse : SV_TARGET0;
-    float4 Specular : SV_TARGET1;
+    float3 Diffuse : SV_TARGET0;
+    float3 Specular : SV_TARGET1;
 };
 
 PSLightPassOut PS_Main(VS_ScreenQuadOut input) : SV_TARGET
@@ -39,8 +38,8 @@ PSLightPassOut PS_Main(VS_ScreenQuadOut input) : SV_TARGET
 	
     LightingOut lighting = CalculateLighting(position.xyz, normalize(normal.rgb), specularExponent);
 
-    output.Diffuse = float4(lighting.DiffuseOut, 1);
-    output.Specular = float4(lighting.SpecularOut, 1);
+    output.Diffuse = lighting.DiffuseOut;
+    output.Specular = lighting.SpecularOut;
 
     return output;
 }

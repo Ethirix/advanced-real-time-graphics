@@ -246,6 +246,10 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	hr = _device->CreateRenderTargetView(_albedoTexture.Get(), &renderTargetViewDesc, _albedoFrameBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_albedoTexture.Get(), &shaderResourceViewDesc, _albedoShaderResourceView.GetAddressOf()); FAIL_CHECK
 
+	textureDesc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+	renderTargetViewDesc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_lightingDiffuseTexture); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_lightingDiffuseTexture.Get(), &renderTargetViewDesc, _lightingDiffuseFrameBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_lightingDiffuseTexture.Get(), &shaderResourceViewDesc, _lightingDiffuseShaderResourceView.GetAddressOf()); FAIL_CHECK
@@ -254,11 +258,9 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	hr = _device->CreateRenderTargetView(_lightingSpecularTexture.Get(), &renderTargetViewDesc, _lightingSpecularFrameBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_lightingSpecularTexture.Get(), &shaderResourceViewDesc, _lightingSpecularShaderResourceView.GetAddressOf()); FAIL_CHECK
 
-#ifdef _WIN64
 	textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	renderTargetViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-#endif
 
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_normalTexture); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_normalTexture.Get(), &renderTargetViewDesc, _normalFrameBufferView.GetAddressOf()); FAIL_CHECK
