@@ -107,12 +107,12 @@ LightingOut CalculateDirectionalLight(
 	float3 fragmentPosition,
 	float3 normal,
 	float3 eye,
-	Material material)
+	float specularExponent)
 {
     float3 lightDirection = normalize(-light.Direction);
     return CalculateBlinnPhong(fragmentPosition, normal, eye, lightDirection, 1, light.AmbientColor,
                                float4(light.DiffuseColor, light.DiffusePower),
-                               float4(light.SpecularColor, light.SpecularPower), material.SpecularExponent);
+                               float4(light.SpecularColor, light.SpecularPower), specularExponent);
 }
 
 LightingOut CalculatePointLight(
@@ -120,13 +120,13 @@ LightingOut CalculatePointLight(
 	float3 fragmentPosition,
 	float3 normal,
 	float3 eye,
-	Material material)
+	float specularExponent)
 {
     float3 lightDirection = normalize(light.Position.xyz - fragmentPosition);
     float distance = length(light.Position.xyz - fragmentPosition);
     LightingOut lighting = CalculateBlinnPhong(fragmentPosition, normal, eye, lightDirection, distance, light.AmbientColor,
                                float4(light.DiffuseColor, light.DiffusePower),
-                               float4(light.SpecularColor, light.SpecularPower), material.SpecularExponent);
+                               float4(light.SpecularColor, light.SpecularPower), specularExponent);
 
     float attenuation = CalculateAttenuation(distance, light.ConstantAttenuation, light.LinearAttenuation,
                                              light.QuadraticAttenuation, light.LightRadius);
@@ -142,14 +142,14 @@ LightingOut CalculateSpotLight(
 	float3 fragmentPosition,
 	float3 normal,
 	float3 eye,
-	Material material)
+	float specularExponent)
 {
 
     float3 lightDirection = normalize(light.Position.xyz - fragmentPosition);
     float distance = length(light.Position.xyz - fragmentPosition);
     LightingOut lighting = CalculateBlinnPhong(fragmentPosition, normal, eye, lightDirection, distance, light.AmbientColor,
                                float4(light.DiffuseColor, light.DiffusePower),
-                               float4(light.SpecularColor, light.SpecularPower), material.SpecularExponent);
+                               float4(light.SpecularColor, light.SpecularPower), specularExponent);
 
     float attenuation = CalculateAttenuation(distance, light.ConstantAttenuation, light.LinearAttenuation,
                                              light.QuadraticAttenuation, light.LightRadius);
@@ -165,7 +165,7 @@ LightingOut CalculateSpotLight(
 LightingOut CalculateLighting(
 	float3 fragmentPosition,
 	float3 normal,
-	Material material)
+	float specularExponent)
 {
     LightingOut lighting;
     lighting.DiffuseOut = float3(0, 0, 0);
@@ -174,7 +174,7 @@ LightingOut CalculateLighting(
 
     for (uint i = 0; i < TotalDirectionalLights && i < MaxDirectionalLights; i++)
     {
-        LightingOut light = CalculateDirectionalLight(T8_DirectionalLights[i], fragmentPosition, normal, Eye.xyz, material);
+        LightingOut light = CalculateDirectionalLight(T8_DirectionalLights[i], fragmentPosition, normal, Eye.xyz, specularExponent);
 
         lighting.DiffuseOut += light.DiffuseOut;
         lighting.SpecularOut += light.SpecularOut;
@@ -183,7 +183,7 @@ LightingOut CalculateLighting(
 
     for (uint i = 0; i < TotalPointLights && i < MaxPointLights; i++)
     {
-        LightingOut light = CalculatePointLight(T9_PointLights[i], fragmentPosition, normal, Eye.xyz, material);
+        LightingOut light = CalculatePointLight(T9_PointLights[i], fragmentPosition, normal, Eye.xyz, specularExponent);
 
         lighting.DiffuseOut += light.DiffuseOut;
         lighting.SpecularOut += light.SpecularOut;
@@ -192,7 +192,7 @@ LightingOut CalculateLighting(
 
     for (uint i = 0; i < TotalSpotLights && i < MaxSpotLights; i++)
     {
-        LightingOut light = CalculateSpotLight(T10_SpotLights[i], fragmentPosition, normal, Eye.xyz, material);
+        LightingOut light = CalculateSpotLight(T10_SpotLights[i], fragmentPosition, normal, Eye.xyz, specularExponent);
 
         lighting.DiffuseOut += light.DiffuseOut;
         lighting.SpecularOut += light.SpecularOut;
