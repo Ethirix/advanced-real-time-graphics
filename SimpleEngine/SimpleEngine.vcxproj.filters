@@ -109,6 +109,7 @@
     </Filter>
     <Filter Include="Resource Files\Shaders\_ForwardShaders">
       <UniqueIdentifier>{2cd21c40-b2bc-4ce7-a90a-7c289b144c6e}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resource Files\Textures\Asphalt">
       <UniqueIdentifier>{41af9b6a-cd56-4419-94cb-d20c5f9a647f}</UniqueIdentifier>
     </Filter>
