@@ -895,20 +895,3 @@ void SimpleEngine::Draw()
 	_context->OMSetRenderTargets(0, nullptr, nullptr);
 
 }
-
-
-//void SimpleEngine::Draw()
-//{
-//	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-//	constexpr float errorColour[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
-//
-//	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
-//	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
-//
-//
-//
-//	ImGui::Render();
-//	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-//
-//	_swapChain->Present(0, 0);
-//}
