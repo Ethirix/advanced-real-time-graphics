@@ -3,11 +3,13 @@
 
 cbuffer CB0_ObjectCameraData : register(b0)
 {
-    float4x4 Projection;
-    float4x4 View;
+    float4x4 ViewProjection;
+    float4x4 InverseViewProjection;
     float4x4 World;
-    float4 Eye;
-    float4 At;
+    float3 Eye;
+    float NearZ;
+    float3 At;
+    float FarZ;
 }
 
 #endif

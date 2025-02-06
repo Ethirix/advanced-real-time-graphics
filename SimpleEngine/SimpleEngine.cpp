@@ -29,7 +29,7 @@ LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wPara
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam))
 		return true;
 
-	auto* engine = reinterpret_cast<SimpleEngine*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+	SimpleEngine* engine = reinterpret_cast<SimpleEngine*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
 	switch (message)
 	{
@@ -74,7 +74,7 @@ HRESULT SimpleEngine::Initialise(HINSTANCE hInstance, int nShowCmd)
 	HRESULT hr = CreateWindowHandle(hInstance); FAIL_CHECK
 	hr = CreateD3DDevice(); FAIL_CHECK
 	hr = CreateSwapChain(); FAIL_CHECK
-	hr = CreateFrameBuffer(); FAIL_CHECK
+	hr = CreateFrameBuffers(); FAIL_CHECK
 	hr = InitialiseShaders(); FAIL_CHECK
 	hr = InitialisePipeline(); FAIL_CHECK
 	hr = InitialiseRunTimeData(); FAIL_CHECK
@@ -111,8 +111,6 @@ HRESULT SimpleEngine::CreateWindowHandle(HINSTANCE hInstance)
 
 HRESULT SimpleEngine::CreateD3DDevice()
 {
-	HRESULT hr = S_OK;
-
 	D3D_FEATURE_LEVEL featureLevels[] = {
 			D3D_FEATURE_LEVEL_11_1
 	};
@@ -125,7 +123,7 @@ HRESULT SimpleEngine::CreateD3DDevice()
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	hr = D3D11CreateDevice(
+	HRESULT hr = D3D11CreateDevice(
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE, 
 		nullptr,
@@ -136,27 +134,22 @@ HRESULT SimpleEngine::CreateD3DDevice()
 		&baseDevice, 
 		nullptr, 
 		&baseDeviceContext
-	);
+	); FAIL_CHECK
 
-    if (FAILED(hr)) return hr;
-
-	hr = baseDevice->QueryInterface(__uuidof(ID3D11Device), reinterpret_cast<void**>(_device.GetAddressOf()));
-	if (FAILED(hr)) return hr;
-    hr = baseDeviceContext->QueryInterface(__uuidof(ID3D11DeviceContext), &_context);
-	if (FAILED(hr)) return hr;
+	hr = baseDevice->QueryInterface(IID_PPV_ARGS(&_device)); FAIL_CHECK
+    hr = baseDeviceContext->QueryInterface(IID_PPV_ARGS(&_context)); FAIL_CHECK
 
 	baseDevice->Release();
     baseDeviceContext->Release();
 
-	hr = _device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(_dxgiDevice.GetAddressOf()));
-    if (FAILED(hr)) return hr;
+	hr = _device->QueryInterface(IID_PPV_ARGS(&_dxgiDevice)); FAIL_CHECK
 
     IDXGIAdapter* dxgiAdapter;
-    hr = _dxgiDevice->GetAdapter(&dxgiAdapter);
-    if (FAILED(hr)) return hr;
-    hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(_dxgiFactory.GetAddressOf()));
-    if (FAILED(hr)) return hr;
+    hr = _dxgiDevice->GetAdapter(&dxgiAdapter); FAIL_CHECK
+    hr = dxgiAdapter->GetParent(IID_PPV_ARGS(&_dxgiFactory)); FAIL_CHECK
     dxgiAdapter->Release();
+
+	hr = _dxgiFactory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_ALT_ENTER); FAIL_CHECK
 
 	return hr;
 }
@@ -187,36 +180,97 @@ HRESULT SimpleEngine::CreateSwapChain()
 	);
 }
 
-HRESULT SimpleEngine::CreateFrameBuffer()
+HRESULT SimpleEngine::CreateFrameBuffers()
 {
-	HRESULT hr = S_OK;
-
 	ID3D11Texture2D* frameBuffer = nullptr;
-
-	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&frameBuffer));
-    if (FAILED(hr)) return hr;
+	HRESULT hr = _swapChain->GetBuffer(0, IID_PPV_ARGS(&frameBuffer)); FAIL_CHECK
 
 	D3D11_RENDER_TARGET_VIEW_DESC frameBufferDesc = {};
 	frameBufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	frameBufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	hr = _device->CreateRenderTargetView(frameBuffer, &frameBufferDesc, _frameBufferView.GetAddressOf()); FAIL_CHECK
 
-	hr = _device->CreateRenderTargetView(frameBuffer, &frameBufferDesc, _frameBufferView.GetAddressOf());
-	if (FAILED(hr)) return hr;
-
-	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
-	frameBuffer->GetDesc(&depthBufferDesc);
-	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	D3D11_TEXTURE2D_DESC depthBufferDesc{};
+	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+#ifdef _DEFERRED_RENDER
+	depthBufferDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+#endif
+	depthBufferDesc.MipLevels = 1;
+	depthBufferDesc.ArraySize = 1;
+	depthBufferDesc.SampleDesc.Count = 1;
+	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthBufferDesc.Width = Screen::Width;
+	depthBufferDesc.Height = Screen::Height;
 
-	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf());
-    if (FAILED(hr)) return hr;
-    hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), nullptr, _depthStencilView.GetAddressOf());
-    if (FAILED(hr)) return hr;
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilDesc{};
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf()); FAIL_CHECK
+    hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), &depthStencilDesc, _depthStencilView.GetAddressOf()); FAIL_CHECK
 
     frameBuffer->Release();
 
-	hr = _dxgiFactory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_ALT_ENTER);
-    if (FAILED(hr)) return hr;
+#ifdef _DEFERRED_RENDER
+	D3D11_TEXTURE2D_DESC textureDesc{};
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc{};
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
+
+	textureDesc.Width = Screen::Width;
+	textureDesc.Height = Screen::Height;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	renderTargetViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, _depthLinearTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_depthLinearTexture.Get(), &renderTargetViewDesc, _depthLinearFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_depthLinearTexture.Get(), &shaderResourceViewDesc, _depthLinearShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	renderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, _albedoTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_albedoTexture.Get(), &renderTargetViewDesc, _albedoFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_albedoTexture.Get(), &shaderResourceViewDesc, _albedoShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	textureDesc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+	renderTargetViewDesc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_lightingDiffuseTexture); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_lightingDiffuseTexture.Get(), &renderTargetViewDesc, _lightingDiffuseFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_lightingDiffuseTexture.Get(), &shaderResourceViewDesc, _lightingDiffuseShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_lightingSpecularTexture); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_lightingSpecularTexture.Get(), &renderTargetViewDesc, _lightingSpecularFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_lightingSpecularTexture.Get(), &shaderResourceViewDesc, _lightingSpecularShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	renderTargetViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_normalTexture); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_normalTexture.Get(), &renderTargetViewDesc, _normalFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_normalTexture.Get(), &shaderResourceViewDesc, _normalShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_worldPositionTexture); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_worldPositionTexture.Get(), &renderTargetViewDesc, _worldPositionFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_worldPositionTexture.Get(), &shaderResourceViewDesc, _worldPositionShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+#endif
 
 	return hr;
 }
@@ -264,13 +318,10 @@ HRESULT SimpleEngine::InitialiseShaders()
 
 HRESULT SimpleEngine::InitialisePipeline()
 {
-	HRESULT hr = S_OK;
-
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_context->IASetInputLayout(_inputLayout.Get());
 
-	hr = InitialiseRasterizerStates();
-	if (FAILED(hr)) return hr;
+	HRESULT hr = InitialiseRasterizerStates(); FAIL_CHECK
 
 	_viewport = { 0.0f, 0.0f,
 		static_cast<float>(Screen::Width),
@@ -278,14 +329,9 @@ HRESULT SimpleEngine::InitialisePipeline()
 		0.0f, 1.0f};
 	_context->RSSetViewports(1, &_viewport);
 
-	hr = InitialiseBuffers();
-	if (FAILED(hr)) return hr;
-
-	hr = InitialiseSamplers();
-	if (FAILED(hr)) return hr;
-
-	hr = InitialiseDepthStencils();
-	if (FAILED(hr)) return hr;
+	hr = InitialiseBuffers(); FAIL_CHECK
+	hr = InitialiseSamplers(); FAIL_CHECK
+	hr = InitialiseDepthStencils(); FAIL_CHECK
 
 	return hr;
 }
@@ -300,6 +346,10 @@ HRESULT SimpleEngine::InitialiseRunTimeData()
 		_camera = cameraComponent.value();
 
 	OnWindowSizeChangeComplete();
+
+#ifdef _DEFERRED_RENDER
+	_screenQuad = std::make_unique<ScreenQuad>(_device);
+#endif
 
 	return S_OK;
 }
@@ -318,7 +368,7 @@ HRESULT SimpleEngine::InitialiseImGUI()
 	return S_OK;
 }
 
-HRESULT SimpleEngine::InitialiseVertexShaderLayout(ID3DBlob* vsBlob)
+HRESULT SimpleEngine::InitialiseVertexShaderLayout(const ComPtr<ID3DBlob>& vsBlob)
 {
 	D3D11_INPUT_ELEMENT_DESC vsInputLayout[] =
 	{
@@ -341,8 +391,8 @@ HRESULT SimpleEngine::InitialiseVertexShaderLayout(ID3DBlob* vsBlob)
 ComPtr<ID3D11VertexShader> SimpleEngine::CompileVertexShader(LPCWSTR path)
 {
 	ComPtr<ID3D11VertexShader> vs = {};
-	ID3DBlob* errorBlob;
-	ID3DBlob* vsBlob;
+	ComPtr<ID3DBlob> errorBlob;
+	ComPtr<ID3DBlob> vsBlob;
 
 	DWORD shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
@@ -357,19 +407,13 @@ ComPtr<ID3D11VertexShader> SimpleEngine::CompileVertexShader(LPCWSTR path)
 		"vs_5_0", 
 		shaderFlags, 
 		0, 
-		&vsBlob, 
-		&errorBlob
+		vsBlob.GetAddressOf(), 
+		errorBlob.GetAddressOf()
 	);
 
 	if (FAILED(hr))
 	{
-		MessageBoxA(_hwnd, 
-			static_cast<char*>(errorBlob->GetBufferPointer()), 
-			nullptr, 
-			ERROR
-		);
-		if (vsBlob) vsBlob->Release();
-		if (errorBlob) errorBlob->Release();
+		MessageBoxA(_hwnd, static_cast<char*>(errorBlob->GetBufferPointer()), nullptr, ERROR);
 		return nullptr;
 	}
 
@@ -379,21 +423,13 @@ ComPtr<ID3D11VertexShader> SimpleEngine::CompileVertexShader(LPCWSTR path)
 		nullptr, 
 		vs.GetAddressOf()
 	);
-	if (FAILED(hr)) 
-	{
-		if (vsBlob) vsBlob->Release();
-		if (errorBlob) errorBlob->Release();
-		return nullptr;
-	}
+	if (FAILED(hr)) return nullptr;
 
 	if (_inputLayout == nullptr)
 	{
 		hr = InitialiseVertexShaderLayout(vsBlob);
-		if (FAILED(hr)) return {};
+		if (FAILED(hr)) return nullptr;
 	}
-
-	if (vsBlob) vsBlob->Release();
-	if (errorBlob) errorBlob->Release();
 
 	return vs;
 }
@@ -401,8 +437,8 @@ ComPtr<ID3D11VertexShader> SimpleEngine::CompileVertexShader(LPCWSTR path)
 ComPtr<ID3D11PixelShader> SimpleEngine::CompilePixelShader(LPCWSTR path)
 {
 	ComPtr<ID3D11PixelShader> ps;
-	ID3DBlob* psBlob;
-	ID3DBlob* errorBlob;
+	ComPtr<ID3DBlob> errorBlob;
+	ComPtr<ID3DBlob> psBlob;
 
 	DWORD shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
@@ -417,19 +453,13 @@ ComPtr<ID3D11PixelShader> SimpleEngine::CompilePixelShader(LPCWSTR path)
 		"ps_5_0",
 		shaderFlags,
 		0,
-		&psBlob,
-		&errorBlob
+		psBlob.GetAddressOf(),
+		errorBlob.GetAddressOf()
 	);
 
 	if (FAILED(hr))
 	{
-		MessageBoxA(_hwnd,
-			static_cast<char*>(errorBlob->GetBufferPointer()),
-			nullptr,
-			ERROR
-		);
-		if (psBlob) psBlob->Release();
-		if (errorBlob) errorBlob->Release();
+		MessageBoxA(_hwnd, static_cast<char*>(errorBlob->GetBufferPointer()), nullptr, ERROR);
 		return nullptr;
 	}
 
@@ -439,16 +469,7 @@ ComPtr<ID3D11PixelShader> SimpleEngine::CompilePixelShader(LPCWSTR path)
 		nullptr,
 		ps.GetAddressOf()
 	);
-
-	if (FAILED(hr))
-	{
-		if (psBlob) psBlob->Release();
-		if (errorBlob) errorBlob->Release();
-		return nullptr;
-	}
-
-	if (psBlob) psBlob->Release();
-	if (errorBlob) errorBlob->Release();
+	if (FAILED(hr)) return nullptr;
 
 	return ps;
 }
@@ -461,8 +482,7 @@ HRESULT SimpleEngine::InitialiseRasterizerStates()
 		Configuration::RasterizerStateConfig.RasterizerDescriptions)
 	{
 		ComPtr<ID3D11RasterizerState> state;
-		hr = _device->CreateRasterizerState(&description, state.GetAddressOf());
-		if (FAILED(hr)) return hr;
+		hr = _device->CreateRasterizerState(&description, state.GetAddressOf()); FAIL_CHECK
 
 		DataStore::RasterizerStates.Store(key, state);
 	}
@@ -478,8 +498,6 @@ HRESULT SimpleEngine::InitialiseRasterizerStates()
 
 HRESULT SimpleEngine::InitialiseBuffers()
 {
-	HRESULT hr = S_OK;
-
 	D3D11_BUFFER_DESC bufferDescription = {};
 	bufferDescription.Usage = D3D11_USAGE_DYNAMIC;
 	bufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -487,8 +505,7 @@ HRESULT SimpleEngine::InitialiseBuffers()
 
 #pragma region CBObjectCameraData
 	bufferDescription.ByteWidth = sizeof(CBObjectCameraData);
-	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBObjectCameraData.Buffer.GetAddressOf());
-	if (FAILED(hr)) return hr;
+	HRESULT hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBObjectCameraData.Buffer.GetAddressOf()); FAIL_CHECK
 
 	_context->VSSetConstantBuffers(0, 1, Buffers::CBObjectCameraData.Buffer.GetAddressOf());
 	_context->PSSetConstantBuffers(0, 1, Buffers::CBObjectCameraData.Buffer.GetAddressOf());
@@ -496,8 +513,7 @@ HRESULT SimpleEngine::InitialiseBuffers()
 
 #pragma region CBMaterial
 	bufferDescription.ByteWidth = sizeof(CBMaterial);
-	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBMaterial.Buffer.GetAddressOf());
-	if (FAILED(hr)) return hr;
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBMaterial.Buffer.GetAddressOf()); FAIL_CHECK
 
 	_context->VSSetConstantBuffers(1, 1, Buffers::CBMaterial.Buffer.GetAddressOf());
 	_context->PSSetConstantBuffers(1, 1, Buffers::CBMaterial.Buffer.GetAddressOf());
@@ -505,8 +521,7 @@ HRESULT SimpleEngine::InitialiseBuffers()
 
 #pragma region CBTextures
 	bufferDescription.ByteWidth = sizeof(CBTextures);
-	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBTextures.Buffer.GetAddressOf());
-	if (FAILED(hr)) return hr;
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBTextures.Buffer.GetAddressOf()); FAIL_CHECK
 
 	_context->VSSetConstantBuffers(2, 1, Buffers::CBTextures.Buffer.GetAddressOf());
 	_context->PSSetConstantBuffers(2, 1, Buffers::CBTextures.Buffer.GetAddressOf());
@@ -514,8 +529,7 @@ HRESULT SimpleEngine::InitialiseBuffers()
 
 #pragma region CBLighting
 	bufferDescription.ByteWidth = sizeof(CBLighting);
-	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBLighting.Buffer.GetAddressOf());
-	if (FAILED(hr)) return hr;
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBLighting.Buffer.GetAddressOf()); FAIL_CHECK
 
 	_context->VSSetConstantBuffers(3, 1, Buffers::CBLighting.Buffer.GetAddressOf());
 	_context->PSSetConstantBuffers(3, 1, Buffers::CBLighting.Buffer.GetAddressOf());
@@ -527,20 +541,19 @@ HRESULT SimpleEngine::InitialiseBuffers()
 	bufferDescription.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 	bufferDescription.StructureByteStride = sizeof(DirectionalLightData);
 
-	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVDirectionalLights.Buffer.GetAddressOf());
-	if (FAILED(hr)) return hr;
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVDirectionalLights.Buffer.GetAddressOf()); FAIL_CHECK
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDirectionalLightDesc{};
 	srvDirectionalLightDesc.Format = DXGI_FORMAT_UNKNOWN;
 	srvDirectionalLightDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 	srvDirectionalLightDesc.Buffer.NumElements = MAX_DIRECTIONAL_LIGHTS;
 
-	hr = _device->CreateShaderResourceView(Buffers::SRVDirectionalLights.Buffer.Get(), &srvDirectionalLightDesc, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
+	hr = _device->CreateShaderResourceView(Buffers::SRVDirectionalLights.Buffer.Get(), &srvDirectionalLightDesc,
+	                                       Buffers::SRVDirectionalLights.Resource.GetAddressOf()); FAIL_CHECK
 
 	_context->VSSetShaderResources(8, 1, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
 	_context->PSSetShaderResources(8, 1, Buffers::SRVDirectionalLights.Resource.GetAddressOf());
 #pragma endregion
-
 
 #pragma region SRVPointLights
 	bufferDescription.ByteWidth = sizeof(PointLightData) * MAX_POINT_LIGHTS;
@@ -548,15 +561,15 @@ HRESULT SimpleEngine::InitialiseBuffers()
 	bufferDescription.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 	bufferDescription.StructureByteStride = sizeof(PointLightData);
 
-	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVPointLights.Buffer.GetAddressOf());
-	if (FAILED(hr)) return hr;
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVPointLights.Buffer.GetAddressOf()); FAIL_CHECK
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvPointLightDesc{};
 	srvPointLightDesc.Format = DXGI_FORMAT_UNKNOWN;
 	srvPointLightDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 	srvPointLightDesc.Buffer.NumElements = MAX_POINT_LIGHTS;
 
-	hr = _device->CreateShaderResourceView(Buffers::SRVPointLights.Buffer.Get(), &srvPointLightDesc, Buffers::SRVPointLights.Resource.GetAddressOf());
+	hr = _device->CreateShaderResourceView(Buffers::SRVPointLights.Buffer.Get(), &srvPointLightDesc,
+	                                       Buffers::SRVPointLights.Resource.GetAddressOf()); FAIL_CHECK
 
 	_context->VSSetShaderResources(9, 1, Buffers::SRVPointLights.Resource.GetAddressOf());
 	_context->PSSetShaderResources(9, 1, Buffers::SRVPointLights.Resource.GetAddressOf());
@@ -568,15 +581,15 @@ HRESULT SimpleEngine::InitialiseBuffers()
 	bufferDescription.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 	bufferDescription.StructureByteStride = sizeof(SpotLightData);
 
-	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVSpotLights.Buffer.GetAddressOf());
-	if (FAILED(hr)) return hr;
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::SRVSpotLights.Buffer.GetAddressOf()); FAIL_CHECK
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvSpotLightDesc{};
 	srvSpotLightDesc.Format = DXGI_FORMAT_UNKNOWN;
 	srvSpotLightDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 	srvSpotLightDesc.Buffer.NumElements = MAX_SPOT_LIGHTS;
 
-	hr = _device->CreateShaderResourceView(Buffers::SRVSpotLights.Buffer.Get(), &srvSpotLightDesc, Buffers::SRVSpotLights.Resource.GetAddressOf());
+	hr = _device->CreateShaderResourceView(Buffers::SRVSpotLights.Buffer.Get(), &srvSpotLightDesc,
+	                                       Buffers::SRVSpotLights.Resource.GetAddressOf()); FAIL_CHECK
 
 	_context->VSSetShaderResources(10, 1, Buffers::SRVSpotLights.Resource.GetAddressOf());
 	_context->PSSetShaderResources(10, 1, Buffers::SRVSpotLights.Resource.GetAddressOf());
@@ -587,8 +600,6 @@ HRESULT SimpleEngine::InitialiseBuffers()
 
 HRESULT SimpleEngine::InitialiseSamplers()
 {
-	HRESULT hr = S_OK;
-
 	D3D11_SAMPLER_DESC bilinearSamplerDesc = {};
 	bilinearSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     bilinearSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -598,8 +609,7 @@ HRESULT SimpleEngine::InitialiseSamplers()
     bilinearSamplerDesc.MinLOD = 0;
 
 	ComPtr<ID3D11SamplerState> bilinearSampler = {};
-	hr = _device->CreateSamplerState(&bilinearSamplerDesc, bilinearSampler.GetAddressOf());
-    if (FAILED(hr)) { return hr; }
+	HRESULT hr = _device->CreateSamplerState(&bilinearSamplerDesc, bilinearSampler.GetAddressOf()); FAIL_CHECK
     _context->PSSetSamplers(0, 1, bilinearSampler.GetAddressOf());
 	DataStore::SamplerStates.Store(BILINEAR_SAMPLER_KEY, bilinearSampler);
 
@@ -608,16 +618,13 @@ HRESULT SimpleEngine::InitialiseSamplers()
 
 HRESULT SimpleEngine::InitialiseDepthStencils()
 {
-	HRESULT hr = S_OK;
-
 	D3D11_DEPTH_STENCIL_DESC dsSkyboxDesc = {};
 	dsSkyboxDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	dsSkyboxDesc.DepthEnable = true;
 	dsSkyboxDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
 	ComPtr<ID3D11DepthStencilState> skyboxDepthStencil = {};
-	hr = _device->CreateDepthStencilState(&dsSkyboxDesc, skyboxDepthStencil.GetAddressOf());
-	if (FAILED(hr)) { return hr; }
+	HRESULT hr = _device->CreateDepthStencilState(&dsSkyboxDesc, skyboxDepthStencil.GetAddressOf()); FAIL_CHECK
 	DataStore::DepthStencilStates.Store(SKYBOX_DEPTH_STENCIL_KEY, skyboxDepthStencil);
 
 	return hr;
@@ -650,26 +657,9 @@ void SimpleEngine::OnWindowSizeChangeComplete()
 	dxgiModeDesc.Height = Screen::Height;
 	HRESULT hr = _swapChain->ResizeTarget(&dxgiModeDesc);
 	hr = _swapChain->ResizeBuffers(0, Screen::Width, Screen::Height, DXGI_FORMAT_UNKNOWN, 0);
-	ID3D11Texture2D* buffer {};
-	hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&buffer));
 
-	D3D11_RENDER_TARGET_VIEW_DESC bufferDesc = {};
-	bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-    bufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-
-	hr = _device->CreateRenderTargetView(buffer, &bufferDesc, _frameBufferView.GetAddressOf());
-
-	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
-	buffer->GetDesc(&depthBufferDesc);
-	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf());
-	hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), nullptr, _depthStencilView.GetAddressOf());
-
-	buffer->Release();
-
-	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
+	//Reinitialise by recreating the RTVs
+	hr = CreateFrameBuffers();
 
 	_viewport.Width = static_cast<float>(Screen::Width);
 	_viewport.Height = static_cast<float>(Screen::Height);
@@ -809,14 +799,101 @@ void SimpleEngine::FixedUpdate(double fixedDeltaTime)
 	SceneGraph::FixedUpdate(fixedDeltaTime);
 }
 
+#ifdef _DEFERRED_RENDER
 void SimpleEngine::Draw()
 {
-	constexpr float backgroundColour[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
+	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	constexpr float errorColour[4]      = { 1.0f, 0.0f, 1.0f, 1.0f };
 
-	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+	_context->ClearRenderTargetView(_albedoFrameBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_normalFrameBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_depthLinearFrameBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_worldPositionFrameBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_lightingDiffuseFrameBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_lightingSpecularFrameBufferView.Get(), backgroundColour);
+
+#pragma region G-Buffer Pass
+	ID3D11RenderTargetView* rTVsGPass[4] = {
+		_albedoFrameBufferView.Get(), _normalFrameBufferView.Get(), _depthLinearFrameBufferView.Get(),
+		_worldPositionFrameBufferView.Get()
+	};
+	_context->OMSetRenderTargets(4, rTVsGPass, _depthStencilView.Get());
+
+	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_GeometryPass.hlsl").value().Shader.Get(),
+	                      nullptr, 0);
+	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_GeometryPass.hlsl").value().Shader.Get(),
+						  nullptr, 0);
+
+	SceneGraph::Draw(_context);
+
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
+
+#pragma region Lighting Pass
+	ID3D11RenderTargetView* rTVsLPass[2] = { _lightingDiffuseFrameBufferView.Get(), _lightingSpecularFrameBufferView.Get() };
+	ID3D11ShaderResourceView* sRVsLPass[4] = {
+		_albedoShaderResourceView.Get(), _normalShaderResourceView.Get(), _depthLinearShaderResourceView.Get(),
+		_worldPositionShaderResourceView.Get()
+	};
+	_context->VSSetShaderResources(16, 4, sRVsLPass);
+	_context->PSSetShaderResources(16, 4, sRVsLPass);
+	_context->OMSetRenderTargets(2, rTVsLPass, nullptr);
+
+	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
+		nullptr, 0);
+	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_LightingPass.hlsl").value().Shader.Get(),
+		nullptr, 0);
+
+	_screenQuad->Draw(_context);
+
+	ID3D11ShaderResourceView* sRVsNull4[4] = { nullptr, nullptr, nullptr, nullptr };
+	_context->VSSetShaderResources(16, 4, sRVsNull4);
+	_context->PSSetShaderResources(16, 4, sRVsNull4);
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
+
+#pragma region Output
+	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), nullptr);
+	ID3D11ShaderResourceView* sRVsGLPass[2] = { _lightingDiffuseShaderResourceView.Get(), _lightingSpecularShaderResourceView.Get() };
+	ID3D11ShaderResourceView* sRVsGLPassT[2] = { _albedoShaderResourceView.Get(), _normalShaderResourceView.Get() };
+	_context->PSSetShaderResources(16, 2, sRVsGLPassT);
+	_context->PSSetShaderResources(20, 2, sRVsGLPass);
+
+	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
+		nullptr, 0);
+	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_CombineGeometryLighting.hlsl").value().Shader.Get(),
+		nullptr, 0);
+
+	_screenQuad->Draw(_context);
+
+	ID3D11ShaderResourceView* unbind = nullptr;
+	_context->PSSetShaderResources(16, 1, &unbind);
+	_context->PSSetShaderResources(17, 1, &unbind);
+	_context->PSSetShaderResources(20, 1, &unbind);
+	_context->PSSetShaderResources(21, 1, &unbind);
+	
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+	_swapChain->Present(0, 0);
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
+}
+
+#else
+
+void SimpleEngine::Draw()
+{
+	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	constexpr float errorColour[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
+
+	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+
+	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
 
 	SceneGraph::Draw(_context);
 
@@ -825,3 +902,4 @@ void SimpleEngine::Draw()
 
 	_swapChain->Present(0, 0);
 }
+#endif

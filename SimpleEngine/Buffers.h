@@ -19,4 +19,7 @@ struct Buffers
 	inline static SRVBufferPair<SRVDirectionalLights> SRVDirectionalLights = {}; //Texture Buffer Slot 8
 	inline static SRVBufferPair<SRVPointLights> SRVPointLights = {}; //Texture Buffer Slot 9
 	inline static SRVBufferPair<SRVSpotLights> SRVSpotLights = {}; //Texture Buffer Slot 10
+
+	//inline static SRVBufferPair<ID3D11Texture2D> SRVSpotLights = {}; //Texture Buffer Slot 10
+	//inline static SRVBufferPair<SRVSpotLights> SRVSpotLights = {}; //Texture Buffer Slot 10
 };

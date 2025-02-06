@@ -2,15 +2,13 @@
 #include <chrono>
 #include <d3d11.h>
 #include <dxgi1_2.h>
-#include <map>
 #include <memory>
-#include <string>
 #include <windows.h>
 #include <wrl.h>
 
 #include "CameraComponent.h"
 #include "SceneGraph.h"
-#include "Shaders.h"
+#include "ScreenQuad.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -32,13 +30,13 @@ private:
 	HRESULT CreateWindowHandle(HINSTANCE hInstance);
 	HRESULT CreateD3DDevice();
 	HRESULT CreateSwapChain();
-	HRESULT CreateFrameBuffer();
+	HRESULT CreateFrameBuffers();
 	HRESULT InitialiseShaders();
 	HRESULT InitialisePipeline();
 	HRESULT InitialiseRunTimeData();
 	HRESULT InitialiseImGUI();
 
-	HRESULT InitialiseVertexShaderLayout(ID3DBlob* vsBlob);
+	HRESULT InitialiseVertexShaderLayout(const ComPtr<ID3DBlob>& vsBlob);
 	ComPtr<ID3D11VertexShader> CompileVertexShader(LPCWSTR path);
 	ComPtr<ID3D11PixelShader> CompilePixelShader(LPCWSTR path);
 	HRESULT InitialiseRasterizerStates();
@@ -53,15 +51,41 @@ private:
 	ComPtr<IDXGIDevice> _dxgiDevice;
 	ComPtr<IDXGIFactory2> _dxgiFactory;
 	ComPtr<IDXGISwapChain1> _swapChain;
+
+#ifdef _DEFERRED_RENDER
+	ComPtr<ID3D11Texture2D> _albedoTexture;
+	ComPtr<ID3D11Texture2D> _normalTexture;
+	ComPtr<ID3D11Texture2D> _depthLinearTexture;
+	ComPtr<ID3D11Texture2D> _worldPositionTexture;
+	ComPtr<ID3D11Texture2D> _lightingDiffuseTexture;
+	ComPtr<ID3D11Texture2D> _lightingSpecularTexture;
+	ComPtr<ID3D11ShaderResourceView> _albedoShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _normalShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _depthLinearShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _worldPositionShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _lightingDiffuseShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _lightingSpecularShaderResourceView;
+	ComPtr<ID3D11RenderTargetView> _albedoFrameBufferView;
+	ComPtr<ID3D11RenderTargetView> _normalFrameBufferView;
+	ComPtr<ID3D11RenderTargetView> _depthLinearFrameBufferView;
+	ComPtr<ID3D11RenderTargetView> _worldPositionFrameBufferView;
+	ComPtr<ID3D11RenderTargetView> _lightingDiffuseFrameBufferView;
+	ComPtr<ID3D11RenderTargetView> _lightingSpecularFrameBufferView;
+#endif
+
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
+
 	ComPtr<ID3D11InputLayout> _inputLayout;
 	D3D11_VIEWPORT _viewport;
 
+#ifdef _DEFERRED_RENDER
+	std::unique_ptr<ScreenQuad> _screenQuad = nullptr;
+#endif
+
 	std::chrono::time_point<std::chrono::steady_clock> _lastFrameTime = std::chrono::high_resolution_clock::now();
 	double _timeSinceLastFixedUpdate = 0;
-	std::map<std::string, Shaders> _shaders = {};
 	std::weak_ptr<CameraComponent> _camera = {};
 
 	int _selectedObject = -1;

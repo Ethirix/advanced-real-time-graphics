@@ -48,11 +48,13 @@ private:
 #pragma endregion
 
 #pragma region Shader Functions
+#ifndef _DEFERRED_RENDER
 public:
 	static bool LoadVertexShader(PATH_STR path, SHARED_PTR_MTL material);
 
 	static bool LoadPixelShader(PATH_STR path, SHARED_PTR_MTL material);
 private:
+#endif
 #pragma endregion
 
 #pragma region Texture Functions

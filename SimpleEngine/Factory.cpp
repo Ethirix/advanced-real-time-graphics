@@ -408,6 +408,7 @@ OPTIONAL_SHARED_PTR_MTL Factory::WavefrontMTLLoader(PATH_STR path)
 
 #pragma region Shader Functions
 
+#ifndef _DEFERRED_RENDER
 bool Factory::LoadVertexShader(PATH_STR path, SHARED_PTR_MTL material)
 {
 	OPTIONAL_SHADER_DATA_VERTEX vertex = DataStore::VertexShaders.Retrieve(path);
@@ -425,6 +426,7 @@ bool Factory::LoadPixelShader(PATH_STR path, SHARED_PTR_MTL material)
 
 	return pixel.has_value();
 }
+#endif
 
 #pragma endregion
 

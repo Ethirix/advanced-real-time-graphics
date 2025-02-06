@@ -107,6 +107,8 @@
     <Filter Include="Header Files\Structs\Lighting">
       <UniqueIdentifier>{a5a49f81-5486-493e-a5ef-9f76d17608f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\_ForwardShaders">
+      <UniqueIdentifier>{2cd21c40-b2bc-4ce7-a90a-7c289b144c6e}</UniqueIdentifier>
     <Filter Include="Resource Files\Textures\Asphalt">
       <UniqueIdentifier>{41af9b6a-cd56-4419-94cb-d20c5f9a647f}</UniqueIdentifier>
     </Filter>
@@ -231,6 +233,9 @@
     </ClCompile>
     <ClCompile Include="SpotLightComponent.cpp">
       <Filter>Components\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenQuad.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -447,6 +452,9 @@
     <ClInclude Include="SpotLightData.h">
       <Filter>Header Files\Structs\Lighting</Filter>
     </ClInclude>
+    <ClInclude Include="ScreenQuad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui\imgui.natstepfilter">
@@ -573,6 +581,9 @@
     <None Include="Assets\Textures\Torus\Torus_DIFFUSE.dds">
       <Filter>Resource Files\Textures\Torus</Filter>
     </None>
+    <None Include="imgui\imgui.natstepfilter">
+      <Filter>ImGUI</Filter>
+    </None>
     <None Include="Assets\Textures\Asphalt\Asphalt_DIFFUSE.dds">
       <Filter>Resource Files\Textures\Asphalt</Filter>
     </None>
@@ -584,6 +595,9 @@
     </None>
     <None Include="Assets\Textures\Asphalt\Asphalt_SPECULAR.dds">
       <Filter>Resource Files\Textures\Asphalt</Filter>
+    </None>
+    <None Include="Assets\Shaders\Functions\VectorSpaceConverter.hlsli">
+      <Filter>Resource Files\Shaders\Functions</Filter>
     </None>
     <None Include="Assets\Textures\Cone\Cone_DIFFUSE.dds">
       <Filter>Resource Files\Textures\Cone</Filter>
@@ -609,6 +623,24 @@
     <None Include="Assets\Textures\Plane\Plane_SPECULAR.dds">
       <Filter>Resource Files\Textures\Plane</Filter>
     </None>
+    <None Include="Assets\Shaders\PS_GeometryPass.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_GeometryPass.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T17_DeferredNormalTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T16_DeferredAlbedoTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T24_GenericTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structs\VS_ScreenQuadOut.hlsli">
+      <Filter>Resource Files\Shaders\Structs</Filter>
+    </None>
     <None Include="Assets\Textures\Skybox\Skybox_DIFFUSE.dds">
       <Filter>Resource Files\Textures\Skybox</Filter>
     </None>
@@ -620,6 +652,43 @@
     </None>
     <None Include="Assets\Textures\Plane\Plane_DIFFUSE.dds">
       <Filter>Resource Files\Textures\Plane</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_LightingPass.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_ScreenQuad.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Assets\Shaders\VS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_BlinnPhong.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_RenderSRV.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T18_DeferredDepthTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T19_DeferredWorldPositionTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T20_DeferredDiffuseLightingTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T21_DeferredSpecularLightingTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_CombineGeometryLighting.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -1,20 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
+    <ProjectConfiguration Include="Debug - Deferred|Win32">
+      <Configuration>Debug - Deferred</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
+    <ProjectConfiguration Include="Debug - Deferred|x64">
+      <Configuration>Debug - Deferred</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="Debug - Forward|Win32">
+      <Configuration>Debug - Forward</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Deferred|Win32">
+      <Configuration>Release - Deferred</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Deferred|x64">
+      <Configuration>Release - Deferred</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Forward|Win32">
+      <Configuration>Release - Forward</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug - Forward|x64">
+      <Configuration>Debug - Forward</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - Forward|x64">
+      <Configuration>Release - Forward</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -26,26 +42,52 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
@@ -57,32 +99,58 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>imgui/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_DEFERRED_RENDER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>imgui/</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -90,6 +158,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>imgui/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -98,14 +167,55 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_DEFERRED_RENDER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>imgui/</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>imgui/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>imgui/</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>user32.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>MKDIR "$(OutputPath)Assets\"
+
+(ROBOCOPY "$(ProjectDir)Assets" "$(OutputPath)Assets" /E /MIR /DCOPY:DA /COPY:DAT) ^&amp; IF %ERRORLEVEL% LEQ 1 EXIT 0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_DEFERRED_RENDER</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>imgui/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -125,7 +235,7 @@
       <Message />
     </CustomBuildStep>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -134,6 +244,35 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>imgui/</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>user32.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>MKDIR "$(OutputPath)Assets\"
+
+(ROBOCOPY "$(ProjectDir)Assets" "$(OutputPath)Assets" /E /MIR /DCOPY:DA /COPY:DAT) ^&amp; IF %ERRORLEVEL% LEQ 1 EXIT 0</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_DEFERRED_RENDER</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>imgui/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -183,6 +322,7 @@
     <ClCompile Include="PlaneColliderComponent.cpp" />
     <ClCompile Include="RasterizerStateConfig.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
+    <ClCompile Include="ScreenQuad.cpp" />
     <ClCompile Include="SimpleEngine.cpp" />
     <ClCompile Include="SphereColliderComponent.cpp" />
     <ClCompile Include="SpotLightComponent.cpp" />
@@ -242,6 +382,7 @@
     <ClInclude Include="SafePointerArray.h" />
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="Screen.h" />
+    <ClInclude Include="ScreenQuad.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="ShaderData.h" />
     <ClInclude Include="ShaderType.h" />
@@ -263,78 +404,37 @@
     <ClInclude Include="VertexIndices.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Configuration\RasterizerStateConfig.json">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Configuration\SceneGraph.json">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Materials\cube2.mtl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Materials\Icosphere3.mtl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Materials\suzanne.mtl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Functions\VectorSpaceConverter.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structs\DirectionalLightData.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structs\PointLightData.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structs\LightingOut.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structs\Material.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structs\SpotLightData.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structs\Textures.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structs\VS_BaseOut.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T10_SpotLights.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T8_DirectionalLights.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T9_PointLights.hlsli">
-      <FileType>Document</FileType>
-    </None>
+    <None Include="Assets\Configuration\RasterizerStateConfig.json" />
+    <None Include="Assets\Configuration\SceneGraph.json" />
+    <None Include="Assets\Materials\cube2.mtl" />
+    <None Include="Assets\Materials\Icosphere3.mtl" />
+    <None Include="Assets\Materials\suzanne.mtl" />
+    <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli" />
+    <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli" />
+    <None Include="Assets\Shaders\Functions\VectorSpaceConverter.hlsli" />
+    <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli" />
+    <None Include="Assets\Shaders\Structs\DirectionalLightData.hlsli" />
+    <None Include="Assets\Shaders\Structs\PointLightData.hlsli" />
+    <None Include="Assets\Shaders\Structs\LightingOut.hlsli" />
+    <None Include="Assets\Shaders\Structs\Material.hlsli" />
+    <None Include="Assets\Shaders\Structs\SpotLightData.hlsli" />
+    <None Include="Assets\Shaders\Structs\Textures.hlsli" />
+    <None Include="Assets\Shaders\Structs\VS_BaseOut.hlsli" />
+    <None Include="Assets\Shaders\Buffers\CB3_Lighting.hlsli" />
+    <None Include="Assets\Shaders\Structs\VS_ScreenQuadOut.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T0_DiffuseTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T10_SpotLights.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T16_DeferredAlbedoTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T17_DeferredNormalTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T18_DeferredDepthTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T19_DeferredWorldPositionTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T20_DeferredDiffuseLightingTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T21_DeferredSpecularLightingTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T24_GenericTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T8_DirectionalLights.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T9_PointLights.hlsli" />
     <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
       <FileType>Document</FileType>
     </None>
@@ -342,16 +442,10 @@
       <FileType>Document</FileType>
     </None>
     <None Include="imgui\imgui.natstepfilter" />
-    <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli">
-      <FileType>Document</FileType>
-    </None>
+    <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli" />
+    <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli" />
+    <None Include="Assets\Shaders\Structs\VS_BaseIn.hlsli" />
     <None Include="packages.config" />
-    <None Include="Assets\Shaders\Structs\VS_BaseIn.hlsli">
-      <FileType>Document</FileType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Buffers\CB0_ObjectCameraData.hlsli">
@@ -366,9 +460,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Meshes\suzanne.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">
       </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">
       </ExcludedFromBuild>
       <FileType>Document</FileType>
     </None>
@@ -393,18 +491,76 @@
     <Natvis Include="imgui\imgui.natvis" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shaders\PS_NormalMapping.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    <None Include="Assets\Shaders\PS_GeometryPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Pixel</ShaderType>
       <FileType>Document</FileType>
     </None>
-    <None Include="Assets\Shaders\VS_NormalMapping.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    <None Include="Assets\Shaders\VS_GeometryPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\PS_LightingPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Assets\Shaders\VS_ScreenQuad.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\PS_RenderSRV.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\PS_CombineGeometryLighting.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Pixel</ShaderType>
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
@@ -429,12 +585,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets" Condition="Exists('packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets')" />
+    <Import Project="packages\nlohmann.json.3.11.3\build\native\nlohmann.json.targets" Condition="Exists('packages\nlohmann.json.3.11.3\build\native\nlohmann.json.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets'))" />
+    <Error Condition="!Exists('packages\nlohmann.json.3.11.3\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\nlohmann.json.3.11.3\build\native\nlohmann.json.targets'))" />
   </Target>
 </Project>
