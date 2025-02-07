@@ -230,18 +230,6 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-#ifdef _DEFERRED_RENDER
-
-	textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-	renderTargetViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
-
-	hr = _device->CreateTexture2D(&textureDesc, nullptr, _depthLinearTexture.GetAddressOf()); FAIL_CHECK
-	hr = _device->CreateRenderTargetView(_depthLinearTexture.Get(), &renderTargetViewDesc, _depthLinearFrameBufferView.GetAddressOf()); FAIL_CHECK
-	hr = _device->CreateShaderResourceView(_depthLinearTexture.Get(), &shaderResourceViewDesc, _depthLinearShaderResourceView.GetAddressOf()); FAIL_CHECK
-
-#endif
-
 	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	renderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
@@ -255,10 +243,10 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 
 	for (auto& mesh : SceneGraph::GetComponentsFromObjects<MeshComponent>())
 	{
-		if (Texture& diffuse = mesh.lock()->Textures->Diffuse; diffuse.Name == "NO_TEXTURE")
+		if (auto& [Name, Resource, Slot] = mesh.lock()->Textures->Diffuse; Name == "NO_TEXTURE")
 		{
-			diffuse.Resource = _outputCopyShaderResourceView;
-			diffuse.Slot = 0;
+			Resource = _outputCopyShaderResourceView;
+			Slot = 0;
 		}
 	}
 
@@ -559,6 +547,14 @@ HRESULT SimpleEngine::InitialiseBuffers()
 	_context->PSSetConstantBuffers(3, 1, Buffers::CBLighting.Buffer.GetAddressOf());
 #pragma endregion
 
+#pragma region CBExtraData
+	bufferDescription.ByteWidth = sizeof(CBExtraData);
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBExtraData.Buffer.GetAddressOf()); FAIL_CHECK
+
+	_context->VSSetConstantBuffers(4, 1, Buffers::CBExtraData.Buffer.GetAddressOf());
+	_context->PSSetConstantBuffers(4, 1, Buffers::CBExtraData.Buffer.GetAddressOf());
+#pragma endregion
+
 #pragma region SRVDirectionalLights
 	bufferDescription.ByteWidth = sizeof(DirectionalLightData) * MAX_DIRECTIONAL_LIGHTS;
 	bufferDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -733,6 +729,13 @@ void SimpleEngine::Update()
 			_camera = cameraComponent.value();
 	}
 
+	Buffers::CBExtraData.BufferData.ColourEffect = _colourEffect;
+	D3D11_MAPPED_SUBRESOURCE extraData;
+	_context->Map(Buffers::CBExtraData.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &extraData);
+	memcpy(extraData.pData, &Buffers::CBExtraData.BufferData, sizeof(Buffers::CBExtraData.BufferData));
+	_context->Unmap(Buffers::CBExtraData.Buffer.Get(), 0);
+
+
 	LightManager::UpdateLights(_context);
 
 	SceneGraph::Update(deltaTime);
@@ -822,13 +825,13 @@ void SimpleEngine::FixedUpdate(double fixedDeltaTime)
 	SceneGraph::FixedUpdate(fixedDeltaTime);
 }
 
-
 void SimpleEngine::Draw()
 {
 	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	constexpr float errorColour[4]      = { 1.0f, 0.0f, 1.0f, 1.0f };
 	constexpr ID3D11ShaderResourceView* unbind = nullptr;
 
+	//Copy screen output to texture of objects that use it
 	_context->CopyResource(_outputCopyTexture.Get(), _baseOutputTexture.Get());
 
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
@@ -838,17 +841,13 @@ void SimpleEngine::Draw()
 #ifdef _DEFERRED_RENDER
 	_context->ClearRenderTargetView(_albedoFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_normalFrameBufferView.Get(), backgroundColour);
-	_context->ClearRenderTargetView(_depthLinearFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_worldPositionFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_lightingDiffuseFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_lightingSpecularFrameBufferView.Get(), backgroundColour);
 
 #pragma region G-Buffer Pass
-	ID3D11RenderTargetView* rTVsGPass[4] = {
-		_albedoFrameBufferView.Get(), _normalFrameBufferView.Get(), _depthLinearFrameBufferView.Get(),
-		_worldPositionFrameBufferView.Get()
-	};
-	_context->OMSetRenderTargets(4, rTVsGPass, _depthStencilView.Get());
+	ID3D11RenderTargetView* rTVsGPass[3] = { _albedoFrameBufferView.Get(), _normalFrameBufferView.Get(),_worldPositionFrameBufferView.Get() };
+	_context->OMSetRenderTargets(3, rTVsGPass, _depthStencilView.Get());
 
 	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_GeometryPass.hlsl").value().Shader.Get(),
 	                      nullptr, 0);
@@ -862,11 +861,8 @@ void SimpleEngine::Draw()
 
 #pragma region Lighting Pass
 	ID3D11RenderTargetView* rTVsLPass[2] = { _lightingDiffuseFrameBufferView.Get(), _lightingSpecularFrameBufferView.Get() };
-	ID3D11ShaderResourceView* sRVsLPass[4] = {
-		_albedoShaderResourceView.Get(), _normalShaderResourceView.Get(), _depthLinearShaderResourceView.Get(),
-		_worldPositionShaderResourceView.Get()
-	};
-	_context->PSSetShaderResources(16, 4, sRVsLPass);
+	ID3D11ShaderResourceView* sRVsLPass[2] = { _normalShaderResourceView.Get(), _worldPositionShaderResourceView.Get() };
+	_context->PSSetShaderResources(17, 2, sRVsLPass);
 	_context->OMSetRenderTargets(2, rTVsLPass, nullptr);
 
 	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
@@ -876,10 +872,8 @@ void SimpleEngine::Draw()
 
 	_screenQuad->Draw(_context);
 
-	_context->PSSetShaderResources(16, 1, &unbind);
 	_context->PSSetShaderResources(17, 1, &unbind);
 	_context->PSSetShaderResources(18, 1, &unbind);
-	_context->PSSetShaderResources(19, 1, &unbind);
 	_context->OMSetRenderTargets(0, nullptr, nullptr);
 #pragma endregion
 

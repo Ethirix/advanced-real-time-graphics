@@ -335,6 +335,7 @@
     <ClInclude Include="BufferPair.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CBExtraData.h" />
     <ClInclude Include="CBLighting.h" />
     <ClInclude Include="CBMaterial.h" />
     <ClInclude Include="CBObjectCameraData.h" />
@@ -411,6 +412,7 @@
     <None Include="Assets\Materials\suzanne.mtl" />
     <None Include="Assets\Shaders\Buffers\CB1_Material.hlsli" />
     <None Include="Assets\Shaders\Buffers\CB2_Textures.hlsli" />
+    <None Include="Assets\Shaders\Buffers\CB4_ExtraData.hlsli" />
     <None Include="Assets\Shaders\Functions\VectorSpaceConverter.hlsli" />
     <None Include="Assets\Shaders\Samplers\S0_BilinearSampler.hlsli" />
     <None Include="Assets\Shaders\Structs\DirectionalLightData.hlsli" />
@@ -426,8 +428,7 @@
     <None Include="Assets\Shaders\Structured Resources\T10_SpotLights.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T16_DeferredAlbedoTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T17_DeferredNormalTexture.hlsli" />
-    <None Include="Assets\Shaders\Structured Resources\T18_DeferredDepthTexture.hlsli" />
-    <None Include="Assets\Shaders\Structured Resources\T19_DeferredWorldPositionTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T18_DeferredWorldPositionTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T1_SpecularTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T20_DeferredDiffuseLightingTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T21_DeferredSpecularLightingTexture.hlsli" />

@@ -55,19 +55,16 @@ private:
 #ifdef _DEFERRED_RENDER
 	ComPtr<ID3D11Texture2D> _albedoTexture;
 	ComPtr<ID3D11Texture2D> _normalTexture;
-	ComPtr<ID3D11Texture2D> _depthLinearTexture;
 	ComPtr<ID3D11Texture2D> _worldPositionTexture;
 	ComPtr<ID3D11Texture2D> _lightingDiffuseTexture;
 	ComPtr<ID3D11Texture2D> _lightingSpecularTexture;
 	ComPtr<ID3D11ShaderResourceView> _albedoShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _normalShaderResourceView;
-	ComPtr<ID3D11ShaderResourceView> _depthLinearShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _worldPositionShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _lightingDiffuseShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _lightingSpecularShaderResourceView;
 	ComPtr<ID3D11RenderTargetView> _albedoFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _normalFrameBufferView;
-	ComPtr<ID3D11RenderTargetView> _depthLinearFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _worldPositionFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _lightingDiffuseFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _lightingSpecularFrameBufferView;
@@ -96,5 +93,7 @@ private:
 	int _selectedObject = -1;
 	Vector3 _force{};
 	Vector3 _forcePosition{};
+
+	DirectX::XMFLOAT4 _colourEffect = { 1, 1, 1, 0 };
 };
 
