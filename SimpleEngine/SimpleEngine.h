@@ -81,6 +81,9 @@ private:
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
 
+	ComPtr<ID3D11Texture2D> _outputCopyTexture;
+	ComPtr<ID3D11ShaderResourceView> _outputCopyShaderResourceView;
+
 	ComPtr<ID3D11InputLayout> _inputLayout;
 	D3D11_VIEWPORT _viewport;
 

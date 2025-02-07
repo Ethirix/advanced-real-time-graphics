@@ -17,6 +17,7 @@
 #include "Helpers.h"
 #include "imgui.h"
 #include "LightManager.h"
+#include "MeshComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
 
@@ -248,6 +249,18 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, _baseOutputTexture.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_baseOutputTexture.Get(), &renderTargetViewDesc, _baseOutputBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_baseOutputTexture.Get(), &shaderResourceViewDesc, _baseOutputShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, _outputCopyTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_outputCopyTexture.Get(), &shaderResourceViewDesc, _outputCopyShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	for (auto& mesh : SceneGraph::GetComponentsFromObjects<MeshComponent>())
+	{
+		if (Texture& diffuse = mesh.lock()->Textures->Diffuse; diffuse.Name == "NO_TEXTURE")
+		{
+			diffuse.Resource = _outputCopyShaderResourceView;
+			diffuse.Slot = 0;
+		}
+	}
 
 #ifdef _DEFERRED_RENDER
 
@@ -815,6 +828,8 @@ void SimpleEngine::Draw()
 	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	constexpr float errorColour[4]      = { 1.0f, 0.0f, 1.0f, 1.0f };
 	constexpr ID3D11ShaderResourceView* unbind = nullptr;
+
+	_context->CopyResource(_outputCopyTexture.Get(), _baseOutputTexture.Get());
 
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);

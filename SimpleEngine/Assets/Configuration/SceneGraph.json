@@ -116,7 +116,7 @@
           "TexturePaths": {
             "Diffuse": {
               "Path": "",
-              "Slot": 0
+              "Slot": -1
             },
             "Specular": {
               "Path": "",
