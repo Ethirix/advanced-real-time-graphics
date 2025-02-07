@@ -73,6 +73,10 @@ private:
 	ComPtr<ID3D11RenderTargetView> _lightingSpecularFrameBufferView;
 #endif
 
+	ComPtr<ID3D11Texture2D> _baseOutputTexture;
+	ComPtr<ID3D11ShaderResourceView> _baseOutputShaderResourceView;
+	ComPtr<ID3D11RenderTargetView> _baseOutputBufferView;
+
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
@@ -80,9 +84,7 @@ private:
 	ComPtr<ID3D11InputLayout> _inputLayout;
 	D3D11_VIEWPORT _viewport;
 
-#ifdef _DEFERRED_RENDER
 	std::unique_ptr<ScreenQuad> _screenQuad = nullptr;
-#endif
 
 	std::chrono::time_point<std::chrono::steady_clock> _lastFrameTime = std::chrono::high_resolution_clock::now();
 	double _timeSinceLastFixedUpdate = 0;
