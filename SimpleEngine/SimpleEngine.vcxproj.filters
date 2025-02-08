@@ -691,6 +691,9 @@
     <None Include="Assets\Shaders\Structured Resources\T18_DeferredWorldPositionTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
+    <None Include="Assets\Shaders\PS_BoxBlur.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="imgui\imgui.natvis">

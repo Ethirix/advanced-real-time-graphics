@@ -243,10 +243,9 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	hr = _device->CreateRenderTargetView(_colourEffectPassTexture.Get(), &renderTargetViewDesc, _colourEffectPassBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_colourEffectPassTexture.Get(), &shaderResourceViewDesc, _colourEffectPassShaderResourceView.GetAddressOf()); FAIL_CHECK
 
-
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, _outputCopyTexture.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_outputCopyTexture.Get(), &shaderResourceViewDesc, _outputCopyShaderResourceView.GetAddressOf()); FAIL_CHECK
-
+	
 	for (auto& mesh : SceneGraph::GetComponentsFromObjects<MeshComponent>())
 	{
 		if (auto& [Name, Resource, Slot] = mesh.lock()->Textures->Diffuse; Name == "NO_TEXTURE")
@@ -291,6 +290,16 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	hr = _device->CreateShaderResourceView(_worldPositionTexture.Get(), &shaderResourceViewDesc, _worldPositionShaderResourceView.GetAddressOf()); FAIL_CHECK
 
 #endif
+
+	textureDesc.Width /= 2;
+	textureDesc.Height /= 2;
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr,  _blurOutputTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateTexture2D(&textureDesc, nullptr,  _blurTempTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_blurOutputTexture.Get(), &renderTargetViewDesc, _blurOutputBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_blurTempTexture.Get(), &renderTargetViewDesc, _blurTempBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_blurOutputTexture.Get(), &shaderResourceViewDesc, _blurOutputShaderResourceView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_blurTempTexture.Get(), &shaderResourceViewDesc, _blurTempShaderResourceView.GetAddressOf()); FAIL_CHECK
 
 	return hr;
 }
@@ -936,6 +945,32 @@ void SimpleEngine::Draw()
 		_context->OMSetRenderTargets(0, nullptr, nullptr);
 
 		output = _colourEffectPassShaderResourceView.Get();
+	}
+#pragma endregion
+
+#pragma region Blur Effect
+	if (_blurIterations > 0)
+	{
+		_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
+				nullptr, 0);
+		_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_BlurEffect.hlsl").value().Shader.Get(),
+				nullptr, 0);
+
+		for (unsigned i = 0; i < _blurIterations; i++)
+		{
+
+			_context->OMSetRenderTargets(1, _colourEffectPassBufferView.GetAddressOf(), nullptr);
+
+			_context->PSSetShaderResources(24, 1, _baseOutputShaderResourceView.GetAddressOf());
+			
+
+			_screenQuad->Draw(_context);
+
+			_context->PSSetShaderResources(24, 1, &unbind);
+			_context->OMSetRenderTargets(0, nullptr, nullptr);
+
+			output = _colourEffectPassShaderResourceView.Get();
+		}
 	}
 #pragma endregion
 
