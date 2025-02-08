@@ -71,8 +71,12 @@ private:
 #endif
 
 	ComPtr<ID3D11Texture2D> _baseOutputTexture;
+	ComPtr<ID3D11Texture2D> _colourEffectPassTexture;
 	ComPtr<ID3D11ShaderResourceView> _baseOutputShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _colourEffectPassShaderResourceView;
 	ComPtr<ID3D11RenderTargetView> _baseOutputBufferView;
+	ComPtr<ID3D11RenderTargetView> _colourEffectPassBufferView;
+
 
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
@@ -93,7 +97,4 @@ private:
 	int _selectedObject = -1;
 	Vector3 _force{};
 	Vector3 _forcePosition{};
-
-	DirectX::XMFLOAT4 _colourEffect = { 1, 1, 1, 0 };
 };
-

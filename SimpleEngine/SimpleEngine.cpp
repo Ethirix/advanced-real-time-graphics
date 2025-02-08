@@ -238,6 +238,11 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	hr = _device->CreateRenderTargetView(_baseOutputTexture.Get(), &renderTargetViewDesc, _baseOutputBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_baseOutputTexture.Get(), &shaderResourceViewDesc, _baseOutputShaderResourceView.GetAddressOf()); FAIL_CHECK
 
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, _colourEffectPassTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_colourEffectPassTexture.Get(), &renderTargetViewDesc, _colourEffectPassBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_colourEffectPassTexture.Get(), &shaderResourceViewDesc, _colourEffectPassShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, _outputCopyTexture.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_outputCopyTexture.Get(), &shaderResourceViewDesc, _outputCopyShaderResourceView.GetAddressOf()); FAIL_CHECK
 
@@ -729,7 +734,7 @@ void SimpleEngine::Update()
 			_camera = cameraComponent.value();
 	}
 
-	Buffers::CBExtraData.BufferData.ColourEffect = _colourEffect;
+	Buffers::CBExtraData.BufferData.ColourEffect = { 1, 0, 0, 0.05};
 	D3D11_MAPPED_SUBRESOURCE extraData;
 	_context->Map(Buffers::CBExtraData.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &extraData);
 	memcpy(extraData.pData, &Buffers::CBExtraData.BufferData, sizeof(Buffers::CBExtraData.BufferData));
@@ -907,10 +912,26 @@ void SimpleEngine::Draw()
 	_context->OMSetRenderTargets(0, nullptr, nullptr);
 #endif
 
+#pragma region Colour Post Effect
+	_context->OMSetRenderTargets(1, _colourEffectPassBufferView.GetAddressOf(), nullptr);
+
+	_context->PSSetShaderResources(24, 1, _baseOutputShaderResourceView.GetAddressOf());
+	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
+		nullptr, 0);
+	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_ColourEffect.hlsl").value().Shader.Get(),
+		nullptr, 0);
+
+	_screenQuad->Draw(_context);
+
+	_context->PSSetShaderResources(24, 1, &unbind);
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
+
+	ID3D11ShaderResourceView* output = _colourEffectPassShaderResourceView.Get();
 #pragma region Display Framebuffer
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), nullptr);
 
-	_context->PSSetShaderResources(24, 1, _baseOutputShaderResourceView.GetAddressOf());
+	_context->PSSetShaderResources(24, 1, &output);
 	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
 		nullptr, 0);
 	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_RenderSRV.hlsl").value().Shader.Get(),

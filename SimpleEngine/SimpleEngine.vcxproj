@@ -331,6 +331,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABBColliderComponent.h" />
+    <ClInclude Include="Assets\Shaders\Structs\BlendType.h" />
     <ClInclude Include="Bounds.h" />
     <ClInclude Include="BufferPair.h" />
     <ClInclude Include="Buffers.h" />
@@ -583,6 +584,19 @@
     <None Include="Assets\Textures\Stone\Stone_DIFFUSE.dds" />
     <None Include="Assets\Textures\Stone\Stone_NORMAL.dds" />
     <None Include="Assets\Textures\Torus\Torus_DIFFUSE.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\PS_ColourEffect.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
