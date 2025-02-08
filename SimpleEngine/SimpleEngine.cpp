@@ -20,6 +20,7 @@
 #include "MeshComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
+#include "Assets/Shaders/Structs/BlendType.h"
 
 LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)  
 {
@@ -733,13 +734,13 @@ void SimpleEngine::Update()
 		if (auto cameraComponent = SceneGraph::TryGetComponentFromObjects<CameraComponent>(); cameraComponent.has_value())
 			_camera = cameraComponent.value();
 	}
-
-	Buffers::CBExtraData.BufferData.ColourEffect = { 1, 0, 0, 0.05};
+	
+	Buffers::CBExtraData.BufferData.ColourEffect = { 0.5, 0.5, 0.5 };
+	Buffers::CBExtraData.BufferData.ColourMode = static_cast<unsigned>(BlendType::LinearBurn);
 	D3D11_MAPPED_SUBRESOURCE extraData;
 	_context->Map(Buffers::CBExtraData.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &extraData);
 	memcpy(extraData.pData, &Buffers::CBExtraData.BufferData, sizeof(Buffers::CBExtraData.BufferData));
 	_context->Unmap(Buffers::CBExtraData.Buffer.Get(), 0);
-
 
 	LightManager::UpdateLights(_context);
 
@@ -836,6 +837,8 @@ void SimpleEngine::Draw()
 	constexpr float errorColour[4]      = { 1.0f, 0.0f, 1.0f, 1.0f };
 	constexpr ID3D11ShaderResourceView* unbind = nullptr;
 
+	ID3D11ShaderResourceView* output = nullptr;
+
 	//Copy screen output to texture of objects that use it
 	_context->CopyResource(_outputCopyTexture.Get(), _baseOutputTexture.Get());
 
@@ -843,6 +846,7 @@ void SimpleEngine::Draw()
 	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
 	_context->ClearRenderTargetView(_baseOutputBufferView.Get(), backgroundColour);
 
+#pragma region Base Colour
 #ifdef _DEFERRED_RENDER
 	_context->ClearRenderTargetView(_albedoFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_normalFrameBufferView.Get(), backgroundColour);
@@ -912,22 +916,29 @@ void SimpleEngine::Draw()
 	_context->OMSetRenderTargets(0, nullptr, nullptr);
 #endif
 
-#pragma region Colour Post Effect
-	_context->OMSetRenderTargets(1, _colourEffectPassBufferView.GetAddressOf(), nullptr);
-
-	_context->PSSetShaderResources(24, 1, _baseOutputShaderResourceView.GetAddressOf());
-	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
-		nullptr, 0);
-	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_ColourEffect.hlsl").value().Shader.Get(),
-		nullptr, 0);
-
-	_screenQuad->Draw(_context);
-
-	_context->PSSetShaderResources(24, 1, &unbind);
-	_context->OMSetRenderTargets(0, nullptr, nullptr);
+	output = _baseOutputShaderResourceView.Get();
 #pragma endregion
 
-	ID3D11ShaderResourceView* output = _colourEffectPassShaderResourceView.Get();
+#pragma region Colour Post Effect
+	if (static_cast<BlendType>(Buffers::CBExtraData.BufferData.ColourMode) != BlendType::None)
+	{
+		_context->OMSetRenderTargets(1, _colourEffectPassBufferView.GetAddressOf(), nullptr);
+
+		_context->PSSetShaderResources(24, 1, _baseOutputShaderResourceView.GetAddressOf());
+		_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
+			nullptr, 0);
+		_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_ColourEffect.hlsl").value().Shader.Get(),
+			nullptr, 0);
+
+		_screenQuad->Draw(_context);
+
+		_context->PSSetShaderResources(24, 1, &unbind);
+		_context->OMSetRenderTargets(0, nullptr, nullptr);
+
+		output = _colourEffectPassShaderResourceView.Get();
+	}
+#pragma endregion
+
 #pragma region Display Framebuffer
 	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), nullptr);
 

@@ -3,7 +3,8 @@
 
 cbuffer CB4_ExtraData : register(b4)
 {
-    float4 ColourEffect;
+    float3 ColourEffect;
+    uint ColourMode;
 }
 
 #endif
