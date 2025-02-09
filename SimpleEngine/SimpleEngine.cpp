@@ -194,10 +194,7 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 
 	D3D11_TEXTURE2D_DESC depthBufferDesc{};
 	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-#ifdef _DEFERRED_RENDER
-	depthBufferDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
-#endif
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.SampleDesc.Count = 1;
@@ -209,8 +206,14 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
+	D3D11_SHADER_RESOURCE_VIEW_DESC depthSRVDesc{};
+	depthSRVDesc.ViewDimension = D3D10_1_SRV_DIMENSION_TEXTURE2D;
+	depthSRVDesc.Texture2D.MipLevels = 1;
+	depthSRVDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+
 	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf()); FAIL_CHECK
     hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), &depthStencilDesc, _depthStencilView.GetAddressOf()); FAIL_CHECK
+    hr = _device->CreateShaderResourceView(_depthStencilBuffer.Get(), &depthSRVDesc, _depthStencilShaderResourceView.GetAddressOf()); FAIL_CHECK
 
     frameBuffer->Release();
 
@@ -242,6 +245,10 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, _colourEffectPassTexture.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_colourEffectPassTexture.Get(), &renderTargetViewDesc, _colourEffectPassBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_colourEffectPassTexture.Get(), &shaderResourceViewDesc, _colourEffectPassShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, _dofBlendTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_dofBlendTexture.Get(), &renderTargetViewDesc, _dofBlendBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_dofBlendTexture.Get(), &shaderResourceViewDesc, _dofBlendShaderResourceView.GetAddressOf()); FAIL_CHECK
 
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, _outputCopyTexture.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_outputCopyTexture.Get(), &shaderResourceViewDesc, _outputCopyShaderResourceView.GetAddressOf()); FAIL_CHECK
@@ -291,8 +298,8 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 
 #endif
 
-	textureDesc.Width /= 2;
-	textureDesc.Height /= 2;
+	//textureDesc.Width /= 2;
+	//textureDesc.Height /= 2;
 
 	hr = _device->CreateTexture2D(&textureDesc, nullptr,  _blurOutputTexture.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateTexture2D(&textureDesc, nullptr,  _blurTempTexture.GetAddressOf()); FAIL_CHECK
@@ -744,8 +751,14 @@ void SimpleEngine::Update()
 			_camera = cameraComponent.value();
 	}
 	
-	Buffers::CBExtraData.BufferData.ColourEffect = { 0.5, 0.5, 0.5 };
-	Buffers::CBExtraData.BufferData.ColourMode = static_cast<unsigned>(BlendType::LinearBurn);
+	Buffers::CBExtraData.BufferData.ColourEffect = { 0.5, 0.0, 0.5 };
+	Buffers::CBExtraData.BufferData.ColourMode = static_cast<unsigned>(BlendType::Darken);
+
+	Buffers::CBExtraData.BufferData.BlurIterations = 2;
+	Buffers::CBExtraData.BufferData.BlurSampleSize = 4;
+
+	Buffers::CBExtraData.BufferData.FocalBlendDistance = 50;
+	Buffers::CBExtraData.BufferData.FocalDepth = 25;
 	D3D11_MAPPED_SUBRESOURCE extraData;
 	_context->Map(Buffers::CBExtraData.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &extraData);
 	memcpy(extraData.pData, &Buffers::CBExtraData.BufferData, sizeof(Buffers::CBExtraData.BufferData));
@@ -933,7 +946,7 @@ void SimpleEngine::Draw()
 	{
 		_context->OMSetRenderTargets(1, _colourEffectPassBufferView.GetAddressOf(), nullptr);
 
-		_context->PSSetShaderResources(24, 1, _baseOutputShaderResourceView.GetAddressOf());
+		_context->PSSetShaderResources(24, 1, &output);
 		_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
 			nullptr, 0);
 		_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_ColourEffect.hlsl").value().Shader.Get(),
@@ -948,29 +961,49 @@ void SimpleEngine::Draw()
 	}
 #pragma endregion
 
-#pragma region Blur Effect
-	if (_blurIterations > 0)
+	bool useDoF = true;
+#pragma region Depth Of Field
+	if (useDoF && Buffers::CBExtraData.BufferData.BlurIterations > 0)
 	{
+#pragma region Blur Effect
 		_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
 				nullptr, 0);
-		_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_BlurEffect.hlsl").value().Shader.Get(),
+		_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_BoxBlur.hlsl").value().Shader.Get(),
 				nullptr, 0);
+		_context->OMSetRenderTargets(1, _blurOutputBufferView.GetAddressOf(), nullptr);
+		_context->PSSetShaderResources(24, 1, &output);
 
-		for (unsigned i = 0; i < _blurIterations; i++)
+		for (unsigned i = 0; i < Buffers::CBExtraData.BufferData.BlurIterations; i++)
 		{
-
-			_context->OMSetRenderTargets(1, _colourEffectPassBufferView.GetAddressOf(), nullptr);
-
-			_context->PSSetShaderResources(24, 1, _baseOutputShaderResourceView.GetAddressOf());
-			
-
 			_screenQuad->Draw(_context);
 
-			_context->PSSetShaderResources(24, 1, &unbind);
-			_context->OMSetRenderTargets(0, nullptr, nullptr);
-
-			output = _colourEffectPassShaderResourceView.Get();
+			_context->CopyResource(_blurTempTexture.Get(), _blurOutputTexture.Get());
+			_context->PSSetShaderResources(24, 1, _blurTempShaderResourceView.GetAddressOf());
 		}
+
+		_context->PSSetShaderResources(24, 1, &unbind);
+		_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
+
+#pragma region Depth-Blend Effect
+		_context->OMSetRenderTargets(1, _dofBlendBufferView.GetAddressOf(), nullptr);
+
+		ID3D11ShaderResourceView* dofSRVs[3] = { output, _blurOutputShaderResourceView.Get(), _depthStencilShaderResourceView.Get() };
+		_context->PSSetShaderResources(24, 3, dofSRVs);
+
+		_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
+				nullptr, 0);
+		_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_DOFEffect.hlsl").value().Shader.Get(),
+				nullptr, 0);
+
+		_screenQuad->Draw(_context);
+
+		output = _dofBlendShaderResourceView.Get();
+		_context->PSSetShaderResources(24, 1, &unbind);
+		_context->PSSetShaderResources(25, 1, &unbind);
+		_context->PSSetShaderResources(26, 1, &unbind);
+		_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
 	}
 #pragma endregion
 

@@ -1,4 +1,3 @@
-
 #include "Samplers/S0_BilinearSampler.hlsli"
 
 #include "Structs/VS_ScreenQuadOut.hlsli"

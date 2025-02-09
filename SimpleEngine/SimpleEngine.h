@@ -74,19 +74,23 @@ private:
 	ComPtr<ID3D11Texture2D> _colourEffectPassTexture;
 	ComPtr<ID3D11Texture2D> _blurOutputTexture;
 	ComPtr<ID3D11Texture2D> _blurTempTexture;
+	ComPtr<ID3D11Texture2D> _dofBlendTexture;
 	ComPtr<ID3D11ShaderResourceView> _baseOutputShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _colourEffectPassShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _blurOutputShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _blurTempShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _dofBlendShaderResourceView;
 	ComPtr<ID3D11RenderTargetView> _baseOutputBufferView;
 	ComPtr<ID3D11RenderTargetView> _colourEffectPassBufferView;
 	ComPtr<ID3D11RenderTargetView> _blurOutputBufferView;
 	ComPtr<ID3D11RenderTargetView> _blurTempBufferView;
+	ComPtr<ID3D11RenderTargetView> _dofBlendBufferView;
 
 
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
+	ComPtr<ID3D11ShaderResourceView> _depthStencilShaderResourceView;
 
 	ComPtr<ID3D11Texture2D> _outputCopyTexture;
 	ComPtr<ID3D11ShaderResourceView> _outputCopyShaderResourceView;
@@ -100,7 +104,6 @@ private:
 	double _timeSinceLastFixedUpdate = 0;
 	std::weak_ptr<CameraComponent> _camera = {};
 
-	unsigned _blurIterations = 1;
 	int _selectedObject = -1;
 	Vector3 _force{};
 	Vector3 _forcePosition{};

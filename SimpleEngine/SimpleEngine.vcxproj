@@ -434,6 +434,8 @@
     <None Include="Assets\Shaders\Structured Resources\T20_DeferredDiffuseLightingTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T21_DeferredSpecularLightingTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T24_GenericTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T25_GenericTexture.hlsli" />
+    <None Include="Assets\Shaders\Structured Resources\T26_DepthTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T2_NormalTexture.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T8_DirectionalLights.hlsli" />
     <None Include="Assets\Shaders\Structured Resources\T9_PointLights.hlsli" />
@@ -600,6 +602,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\PS_BoxBlur.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Forward|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release - Deferred|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\PS_DOFEffect.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Deferred|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug - Forward|Win32'">Pixel</ShaderType>
