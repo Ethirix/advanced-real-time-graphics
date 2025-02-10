@@ -456,15 +456,18 @@
     <ClInclude Include="ScreenQuad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Assets\Shaders\Structs\BlendType.h">
+      <Filter>Header Files\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="CBExtraData.h">
+      <Filter>Header Files\Buffers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui\imgui.natstepfilter">
       <Filter>ImGUI</Filter>
     </None>
     <None Include="packages.config" />
-    <None Include="Assets\Shaders\VS_Skybox.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="Assets\Configuration\RasterizerStateConfig.json">
       <Filter>Resource Files\Configuration</Filter>
     </None>
@@ -537,9 +540,6 @@
     <None Include="Assets\Shaders\Structs\VS_BaseOut.hlsli">
       <Filter>Resource Files\Shaders\Structs</Filter>
     </None>
-    <None Include="Assets\Shaders\Structs\VS_NormalMappingOut.hlsli">
-      <Filter>Resource Files\Shaders\Structs</Filter>
-    </None>
     <None Include="Assets\Shaders\Structs\VS_SkyboxOut.hlsli">
       <Filter>Resource Files\Shaders\Structs</Filter>
     </None>
@@ -563,21 +563,6 @@
     </None>
     <None Include="Assets\Shaders\Structured Resources\T64_SkyboxTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
-    </None>
-    <None Include="Assets\Shaders\PS_BlinnPhong.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Assets\Shaders\PS_NormalMapping.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Assets\Shaders\PS_Skybox.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Assets\Shaders\VS_NormalMapping.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="Assets\Textures\Torus\Torus_DIFFUSE.dds">
       <Filter>Resource Files\Textures\Torus</Filter>
@@ -676,12 +661,6 @@
     <None Include="Assets\Shaders\PS_RenderSRV.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="Assets\Shaders\Structured Resources\T18_DeferredDepthTexture.hlsli">
-      <Filter>Resource Files\Shaders\Structured Resources</Filter>
-    </None>
-    <None Include="Assets\Shaders\Structured Resources\T19_DeferredWorldPositionTexture.hlsli">
-      <Filter>Resource Files\Shaders\Structured Resources</Filter>
-    </None>
     <None Include="Assets\Shaders\Structured Resources\T20_DeferredDiffuseLightingTexture.hlsli">
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
@@ -689,6 +668,39 @@
       <Filter>Resource Files\Shaders\Structured Resources</Filter>
     </None>
     <None Include="Assets\Shaders\PS_CombineGeometryLighting.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_ColourEffect.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_BlinnPhong.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_BlinnPhong.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\VS_Skybox.hlsl">
+      <Filter>Resource Files\Shaders\_ForwardShaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Buffers\CB4_ExtraData.hlsli">
+      <Filter>Resource Files\Shaders\Buffers</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T18_DeferredWorldPositionTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_BoxBlur.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T26_DepthTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\Structured Resources\T25_GenericTexture.hlsli">
+      <Filter>Resource Files\Shaders\Structured Resources</Filter>
+    </None>
+    <None Include="Assets\Shaders\PS_DOFEffect.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

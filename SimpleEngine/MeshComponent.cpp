@@ -45,14 +45,22 @@ MeshComponent::MeshComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json
 
 	Textures = std::make_shared<struct Textures>();
 	if (auto diffuseResource = Factory::CreateTexture(diffuse.first, device); diffuseResource.has_value())
-		Textures->Diffuse = {diffuse.first, diffuseResource.value(), diffuse.second};
+		Textures->Diffuse = { diffuse.first, diffuseResource.value(), diffuse.second };
+	else
+		Textures->Diffuse = { "NO_TEXTURE", nullptr, -1 };
 	if (auto specularResource = Factory::CreateTexture(specular.first, device); specularResource.has_value())
 		Textures->Specular = {specular.first, specularResource.value(), specular.second};
+	else
+		Textures->Specular = { "NO_TEXTURE", nullptr, -1 };
 	if (auto displacementResource = Factory::CreateTexture(displacement.first, device); displacementResource.
 		has_value())
 		Textures->Displacement = {displacement.first, displacementResource.value(), displacement.second};
+	else
+		Textures->Displacement = { "NO_TEXTURE", nullptr, -1 };
 	if (auto normalResource = Factory::CreateTexture(normal.first, device); normalResource.has_value())
 		Textures->Normal = {normal.first, normalResource.value(), normal.second};
+	else
+		Textures->Normal = { "NO_TEXTURE", nullptr, -1 };
 
 	if (auto state = DataStore::DepthStencilStates.Retrieve(stencil); state.has_value())
 		DepthStencil = state.value();

@@ -1,0 +1,6 @@
+#ifndef __T18_DEFFEREDWORLDPOSITIONTEXTURE_HLSLI__
+#define __T18_DEFFEREDWORLDPOSITIONTEXTURE_HLSLI__
+
+Texture2D T18_DeferredWorldPositionTexture : register(t18);
+
+#endif

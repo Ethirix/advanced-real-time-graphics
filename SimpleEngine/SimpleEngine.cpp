@@ -17,8 +17,10 @@
 #include "Helpers.h"
 #include "imgui.h"
 #include "LightManager.h"
+#include "MeshComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
+#include "Assets/Shaders/Structs/BlendType.h"
 
 LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)  
 {
@@ -192,10 +194,7 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 
 	D3D11_TEXTURE2D_DESC depthBufferDesc{};
 	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-#ifdef _DEFERRED_RENDER
-	depthBufferDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
-#endif
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.SampleDesc.Count = 1;
@@ -207,12 +206,17 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
+	D3D11_SHADER_RESOURCE_VIEW_DESC depthSRVDesc{};
+	depthSRVDesc.ViewDimension = D3D10_1_SRV_DIMENSION_TEXTURE2D;
+	depthSRVDesc.Texture2D.MipLevels = 1;
+	depthSRVDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+
 	hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, _depthStencilBuffer.GetAddressOf()); FAIL_CHECK
     hr = _device->CreateDepthStencilView(_depthStencilBuffer.Get(), &depthStencilDesc, _depthStencilView.GetAddressOf()); FAIL_CHECK
+    hr = _device->CreateShaderResourceView(_depthStencilBuffer.Get(), &depthSRVDesc, _depthStencilShaderResourceView.GetAddressOf()); FAIL_CHECK
 
     frameBuffer->Release();
 
-#ifdef _DEFERRED_RENDER
 	D3D11_TEXTURE2D_DESC textureDesc{};
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc{};
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
@@ -230,17 +234,35 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-	textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-	renderTargetViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
-
-	hr = _device->CreateTexture2D(&textureDesc, nullptr, _depthLinearTexture.GetAddressOf()); FAIL_CHECK
-	hr = _device->CreateRenderTargetView(_depthLinearTexture.Get(), &renderTargetViewDesc, _depthLinearFrameBufferView.GetAddressOf()); FAIL_CHECK
-	hr = _device->CreateShaderResourceView(_depthLinearTexture.Get(), &shaderResourceViewDesc, _depthLinearShaderResourceView.GetAddressOf()); FAIL_CHECK
-
 	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	renderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, _baseOutputTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_baseOutputTexture.Get(), &renderTargetViewDesc, _baseOutputBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_baseOutputTexture.Get(), &shaderResourceViewDesc, _baseOutputShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, _colourEffectPassTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_colourEffectPassTexture.Get(), &renderTargetViewDesc, _colourEffectPassBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_colourEffectPassTexture.Get(), &shaderResourceViewDesc, _colourEffectPassShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, _dofBlendTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_dofBlendTexture.Get(), &renderTargetViewDesc, _dofBlendBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_dofBlendTexture.Get(), &shaderResourceViewDesc, _dofBlendShaderResourceView.GetAddressOf()); FAIL_CHECK
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, _outputCopyTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_outputCopyTexture.Get(), &shaderResourceViewDesc, _outputCopyShaderResourceView.GetAddressOf()); FAIL_CHECK
+	
+	for (auto& mesh : SceneGraph::GetComponentsFromObjects<MeshComponent>())
+	{
+		if (auto& [Name, Resource, Slot] = mesh.lock()->Textures->Diffuse; Name == "NO_TEXTURE")
+		{
+			Resource = _outputCopyShaderResourceView;
+			Slot = 0;
+		}
+	}
+
+#ifdef _DEFERRED_RENDER
 
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, _albedoTexture.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateRenderTargetView(_albedoTexture.Get(), &renderTargetViewDesc, _albedoFrameBufferView.GetAddressOf()); FAIL_CHECK
@@ -275,6 +297,16 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	hr = _device->CreateShaderResourceView(_worldPositionTexture.Get(), &shaderResourceViewDesc, _worldPositionShaderResourceView.GetAddressOf()); FAIL_CHECK
 
 #endif
+
+	//textureDesc.Width /= 2;
+	//textureDesc.Height /= 2;
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr,  _blurOutputTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateTexture2D(&textureDesc, nullptr,  _blurTempTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_blurOutputTexture.Get(), &renderTargetViewDesc, _blurOutputBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_blurTempTexture.Get(), &renderTargetViewDesc, _blurTempBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_blurOutputTexture.Get(), &shaderResourceViewDesc, _blurOutputShaderResourceView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_blurTempTexture.Get(), &shaderResourceViewDesc, _blurTempShaderResourceView.GetAddressOf()); FAIL_CHECK
 
 	return hr;
 }
@@ -351,9 +383,7 @@ HRESULT SimpleEngine::InitialiseRunTimeData()
 
 	OnWindowSizeChangeComplete();
 
-#ifdef _DEFERRED_RENDER
 	_screenQuad = std::make_unique<ScreenQuad>(_device);
-#endif
 
 	return S_OK;
 }
@@ -539,6 +569,14 @@ HRESULT SimpleEngine::InitialiseBuffers()
 	_context->PSSetConstantBuffers(3, 1, Buffers::CBLighting.Buffer.GetAddressOf());
 #pragma endregion
 
+#pragma region CBExtraData
+	bufferDescription.ByteWidth = sizeof(CBExtraData);
+	hr = _device->CreateBuffer(&bufferDescription, nullptr, Buffers::CBExtraData.Buffer.GetAddressOf()); FAIL_CHECK
+
+	_context->VSSetConstantBuffers(4, 1, Buffers::CBExtraData.Buffer.GetAddressOf());
+	_context->PSSetConstantBuffers(4, 1, Buffers::CBExtraData.Buffer.GetAddressOf());
+#pragma endregion
+
 #pragma region SRVDirectionalLights
 	bufferDescription.ByteWidth = sizeof(DirectionalLightData) * MAX_DIRECTIONAL_LIGHTS;
 	bufferDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -712,6 +750,19 @@ void SimpleEngine::Update()
 		if (auto cameraComponent = SceneGraph::TryGetComponentFromObjects<CameraComponent>(); cameraComponent.has_value())
 			_camera = cameraComponent.value();
 	}
+	
+	Buffers::CBExtraData.BufferData.ColourEffect = { 0.5, 0.0, 0.5 };
+	Buffers::CBExtraData.BufferData.ColourMode = static_cast<unsigned>(BlendType::Darken);
+
+	Buffers::CBExtraData.BufferData.BlurIterations = 2;
+	Buffers::CBExtraData.BufferData.BlurSampleSize = 4;
+
+	Buffers::CBExtraData.BufferData.FocalBlendDistance = 50;
+	Buffers::CBExtraData.BufferData.FocalDepth = 25;
+	D3D11_MAPPED_SUBRESOURCE extraData;
+	_context->Map(Buffers::CBExtraData.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &extraData);
+	memcpy(extraData.pData, &Buffers::CBExtraData.BufferData, sizeof(Buffers::CBExtraData.BufferData));
+	_context->Unmap(Buffers::CBExtraData.Buffer.Get(), 0);
 
 	LightManager::UpdateLights(_context);
 
@@ -802,29 +853,32 @@ void SimpleEngine::FixedUpdate(double fixedDeltaTime)
 	SceneGraph::FixedUpdate(fixedDeltaTime);
 }
 
-
 void SimpleEngine::Draw()
 {
 	constexpr float backgroundColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	constexpr float errorColour[4]      = { 1.0f, 0.0f, 1.0f, 1.0f };
+	constexpr ID3D11ShaderResourceView* unbind = nullptr;
+
+	ID3D11ShaderResourceView* output = nullptr;
+
+	//Copy screen output to texture of objects that use it
+	_context->CopyResource(_outputCopyTexture.Get(), _baseOutputTexture.Get());
 
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+	_context->ClearRenderTargetView(_baseOutputBufferView.Get(), backgroundColour);
 
+#pragma region Base Colour
 #ifdef _DEFERRED_RENDER
 	_context->ClearRenderTargetView(_albedoFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_normalFrameBufferView.Get(), backgroundColour);
-	_context->ClearRenderTargetView(_depthLinearFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_worldPositionFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_lightingDiffuseFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_lightingSpecularFrameBufferView.Get(), backgroundColour);
 
 #pragma region G-Buffer Pass
-	ID3D11RenderTargetView* rTVsGPass[4] = {
-		_albedoFrameBufferView.Get(), _normalFrameBufferView.Get(), _depthLinearFrameBufferView.Get(),
-		_worldPositionFrameBufferView.Get()
-	};
-	_context->OMSetRenderTargets(4, rTVsGPass, _depthStencilView.Get());
+	ID3D11RenderTargetView* rTVsGPass[3] = { _albedoFrameBufferView.Get(), _normalFrameBufferView.Get(),_worldPositionFrameBufferView.Get() };
+	_context->OMSetRenderTargets(3, rTVsGPass, _depthStencilView.Get());
 
 	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_GeometryPass.hlsl").value().Shader.Get(),
 	                      nullptr, 0);
@@ -838,12 +892,8 @@ void SimpleEngine::Draw()
 
 #pragma region Lighting Pass
 	ID3D11RenderTargetView* rTVsLPass[2] = { _lightingDiffuseFrameBufferView.Get(), _lightingSpecularFrameBufferView.Get() };
-	ID3D11ShaderResourceView* sRVsLPass[4] = {
-		_albedoShaderResourceView.Get(), _normalShaderResourceView.Get(), _depthLinearShaderResourceView.Get(),
-		_worldPositionShaderResourceView.Get()
-	};
-	_context->VSSetShaderResources(16, 4, sRVsLPass);
-	_context->PSSetShaderResources(16, 4, sRVsLPass);
+	ID3D11ShaderResourceView* sRVsLPass[2] = { _normalShaderResourceView.Get(), _worldPositionShaderResourceView.Get() };
+	_context->PSSetShaderResources(17, 2, sRVsLPass);
 	_context->OMSetRenderTargets(2, rTVsLPass, nullptr);
 
 	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
@@ -853,14 +903,13 @@ void SimpleEngine::Draw()
 
 	_screenQuad->Draw(_context);
 
-	ID3D11ShaderResourceView* sRVsNull4[4] = { nullptr, nullptr, nullptr, nullptr };
-	_context->VSSetShaderResources(16, 4, sRVsNull4);
-	_context->PSSetShaderResources(16, 4, sRVsNull4);
+	_context->PSSetShaderResources(17, 1, &unbind);
+	_context->PSSetShaderResources(18, 1, &unbind);
 	_context->OMSetRenderTargets(0, nullptr, nullptr);
 #pragma endregion
 
-#pragma region Output
-	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), nullptr);
+#pragma region Combine Passes
+	_context->OMSetRenderTargets(1, _baseOutputBufferView.GetAddressOf(), nullptr);
 	ID3D11ShaderResourceView* sRVsGLPass[2] = { _lightingDiffuseShaderResourceView.Get(), _lightingSpecularShaderResourceView.Get() };
 	ID3D11ShaderResourceView* sRVsGLPassT[2] = { _albedoShaderResourceView.Get(), _normalShaderResourceView.Get() };
 	_context->PSSetShaderResources(16, 2, sRVsGLPassT);
@@ -873,20 +922,105 @@ void SimpleEngine::Draw()
 
 	_screenQuad->Draw(_context);
 
-	ID3D11ShaderResourceView* unbind = nullptr;
 	_context->PSSetShaderResources(16, 1, &unbind);
 	_context->PSSetShaderResources(17, 1, &unbind);
 	_context->PSSetShaderResources(20, 1, &unbind);
 	_context->PSSetShaderResources(21, 1, &unbind);
+
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
 #pragma endregion
 
 #else
-
-	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), _depthStencilView.Get());
+	_context->OMSetRenderTargets(1, _baseOutputBufferView.GetAddressOf(), _depthStencilView.Get());
 
 	SceneGraph::Draw(_context);
 
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
 #endif
+
+	output = _baseOutputShaderResourceView.Get();
+#pragma endregion
+
+#pragma region Colour Post Effect
+	if (static_cast<BlendType>(Buffers::CBExtraData.BufferData.ColourMode) != BlendType::None)
+	{
+		_context->OMSetRenderTargets(1, _colourEffectPassBufferView.GetAddressOf(), nullptr);
+
+		_context->PSSetShaderResources(24, 1, &output);
+		_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
+			nullptr, 0);
+		_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_ColourEffect.hlsl").value().Shader.Get(),
+			nullptr, 0);
+
+		_screenQuad->Draw(_context);
+
+		_context->PSSetShaderResources(24, 1, &unbind);
+		_context->OMSetRenderTargets(0, nullptr, nullptr);
+
+		output = _colourEffectPassShaderResourceView.Get();
+	}
+#pragma endregion
+
+	bool useDoF = true;
+#pragma region Depth Of Field
+	if (useDoF && Buffers::CBExtraData.BufferData.BlurIterations > 0)
+	{
+#pragma region Blur Effect
+		_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
+				nullptr, 0);
+		_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_BoxBlur.hlsl").value().Shader.Get(),
+				nullptr, 0);
+		_context->OMSetRenderTargets(1, _blurOutputBufferView.GetAddressOf(), nullptr);
+		_context->PSSetShaderResources(24, 1, &output);
+
+		for (unsigned i = 0; i < Buffers::CBExtraData.BufferData.BlurIterations; i++)
+		{
+			_screenQuad->Draw(_context);
+
+			_context->CopyResource(_blurTempTexture.Get(), _blurOutputTexture.Get());
+			_context->PSSetShaderResources(24, 1, _blurTempShaderResourceView.GetAddressOf());
+		}
+
+		_context->PSSetShaderResources(24, 1, &unbind);
+		_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
+
+#pragma region Depth-Blend Effect
+		_context->OMSetRenderTargets(1, _dofBlendBufferView.GetAddressOf(), nullptr);
+
+		ID3D11ShaderResourceView* dofSRVs[3] = { output, _blurOutputShaderResourceView.Get(), _depthStencilShaderResourceView.Get() };
+		_context->PSSetShaderResources(24, 3, dofSRVs);
+
+		_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
+				nullptr, 0);
+		_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_DOFEffect.hlsl").value().Shader.Get(),
+				nullptr, 0);
+
+		_screenQuad->Draw(_context);
+
+		output = _dofBlendShaderResourceView.Get();
+		_context->PSSetShaderResources(24, 1, &unbind);
+		_context->PSSetShaderResources(25, 1, &unbind);
+		_context->PSSetShaderResources(26, 1, &unbind);
+		_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
+	}
+#pragma endregion
+
+#pragma region Display Framebuffer
+	_context->OMSetRenderTargets(1, _frameBufferView.GetAddressOf(), nullptr);
+
+	_context->PSSetShaderResources(24, 1, &output);
+	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
+		nullptr, 0);
+	_context->PSSetShader(DataStore::PixelShaders.Retrieve("Assets/Shaders/PS_RenderSRV.hlsl").value().Shader.Get(),
+		nullptr, 0);
+
+	_screenQuad->Draw(_context);
+
+	_context->PSSetShaderResources(24, 1, &unbind);
+	_context->OMSetRenderTargets(0, nullptr, nullptr);
+#pragma endregion
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

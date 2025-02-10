@@ -55,34 +55,50 @@ private:
 #ifdef _DEFERRED_RENDER
 	ComPtr<ID3D11Texture2D> _albedoTexture;
 	ComPtr<ID3D11Texture2D> _normalTexture;
-	ComPtr<ID3D11Texture2D> _depthLinearTexture;
 	ComPtr<ID3D11Texture2D> _worldPositionTexture;
 	ComPtr<ID3D11Texture2D> _lightingDiffuseTexture;
 	ComPtr<ID3D11Texture2D> _lightingSpecularTexture;
 	ComPtr<ID3D11ShaderResourceView> _albedoShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _normalShaderResourceView;
-	ComPtr<ID3D11ShaderResourceView> _depthLinearShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _worldPositionShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _lightingDiffuseShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _lightingSpecularShaderResourceView;
 	ComPtr<ID3D11RenderTargetView> _albedoFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _normalFrameBufferView;
-	ComPtr<ID3D11RenderTargetView> _depthLinearFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _worldPositionFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _lightingDiffuseFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _lightingSpecularFrameBufferView;
 #endif
 
+	ComPtr<ID3D11Texture2D> _baseOutputTexture;
+	ComPtr<ID3D11Texture2D> _colourEffectPassTexture;
+	ComPtr<ID3D11Texture2D> _blurOutputTexture;
+	ComPtr<ID3D11Texture2D> _blurTempTexture;
+	ComPtr<ID3D11Texture2D> _dofBlendTexture;
+	ComPtr<ID3D11ShaderResourceView> _baseOutputShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _colourEffectPassShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _blurOutputShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _blurTempShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _dofBlendShaderResourceView;
+	ComPtr<ID3D11RenderTargetView> _baseOutputBufferView;
+	ComPtr<ID3D11RenderTargetView> _colourEffectPassBufferView;
+	ComPtr<ID3D11RenderTargetView> _blurOutputBufferView;
+	ComPtr<ID3D11RenderTargetView> _blurTempBufferView;
+	ComPtr<ID3D11RenderTargetView> _dofBlendBufferView;
+
+
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
+	ComPtr<ID3D11ShaderResourceView> _depthStencilShaderResourceView;
+
+	ComPtr<ID3D11Texture2D> _outputCopyTexture;
+	ComPtr<ID3D11ShaderResourceView> _outputCopyShaderResourceView;
 
 	ComPtr<ID3D11InputLayout> _inputLayout;
 	D3D11_VIEWPORT _viewport;
 
-#ifdef _DEFERRED_RENDER
 	std::unique_ptr<ScreenQuad> _screenQuad = nullptr;
-#endif
 
 	std::chrono::time_point<std::chrono::steady_clock> _lastFrameTime = std::chrono::high_resolution_clock::now();
 	double _timeSinceLastFixedUpdate = 0;
@@ -92,4 +108,3 @@ private:
 	Vector3 _force{};
 	Vector3 _forcePosition{};
 };
-
