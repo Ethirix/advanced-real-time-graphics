@@ -3,7 +3,7 @@
 
 struct CBExtraData
 {
-	DirectX::XMFLOAT3 ColourEffect{};
+	DirectX::XMFLOAT3 ColourEffect { 1, 1, 1 };
 	unsigned ColourMode;
 
 	unsigned BlurIterations;

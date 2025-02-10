@@ -750,9 +750,51 @@ void SimpleEngine::Update()
 		if (auto cameraComponent = SceneGraph::TryGetComponentFromObjects<CameraComponent>(); cameraComponent.has_value())
 			_camera = cameraComponent.value();
 	}
-	
-	Buffers::CBExtraData.BufferData.ColourEffect = { 0.5, 0.0, 0.5 };
-	Buffers::CBExtraData.BufferData.ColourMode = static_cast<unsigned>(BlendType::Darken);
+
+	ImGui::Begin("Post Effects");
+	if (ImGui::TreeNode("Colour Effect"))
+	{
+		static ImGuiColorEditFlags flags  = ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_Float;
+		static DirectX::XMFLOAT3& color = Buffers::CBExtraData.BufferData.ColourEffect;
+		static unsigned& blendType = Buffers::CBExtraData.BufferData.ColourMode;
+
+		static const char* blendTypes[] = {
+			"None", "Darken", "Multiply", "ColorBurn", "LinearBurn", "Lighten", "Screen", "ColorDodge", "LinearDodge",
+			"Difference", "Exclusion"
+		};
+
+		ImGui::ColorEdit3("Blend Colour", reinterpret_cast<float*>(&color), flags);
+		if (ImGui::BeginCombo("Blend Types", blendTypes[blendType]))
+		{
+			for (unsigned i = 0; i < IM_ARRAYSIZE(blendTypes); i++)
+			{
+				if (ImGui::Selectable(blendTypes[i], i == blendType))
+				{
+					blendType = i;
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Depth of Field Effect"))
+	{
+		static bool enableDoF = true;
+		static unsigned& blurIterations = Buffers::CBExtraData.BufferData.BlurIterations;
+		static unsigned& blurSampleSize = Buffers::CBExtraData.BufferData.BlurSampleSize;
+		static float& focalDepth = Buffers::CBExtraData.BufferData.FocalDepth;
+		static float& focalBlendDistance = Buffers::CBExtraData.BufferData.FocalBlendDistance;
+
+		ImGui::Checkbox("Use DoF", &enableDoF);
+		ImGui::SliderScalar("Blur Iterations", ImGuiDataType_U32, &blurIterations, &std::numeric_limits<unsigned>::min(),
+		                    std::numeric_limits<unsigned>::max(), "%u");
+
+		ImGui::TreePop();
+	}
+	ImGui::End();
 
 	Buffers::CBExtraData.BufferData.BlurIterations = 2;
 	Buffers::CBExtraData.BufferData.BlurSampleSize = 4;
@@ -867,6 +909,10 @@ void SimpleEngine::Draw()
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
 	_context->ClearRenderTargetView(_baseOutputBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_colourEffectPassBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_blurOutputBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_blurTempBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_dofBlendBufferView.Get(), backgroundColour);
 
 #pragma region Base Colour
 #ifdef _DEFERRED_RENDER
@@ -961,9 +1007,8 @@ void SimpleEngine::Draw()
 	}
 #pragma endregion
 
-	bool useDoF = true;
 #pragma region Depth Of Field
-	if (useDoF && Buffers::CBExtraData.BufferData.BlurIterations > 0)
+	if (Buffers::CBExtraData.BufferData.BlurIterations > 0)
 	{
 #pragma region Blur Effect
 		_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
@@ -1019,7 +1064,6 @@ void SimpleEngine::Draw()
 	_screenQuad->Draw(_context);
 
 	_context->PSSetShaderResources(24, 1, &unbind);
-	_context->OMSetRenderTargets(0, nullptr, nullptr);
 #pragma endregion
 
 	ImGui::Render();

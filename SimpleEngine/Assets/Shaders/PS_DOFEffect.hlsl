@@ -16,11 +16,6 @@ float4 PS_Main(VS_ScreenQuadOut input) : SV_TARGET
 	float depth = T26_DepthTexture.Sample(S0_BilinearSampler, input.TextureCoordinates).r;
 	depth = NearZ * FarZ / (FarZ + depth * (NearZ - FarZ));
 
-	//if (depth > 10)
-	//	return blurred;
-	//else
-	//	return base;
-
 	float blurFactor = smoothstep(FocalDepth, FocalDepth + FocalBlendDistance, depth);
 
 	return lerp(base, blurred, saturate(blurFactor));
