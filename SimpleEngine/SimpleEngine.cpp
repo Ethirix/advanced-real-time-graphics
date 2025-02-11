@@ -813,6 +813,10 @@ void SimpleEngine::Update()
 	}
 	ImGui::End();
 
+	ImGui::Begin("Scene Graph");
+
+	ImGui::End();
+
 	D3D11_MAPPED_SUBRESOURCE extraData;
 	_context->Map(Buffers::CBExtraData.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &extraData);
 	memcpy(extraData.pData, &Buffers::CBExtraData.BufferData, sizeof(Buffers::CBExtraData.BufferData));
