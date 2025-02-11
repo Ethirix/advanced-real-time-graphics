@@ -788,19 +788,31 @@ void SimpleEngine::Update()
 		static float& focalDepth = Buffers::CBExtraData.BufferData.FocalDepth;
 		static float& focalBlendDistance = Buffers::CBExtraData.BufferData.FocalBlendDistance;
 
+		constexpr unsigned maxBlurIterations = 16;
+		constexpr unsigned maxSampleSize = 32;
+		constexpr float maxFocalDistance = 512;
+		constexpr unsigned minU = 0;
+		constexpr float minF = 0;
+
 		ImGui::Checkbox("Use DoF", &enableDoF);
-		ImGui::SliderScalar("Blur Iterations", ImGuiDataType_U32, &blurIterations, &std::numeric_limits<unsigned>::min(),
-		                    std::numeric_limits<unsigned>::max(), "%u");
+		if (enableDoF)
+		{
+			ImGui::SliderScalar("Blur Iterations", ImGuiDataType_U32, 
+				&blurIterations, &minU, &maxBlurIterations , "%u");
+			ImGui::SliderScalar("Blur Sample Size", ImGuiDataType_U32, 
+				&blurSampleSize, &minU, &maxSampleSize, "%u");
+			ImGui::SliderFloat("Focal Depth", &focalDepth, minF, maxFocalDistance, "%f");
+			ImGui::SliderFloat("Focal Blend Distance", &focalBlendDistance, minF, maxFocalDistance, "%f");
+		}	
+		else
+		{
+			blurIterations = 0;
+		}
 
 		ImGui::TreePop();
 	}
 	ImGui::End();
 
-	Buffers::CBExtraData.BufferData.BlurIterations = 2;
-	Buffers::CBExtraData.BufferData.BlurSampleSize = 4;
-
-	Buffers::CBExtraData.BufferData.FocalBlendDistance = 50;
-	Buffers::CBExtraData.BufferData.FocalDepth = 25;
 	D3D11_MAPPED_SUBRESOURCE extraData;
 	_context->Map(Buffers::CBExtraData.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &extraData);
 	memcpy(extraData.pData, &Buffers::CBExtraData.BufferData, sizeof(Buffers::CBExtraData.BufferData));
