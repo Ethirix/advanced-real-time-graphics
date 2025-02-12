@@ -4,17 +4,19 @@
 #include "SafePointerArray.h"
 #include "Vertex.h"
 
-ScreenQuad::ScreenQuad(const Microsoft::WRL::ComPtr<ID3D11Device>& device)
+ScreenQuad::ScreenQuad(const Microsoft::WRL::ComPtr<ID3D11Device>& device, float size, DirectX::XMFLOAT2 offset)
 {
 	_mesh = {};
 
 	_mesh.Vertices.Elements = new struct Vertex[4];
 	_mesh.Vertices.Length = 4;
+
+	DirectX::XMFLOAT2 topLeftPos = { -1 + offset.x * 2, 1 - offset.y * 2 };
 	
-	_mesh.Vertices.Elements[0].Position = { -1.0f, -1.0f, 0.0f };
-	_mesh.Vertices.Elements[1].Position = { -1.0f, 1.0f,  0.0f };
-	_mesh.Vertices.Elements[2].Position = { 1.0f, 1.0f,   0.0f };
-	_mesh.Vertices.Elements[3].Position = { 1.0f, -1.0f,  0.0f };
+	_mesh.Vertices.Elements[0].Position = { topLeftPos.x, topLeftPos.y - size * 2.0f, 0.0f };
+	_mesh.Vertices.Elements[1].Position = { topLeftPos.x, topLeftPos.y,  0.0f };
+	_mesh.Vertices.Elements[2].Position = { topLeftPos.x + size * 2.0f, topLeftPos.y,   0.0f };
+	_mesh.Vertices.Elements[3].Position = { topLeftPos.x + size * 2.0f, topLeftPos.y - size * 2.0f,  0.0f };
 
 	_mesh.Vertices.Elements[0].Normal = { 0.0f, 1.0f, 0.0f };
 	_mesh.Vertices.Elements[1].Normal = { 0.0f, 1.0f, 0.0f };

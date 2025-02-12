@@ -16,6 +16,7 @@ struct PSGeoPassOut
     float4 Albedo        : SV_TARGET0; //rgb - albedo a - specular
     float4 Normal        : SV_TARGET1; //rgb - normal a - specularExpo
     float4 WorldPosition : SV_TARGET2;
+    float  Depth         : SV_TARGET3;
 };
 
 PSGeoPassOut PS_Main(VS_BaseOut input)
@@ -37,6 +38,8 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
     output.Normal.a = SpecularExponent;
 
     output.WorldPosition = input.WorldPosition;
+
+    output.Depth = (input.Position.w - NearZ) / (FarZ - NearZ);
 
     return output;
 }

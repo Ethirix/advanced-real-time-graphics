@@ -52,19 +52,32 @@ private:
 	ComPtr<IDXGISwapChain1> _swapChain;
 
 #ifdef _DEFERRED_RENDER
+	std::unique_ptr<ScreenQuad> _albedoScreenQuad = nullptr;
+	std::unique_ptr<ScreenQuad> _normalScreenQuad = nullptr;
+	std::unique_ptr<ScreenQuad> _worldPosScreenQuad = nullptr;
+	std::unique_ptr<ScreenQuad> _depthScreenQuad = nullptr;
+
+	bool _displayAlbedo   = false;
+	bool _displayNormal   = false;
+	bool _displayWorldPos = false;
+	bool _displayDepth    = false;
+
 	ComPtr<ID3D11Texture2D> _albedoTexture;
 	ComPtr<ID3D11Texture2D> _normalTexture;
 	ComPtr<ID3D11Texture2D> _worldPositionTexture;
+	ComPtr<ID3D11Texture2D> _depthLinearTexture;
 	ComPtr<ID3D11Texture2D> _lightingDiffuseTexture;
 	ComPtr<ID3D11Texture2D> _lightingSpecularTexture;
 	ComPtr<ID3D11ShaderResourceView> _albedoShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _normalShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _worldPositionShaderResourceView;
+	ComPtr<ID3D11ShaderResourceView> _depthLinearShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _lightingDiffuseShaderResourceView;
 	ComPtr<ID3D11ShaderResourceView> _lightingSpecularShaderResourceView;
 	ComPtr<ID3D11RenderTargetView> _albedoFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _normalFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _worldPositionFrameBufferView;
+	ComPtr<ID3D11RenderTargetView> _depthLinearFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _lightingDiffuseFrameBufferView;
 	ComPtr<ID3D11RenderTargetView> _lightingSpecularFrameBufferView;
 #endif
