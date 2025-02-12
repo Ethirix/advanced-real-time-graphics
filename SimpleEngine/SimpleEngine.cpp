@@ -263,6 +263,13 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 		}
 	}
 
+	hr = _device->CreateTexture2D(&textureDesc, nullptr,  _blurOutputTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateTexture2D(&textureDesc, nullptr,  _blurTempTexture.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_blurOutputTexture.Get(), &renderTargetViewDesc, _blurOutputBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_blurTempTexture.Get(), &renderTargetViewDesc, _blurTempBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_blurOutputTexture.Get(), &shaderResourceViewDesc, _blurOutputShaderResourceView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_blurTempTexture.Get(), &shaderResourceViewDesc, _blurTempShaderResourceView.GetAddressOf()); FAIL_CHECK
+
 #ifdef _DEFERRED_RENDER
 
 	hr = _device->CreateTexture2D(&textureDesc, nullptr, _albedoTexture.GetAddressOf()); FAIL_CHECK
@@ -297,17 +304,15 @@ HRESULT SimpleEngine::CreateFrameBuffers()
 	hr = _device->CreateRenderTargetView(_worldPositionTexture.Get(), &renderTargetViewDesc, _worldPositionFrameBufferView.GetAddressOf()); FAIL_CHECK
 	hr = _device->CreateShaderResourceView(_worldPositionTexture.Get(), &shaderResourceViewDesc, _worldPositionShaderResourceView.GetAddressOf()); FAIL_CHECK
 
+	textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	renderTargetViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+
+	hr = _device->CreateTexture2D(&textureDesc, nullptr, &_depthLinearTexture); FAIL_CHECK
+	hr = _device->CreateRenderTargetView(_depthLinearTexture.Get(), &renderTargetViewDesc, _depthLinearFrameBufferView.GetAddressOf()); FAIL_CHECK
+	hr = _device->CreateShaderResourceView(_depthLinearTexture.Get(), &shaderResourceViewDesc, _depthLinearShaderResourceView.GetAddressOf()); FAIL_CHECK
+
 #endif
-
-	//textureDesc.Width /= 2;
-	//textureDesc.Height /= 2;
-
-	hr = _device->CreateTexture2D(&textureDesc, nullptr,  _blurOutputTexture.GetAddressOf()); FAIL_CHECK
-	hr = _device->CreateTexture2D(&textureDesc, nullptr,  _blurTempTexture.GetAddressOf()); FAIL_CHECK
-	hr = _device->CreateRenderTargetView(_blurOutputTexture.Get(), &renderTargetViewDesc, _blurOutputBufferView.GetAddressOf()); FAIL_CHECK
-	hr = _device->CreateRenderTargetView(_blurTempTexture.Get(), &renderTargetViewDesc, _blurTempBufferView.GetAddressOf()); FAIL_CHECK
-	hr = _device->CreateShaderResourceView(_blurOutputTexture.Get(), &shaderResourceViewDesc, _blurOutputShaderResourceView.GetAddressOf()); FAIL_CHECK
-	hr = _device->CreateShaderResourceView(_blurTempTexture.Get(), &shaderResourceViewDesc, _blurTempShaderResourceView.GetAddressOf()); FAIL_CHECK
 
 	return hr;
 }
@@ -385,6 +390,10 @@ HRESULT SimpleEngine::InitialiseRunTimeData()
 	OnWindowSizeChangeComplete();
 
 	_screenQuad = std::make_unique<ScreenQuad>(_device);
+	_albedoScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f);
+	_normalScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.25f, 0.0f));
+	_worldPosScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.50f, 0.0f));
+	_depthScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.75f, 0.0f));
 
 	return S_OK;
 }
@@ -951,6 +960,11 @@ void SimpleEngine::Update()
 		Helpers::ActiveCamera = cameras[selectedCamera];
 	else
 		Helpers::ActiveCamera = {};
+
+	ImGui::Checkbox("Show Albedo", &_displayAlbedo);
+	ImGui::Checkbox("Show Normal", &_displayNormal);
+	ImGui::Checkbox("Show World Position", &_displayWorldPos);
+	ImGui::Checkbox("Show Depth", &_displayDepth);
 	ImGui::End();
 #pragma endregion
 #pragma endregion
@@ -1026,12 +1040,16 @@ void SimpleEngine::Draw()
 	_context->ClearRenderTargetView(_albedoFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_normalFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_worldPositionFrameBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_depthLinearFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_lightingDiffuseFrameBufferView.Get(), backgroundColour);
 	_context->ClearRenderTargetView(_lightingSpecularFrameBufferView.Get(), backgroundColour);
 
 #pragma region G-Buffer Pass
-	ID3D11RenderTargetView* rTVsGPass[3] = { _albedoFrameBufferView.Get(), _normalFrameBufferView.Get(),_worldPositionFrameBufferView.Get() };
-	_context->OMSetRenderTargets(3, rTVsGPass, _depthStencilView.Get());
+	ID3D11RenderTargetView* rTVsGPass[4] = {
+		_albedoFrameBufferView.Get(), _normalFrameBufferView.Get(), _worldPositionFrameBufferView.Get(),
+		_depthLinearFrameBufferView.Get()
+	};
+	_context->OMSetRenderTargets(4, rTVsGPass, _depthStencilView.Get());
 
 	_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_GeometryPass.hlsl").value().Shader.Get(),
 	                      nullptr, 0);
@@ -1171,6 +1189,34 @@ void SimpleEngine::Draw()
 	_screenQuad->Draw(_context);
 
 	_context->PSSetShaderResources(24, 1, &unbind);
+
+#ifdef _DEFERRED_RENDER
+	if (_displayAlbedo)
+	{
+		_context->PSSetShaderResources(24, 1, _albedoShaderResourceView.GetAddressOf());
+		_albedoScreenQuad->Draw(_context);
+	}
+
+	if (_displayNormal)
+	{
+		_context->PSSetShaderResources(24, 1, _normalShaderResourceView.GetAddressOf());
+		_normalScreenQuad->Draw(_context);
+	}
+
+	if (_displayWorldPos)
+	{
+		_context->PSSetShaderResources(24, 1, _worldPositionShaderResourceView.GetAddressOf());
+		_worldPosScreenQuad->Draw(_context);
+	}
+
+	if (_displayDepth)
+	{
+		_context->PSSetShaderResources(24, 1, _depthLinearShaderResourceView.GetAddressOf());
+		_depthScreenQuad->Draw(_context);
+	}
+
+	_context->PSSetShaderResources(24, 1, &unbind);
+#endif
 #pragma endregion
 
 	ImGui::Render();
