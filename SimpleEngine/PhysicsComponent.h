@@ -16,6 +16,11 @@ public:
 	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override {}
 
 	Vector3 GetVelocity();
+	Vector3 GetAngularVelocity();
+	Vector3 GetAcceleration();
+	Vector3 GetNetForce();
+	Vector3 GetTorque();
+	Vector3 GetImpulse();
 	float GetMass();
 
 	void SetMass(float mass);

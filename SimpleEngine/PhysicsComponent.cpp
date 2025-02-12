@@ -135,6 +135,31 @@ Vector3 PhysicsComponent::GetVelocity()
 	return _velocity;
 }
 
+Vector3 PhysicsComponent::GetAngularVelocity()
+{
+	return _angularVelocity;
+}
+
+Vector3 PhysicsComponent::GetAcceleration()
+{
+	return _acceleration;
+}
+
+Vector3 PhysicsComponent::GetNetForce()
+{
+	return _netForce;
+}
+
+Vector3 PhysicsComponent::GetTorque()
+{
+	return _torque;
+}
+
+Vector3 PhysicsComponent::GetImpulse()
+{
+	return _impulse;
+}
+
 float PhysicsComponent::GetMass()
 {
 	return _mass;

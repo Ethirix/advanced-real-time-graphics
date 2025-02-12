@@ -31,6 +31,8 @@ private:
 
 	static OPTIONAL_SHARED_PTR_MESH WavefrontOBJLoader(PATH_STR path, DEVICE device, MeshType type);
 
+	static void CalculateTangents(SHARED_PTR_MESH& mesh, bool recalculateNormals = false);
+
 	static OPTIONAL_BUFFER InitializeVertexBuffer(PATH_STR path, const SHARED_PTR_MESH& mesh, DEVICE device);
 
 	static OPTIONAL_BUFFER InitializeIndexBuffer(PATH_STR path, const SHARED_PTR_MESH& mesh, DEVICE device);
@@ -46,11 +48,13 @@ private:
 #pragma endregion
 
 #pragma region Shader Functions
+#ifndef _DEFERRED_RENDER
 public:
 	static bool LoadVertexShader(PATH_STR path, SHARED_PTR_MTL material);
 
 	static bool LoadPixelShader(PATH_STR path, SHARED_PTR_MTL material);
 private:
+#endif
 #pragma endregion
 
 #pragma region Texture Functions

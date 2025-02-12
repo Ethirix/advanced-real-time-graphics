@@ -1,0 +1,6 @@
+#ifndef __T20_DEFFEREDDIFFUSELIGHTINGTEXTURE_HLSLI__
+#define __T20_DEFFEREDDIFFUSELIGHTINGTEXTURE_HLSLI__
+
+Texture2D T20_DeferredDiffuseLightingTexture : register(t20);
+
+#endif

@@ -2,6 +2,7 @@
 
 #include "Buffers.h"
 #include "GameObject.h"
+#include "Helpers.h"
 
 CameraComponent::CameraComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json json)
 	: ComponentBase(owningGameObject)
@@ -37,7 +38,14 @@ CameraComponent::CameraComponent(WP_GAMEOBJECT owningGameObject, nlohmann::json 
 
 void CameraComponent::Update(double deltaTime)
 {
+	if (GetForegroundWindow() != Helpers::WindowHandle && !Helpers::ActiveCamera.expired() 
+		&& Helpers::ActiveCamera.lock().get() != this)
+		return;
+	
 	DirectX::XMMATRIX cameraWorld = XMMatrixInverse(nullptr, XMLoadFloat4x4(&_view));
+	DirectX::XMFLOAT3 pos         = GameObject.lock()->Transform->GetPosition();
+	DirectX::XMFLOAT4 pos4         = {pos.x, pos.y, pos.z, 1};
+	cameraWorld.r[3]              = XMLoadFloat4(&pos4);
 
 	//0x0001 is per frame (lowest significance bit)
 	//0x8000 is every frame (highest significance bit)
@@ -116,10 +124,8 @@ void CameraComponent::Update(double deltaTime)
 	}
 
 	XMStoreFloat3(&_eye, cameraWorld.r[3]);
+	XMStoreFloat3(&_at, cameraWorld.r[2]);
+	XMStoreFloat3(&_up, cameraWorld.r[1]);
 	GameObject.lock()->Transform->SetPosition(_eye);
 	XMStoreFloat4x4(&_view, XMMatrixInverse(nullptr, cameraWorld));
-
-	Buffers::CBObjectCameraData.BufferData.CameraPosition = {_eye.x, _eye.y, _eye.z, 1};
-	Buffers::CBObjectCameraData.BufferData.View = XMMatrixTranspose(XMLoadFloat4x4(&GetView()));
-	Buffers::CBObjectCameraData.BufferData.Projection = XMMatrixTranspose(XMLoadFloat4x4(&GetProjection()));
 }

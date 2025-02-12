@@ -31,13 +31,62 @@
             "Y": 1,
             "Z": 0
           },
-          "NearPlane": 0.01,
-          "FarPlane": 100000.0,
+          "NearPlane": 0.1,
+          "FarPlane": 2000.0,
           "MovementSpeed": 16.0,
           "RotationSpeed": 2.0
         }
       ],
-      "Children": []
+      "Children": [
+        {
+          "Name": "Skybox",
+          "Position": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "Scale": {
+            "X": 1,
+            "Y": 1,
+            "Z": 1
+          },
+          "Rotation": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "Components": [
+            {
+              "Type": "Mesh Component",
+              "MeshPath": "Assets/Meshes/InvertedCube2.obj",
+              "MaterialPath": "",
+              "VertexShaderPath": "Assets/Shaders/VS_Skybox.hlsl",
+              "PixelShaderPath": "Assets/Shaders/PS_Skybox.hlsl",
+              "MeshType": 1,
+              "TexturePaths": {
+                "Diffuse": {
+                  "Path": "Assets/Textures/Skybox/Skybox_DIFFUSE.dds",
+                  "Slot": 64
+                },
+                "Specular": {
+                  "Path": "",
+                  "Slot": -1
+                },
+                "Displacement": {
+                  "Path": "",
+                  "Slot": -1
+                },
+                "Normal": {
+                  "Path": "",
+                  "Slot": -1
+                }
+              },
+              "Stencil": "DSSkybox"
+            }
+          ],
+          "Children": []
+        }
+      ]
     },
     {
       "Name": "Suzanne",
@@ -67,7 +116,7 @@
           "TexturePaths": {
             "Diffuse": {
               "Path": "",
-              "Slot": 0
+              "Slot": -1
             },
             "Specular": {
               "Path": "",
@@ -155,7 +204,7 @@
             },
             "Normal": {
               "Path": "Assets/Textures/Crate/Crate_NORMAL.dds",
-              "Slot": -1
+              "Slot": 2
             }
           },
           "Stencil": ""
@@ -268,16 +317,16 @@
       "Children": []
     },
     {
-      "Name": "Skybox",
+      "Name": "NormalMappingTest",
       "Position": {
-        "X": 0,
-        "Y": 0,
-        "Z": 0
+        "X": -15,
+        "Y": 30,
+        "Z": 30
       },
       "Scale": {
-        "X": 1,
-        "Y": 1,
-        "Z": 1
+        "X": 2,
+        "Y": 2,
+        "Z": 2
       },
       "Rotation": {
         "X": 0,
@@ -287,30 +336,134 @@
       "Components": [
         {
           "Type": "MeshComponent",
-          "MeshPath": "Assets/Meshes/InvertedCube2.obj",
-          "MaterialPath": "",
-          "VertexShaderPath": "Assets/Shaders/VS_Skybox.hlsl",
-          "PixelShaderPath": "Assets/Shaders/PS_Skybox.hlsl",
+          "MeshPath": "Assets/Meshes/artgcube.obj",
+          "MaterialPath": "Assets/Materials/artgcube.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
           "MeshType": 1,
           "TexturePaths": {
             "Diffuse": {
-              "Path": "Assets/Textures/Skybox/Skybox_DIFFUSE.dds",
-              "Slot": 2
+              "Path": "Assets/Textures/Stone/Stone_DIFFUSE.dds",
+              "Slot": 0
             },
             "Specular": {
               "Path": "",
-              "Slot": -1
+              "Slot": 1
             },
             "Displacement": {
               "Path": "",
               "Slot": -1
             },
             "Normal": {
-              "Path": "",
-              "Slot": -1
+              "Path": "Assets/Textures/Stone/Stone_NORMAL.dds",
+              "Slot": 2
             }
           },
-          "Stencil": "DSSkybox"
+          "Stencil": ""
+        },
+        {
+          "Type": "PhysicsComponent",
+          "Mass": 20,
+          "DragCoefficient": 1.4,
+          "FrictionCoefficient": 0.8,
+          "Restitution": 0.2,
+          "AngularDamping": 0.2,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": true
+        },
+        {
+          "Type": "AABBColliderComponent",
+          "Bounds": {
+            "Min": {
+              "X": -1,
+              "Y": -1,
+              "Z": -1
+            },
+            "Max": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
+            }
+          },
+          "UseMeshBounds": true,
+          "Collideable": true
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "NormalMappingTestSphere",
+      "Position": {
+        "X": -30,
+        "Y": 30,
+        "Z": 30
+      },
+      "Scale": {
+        "X": 2,
+        "Y": 2,
+        "Z": 2
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "MeshComponent",
+          "MeshPath": "Assets/Meshes/sphere.obj",
+          "MaterialPath": "Assets/Materials/sphere.mtl",
+          "VertexShaderPath": "Assets/Shaders/VS_BlinnPhong.hlsl",
+          "PixelShaderPath": "Assets/Shaders/PS_BlinnPhong.hlsl",
+          "MeshType": 1,
+          "TexturePaths": {
+            "Diffuse": {
+              "Path": "Assets/Textures/SlateTile/SlateTile_DIFFUSE.dds",
+              "Slot": 0
+            },
+            "Specular": {
+              "Path": "",
+              "Slot": 1
+            },
+            "Displacement": {
+              "Path": "",
+              "Slot": -1
+            },
+            "Normal": {
+              "Path": "Assets/Textures/SlateTile/SlateTile_NORMAL.dds",
+              "Slot": 2
+            }
+          },
+          "Stencil": ""
+        },
+        {
+          "Type": "PhysicsComponent",
+          "Mass": 20,
+          "DragCoefficient": 1.4,
+          "FrictionCoefficient": 0.8,
+          "Restitution": 0.2,
+          "AngularDamping": 0.2,
+          "UseGravity": true,
+          "UseDrag": true,
+          "UseFriction": true
+        },
+        {
+          "Type": "AABBColliderComponent",
+          "Bounds": {
+            "Min": {
+              "X": -1,
+              "Y": -1,
+              "Z": -1
+            },
+            "Max": {
+              "X": 1,
+              "Y": 1,
+              "Z": 1
+            }
+          },
+          "UseMeshBounds": true,
+          "Collideable": true
         }
       ],
       "Children": []
@@ -376,9 +529,9 @@
     {
       "Name": "GlobalLight",
       "Position": {
-        "X": -20,
-        "Y": -20,
-        "Z": -20
+        "X": 0,
+        "Y": 0,
+        "Z": 0
       },
       "Scale": {
         "X": 1,
@@ -392,11 +545,16 @@
       },
       "Components": [
         {
-          "Type": "LightComponent",
+          "Type": "DirectionalLightComponent",
+          "LightDirection": {
+            "X": -20,
+            "Y": -20,
+            "Z": -20
+          },
           "DiffuseColour": {
             "R": 0.9,
-            "G": 0.80,
-            "B": 0.85
+            "G": 0.8,
+            "B": 0.8
           },
           "DiffusePower": 1,
           "SpecularColour": {
@@ -406,14 +564,10 @@
           },
           "SpecularPower": 1,
           "AmbientColour": {
-            "R": 0.50,
-            "G": 0.4,
-            "B": 0.55
-          },
-          "ConstantAttenuation": 1,
-          "LinearAttenuation": 0,
-          "QuadraticAttenuation": 0,
-          "LightRadius": 0
+            "R": 0.0,
+            "G": 0.0,
+            "B": 0.0
+          }
         }
       ],
       "Children": []
@@ -437,15 +591,15 @@
       },
       "Components": [
         {
-          "Type": "LightComponent",
+          "Type": "PointLightComponent",
           "DiffuseColour": {
             "R": 0,
             "G": 1,
             "B": 0
           },
-          "DiffusePower": 5,
+          "DiffusePower": 2,
           "SpecularColour": {
-            "R": 0,
+            "R": 1,
             "G": 1,
             "B": 0
           },
@@ -456,8 +610,8 @@
             "B": 0
           },
           "ConstantAttenuation": 1,
-          "LinearAttenuation": 0,
-          "QuadraticAttenuation": 0.1,
+          "LinearAttenuation": 0.1,
+          "QuadraticAttenuation": 0.00001,
           "LightRadius": 32
         },
         {
@@ -525,27 +679,27 @@
       },
       "Components": [
         {
-          "Type": "LightComponent",
+          "Type": "PointLightComponent",
           "DiffuseColour": {
             "R": 1,
             "G": 0,
             "B": 0
           },
-          "DiffusePower": 4,
+          "DiffusePower": 128,
           "SpecularColour": {
             "R": 1,
             "G": 0,
             "B": 0
           },
-          "SpecularPower": 3.2,
+          "SpecularPower": 128,
           "AmbientColour": {
             "R": 0,
             "G": 0,
             "B": 0
           },
           "ConstantAttenuation": 1,
-          "LinearAttenuation": 0,
-          "QuadraticAttenuation": 0.05,
+          "LinearAttenuation": 0.1,
+          "QuadraticAttenuation": 0.00001,
           "LightRadius": 128
         },
         {
@@ -597,27 +751,27 @@
       },
       "Components": [
         {
-          "Type": "LightComponent",
+          "Type": "PointLightComponent",
           "DiffuseColour": {
             "R": 1,
             "G": 0.45,
             "B": 0
           },
-          "DiffusePower": 2,
+          "DiffusePower": 64,
           "SpecularColour": {
             "R": 1,
             "G": 0.45,
             "B": 0
           },
-          "SpecularPower": 1.6,
+          "SpecularPower": 64,
           "AmbientColour": {
             "R": 0,
             "G": 0,
             "B": 0
           },
           "ConstantAttenuation": 1,
-          "LinearAttenuation": 0,
-          "QuadraticAttenuation": 0.1,
+          "LinearAttenuation": 0.1,
+          "QuadraticAttenuation": 0.00001,
           "LightRadius": 128
         },
         {
@@ -651,10 +805,10 @@
       "Children": []
     },
     {
-      "Name": "PointLightCyan",
+      "Name": "SpotLightCyan",
       "Position": {
         "X": 100,
-        "Y": 10,
+        "Y": 5,
         "Z": 0
       },
       "Scale": {
@@ -669,27 +823,34 @@
       },
       "Components": [
         {
-          "Type": "LightComponent",
+          "Type": "SpotLightComponent",
+          "LightDirection": {
+            "X": -2,
+            "Y": -1,
+            "Z": 0
+          },
+          "InnerAngle": 10,
+          "OuterAngle": 45,
           "DiffuseColour": {
             "R": 0,
             "G": 1,
             "B": 1
           },
-          "DiffusePower": 5,
+          "DiffusePower": 64,
           "SpecularColour": {
             "R": 0,
             "G": 1,
             "B": 1
           },
-          "SpecularPower": 4,
+          "SpecularPower": 64,
           "AmbientColour": {
             "R": 0,
             "G": 0,
             "B": 0
           },
           "ConstantAttenuation": 1,
-          "LinearAttenuation": 0.1,
-          "QuadraticAttenuation": 0.1,
+          "LinearAttenuation": 0.01,
+          "QuadraticAttenuation": 0.00001,
           "LightRadius": 128
         },
         {
@@ -718,6 +879,45 @@
             }
           },
           "Stencil": ""
+        }
+      ],
+      "Children": []
+    },
+    {
+      "Name": "SplineCamera",
+      "Position": {
+        "X": 0,
+        "Y": 10,
+        "Z": -5
+      },
+      "Scale": {
+        "X": 1,
+        "Y": 1,
+        "Z": 1
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "CameraComponent",
+          "FieldOfView": 90.0,
+          "At": {
+            "X": 0,
+            "Y": 0,
+            "Z": 1
+          },
+          "Up": {
+            "X": 0,
+            "Y": 1,
+            "Z": 0
+          },
+          "NearPlane": 0.1,
+          "FarPlane": 2000.0,
+          "MovementSpeed": 0.0,
+          "RotationSpeed": 0.0
         }
       ],
       "Children": []

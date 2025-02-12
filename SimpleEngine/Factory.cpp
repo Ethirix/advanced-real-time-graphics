@@ -9,6 +9,7 @@
 #include "DataStore.h"
 #include "DDSTextureLoader.h"
 #include "Helpers.h"
+#include "VertexIndices.h"
 
 #pragma region Mesh Functions
 
@@ -52,8 +53,11 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		return {};
 
 	std::vector<DirectX::XMFLOAT3> positions, normals;
-	std::vector<UINT> positionIndices, normalIndices, textCoordIndices;
 	std::vector<DirectX::XMFLOAT2> textureCoordinates;
+
+	std::unordered_map<std::string, VertexIndices> faces{};
+	std::vector<UINT> indices;
+	UINT currentIndex = 0;
 
 	while (std::getline(fileStream, currentLine))
 	{
@@ -98,7 +102,7 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 		}
 		else if (objToken == "f")
 		{
-			std::vector<UINT> data;
+			VertexIndices currentFace{};
 			USHORT polygonSideCount = 0;
 
 			while (true)
@@ -109,38 +113,66 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 				if (indicesLine.empty())
 					break;
 
-				polygonSideCount++;
-				if (polygonSideCount > 3)
+				if (polygonSideCount++ > 3)
 					return {};
 
-				std::ranges::replace(indicesLine, '/', ' ');
-				std::istringstream indicesStringStream(indicesLine);
+				if (faces.contains(indicesLine))
+				{
+					indices.emplace_back(faces.find(indicesLine)->second.Index);
+					continue;
+				}
+
+				std::string replacedLine = indicesLine;
+				std::ranges::replace(replacedLine, '/', ' ');
+				std::istringstream indicesStringStream(replacedLine);
 
 				UINT index;
-				while (indicesStringStream >> index)
-					data.emplace_back(index - 1);
+				indicesStringStream >> index;
+				currentFace.Position = index - 1;
+				indicesStringStream >> index;
+				currentFace.TextureCoordinate = index - 1;
+				indicesStringStream >> index;
+				currentFace.Normal = index - 1;
+				currentFace.Index = currentIndex++;
 
-				positionIndices.emplace_back(data[0]);
-				textCoordIndices.emplace_back(data[1]);
-				normalIndices.emplace_back(data[2]);
-				data.clear();
+				faces.try_emplace(indicesLine, currentFace);
+				indices.emplace_back(currentFace.Index);
 			}
 		}
 	}
 
-	mesh->Vertices.Elements = new struct Vertex[positionIndices.size()];
-	mesh->Vertices.Length = positionIndices.size();
-	for (int i = 0; i < positionIndices.size(); i++)
+	std::vector<VertexIndices> orderedFaces;
+	for (int i = 0; i < faces.size(); ++i)
 	{
-		mesh->Vertices.Elements[i].Position = positions[positionIndices[i]];
-		mesh->Vertices.Elements[i].Normal = normals[normalIndices[i]];
-		mesh->Vertices.Elements[i].TextureCoordinate = textureCoordinates[textCoordIndices[i]];
+		for (VertexIndices& vertex : faces | std::views::values)
+		{
+			if (vertex.Index == i)
+			{
+				orderedFaces.emplace_back(vertex);
+				break;
+			}
+		}
 	}
 
-	mesh->VertexIndices.Elements = new UINT[mesh->Vertices.Length];
-	mesh->VertexIndices.Length = mesh->Vertices.Length;
-	for (unsigned i = 0; i < mesh->Vertices.Length; i++)
-		mesh->VertexIndices.Elements[i] = i;
+	mesh->Vertices.Elements = new struct Vertex[faces.size()];
+	mesh->Vertices.Length = faces.size();
+	{
+		unsigned i = 0;
+		for (const VertexIndices& vertex : orderedFaces)
+		{
+			mesh->Vertices.Elements[i].Position = positions[vertex.Position];
+			mesh->Vertices.Elements[i].Normal = normals[vertex.Normal];
+			mesh->Vertices.Elements[i].TextureCoordinate = textureCoordinates[vertex.TextureCoordinate];
+
+			i++;
+		}
+	}
+	mesh->VertexIndices.Elements = new UINT[indices.size()];
+	mesh->VertexIndices.Length = indices.size();
+	for (unsigned i = 0; i < indices.size(); ++i)
+		mesh->VertexIndices.Elements[i] = indices[i];
+
+	CalculateTangents(mesh);
 
 	OPTIONAL_BUFFER vertexBuffer = InitializeVertexBuffer(path, mesh, device);
 	if (!vertexBuffer.has_value())
@@ -179,6 +211,82 @@ OPTIONAL_SHARED_PTR_MESH Factory::WavefrontOBJLoader(PATH_STR path, DEVICE devic
 	mesh->Bounds.Center = Vector3::Zero();
 
 	return mesh;
+}
+
+void Factory::CalculateTangents(SHARED_PTR_MESH& mesh, bool recalculateNormals)
+{
+	//TODO: Add Tangent and Bitangent loading
+	//TODO: Add own normal calculation to Tangent/Bitangent function
+	//https://marti.works/posts/post-calculating-tangents-for-your-mesh/post/
+	//https://terathon.com/blog/tangent-space.html
+
+	std::vector<Vector3> tangents(mesh->Vertices.Length);
+	std::vector<Vector3> bitangents(mesh->Vertices.Length);
+
+	for (unsigned i = 0; i < mesh->VertexIndices.Length; i += 3)
+	{
+		//Indices to triangles
+		unsigned index0 = mesh->VertexIndices.Elements[i + 0];
+		unsigned index1 = mesh->VertexIndices.Elements[i + 1];
+		unsigned index2 = mesh->VertexIndices.Elements[i + 2];
+
+		DirectX::XMFLOAT3 vertexPos0 = mesh->Vertices.Elements[index0].Position;
+		DirectX::XMFLOAT3 vertexPos1 = mesh->Vertices.Elements[index1].Position;
+		DirectX::XMFLOAT3 vertexPos2 = mesh->Vertices.Elements[index2].Position;
+
+		DirectX::XMFLOAT2 textureCoordinate0 = mesh->Vertices.Elements[index0].TextureCoordinate;
+		DirectX::XMFLOAT2 textureCoordinate1 = mesh->Vertices.Elements[index1].TextureCoordinate;
+		DirectX::XMFLOAT2 textureCoordinate2 = mesh->Vertices.Elements[index2].TextureCoordinate;
+
+		DirectX::XMFLOAT3 edge0 = (Vector3(vertexPos1) - Vector3(vertexPos0)).ToDXFloat3();
+		DirectX::XMFLOAT3 edge1 = (Vector3(vertexPos2) - Vector3(vertexPos0)).ToDXFloat3();
+
+		DirectX::XMFLOAT2 uv0 = { textureCoordinate1.x - textureCoordinate0.x, textureCoordinate1.y - textureCoordinate0.y };
+		DirectX::XMFLOAT2 uv1 = { textureCoordinate2.x - textureCoordinate0.x, textureCoordinate2.y - textureCoordinate0.y };
+
+		float result = 1.0f / (uv0.x * uv1.y - uv0.y * uv1.x);
+
+		Vector3 tangent
+		{
+			(edge0.x * uv1.y - edge1.x * uv0.y) * result,
+			(edge0.y * uv1.y - edge1.y * uv0.y) * result,
+			(edge0.z * uv1.y - edge1.z * uv0.y) * result
+		};
+
+		Vector3 biTangent =
+		{
+			(edge0.x * uv1.x - edge1.x * uv0.x) * result,
+			(edge0.y * uv1.x - edge1.y * uv0.x) * result,
+			(edge0.z * uv1.x - edge1.z * uv0.x) * result
+		};
+
+		tangent = tangent.Normalise();
+		biTangent = biTangent.Normalise();
+
+		//Additive to get an 'average' as vertices are deduplicated
+		tangents[index0] += tangent;
+		tangents[index1] += tangent;
+		tangents[index2] += tangent;
+
+		bitangents[index0] += biTangent;
+		bitangents[index1] += biTangent;
+		bitangents[index2] += biTangent;
+	}
+
+	for (unsigned i = 0; i < mesh->Vertices.Length; i++)
+	{
+		Vector3 normal = mesh->Vertices.Elements[i].Normal;
+		Vector3 tangent = tangents[i];
+		Vector3 bitangent = bitangents[i];
+
+		Vector3 normalisedTangent = (tangent - normal * normal.Dot(tangent)).Normalise();
+		Vector3 normalisedBitangent = (bitangent - normal * normal.Dot(bitangent)).Normalise();
+
+		float handedness = Vector3::Cross(normal, tangent).Dot(bitangent) > 0 ? 1.0f : -1.0f;
+
+		mesh->Vertices.Elements[i].Tangent = { normalisedTangent.X, normalisedTangent.Y, normalisedTangent.Z, handedness };
+		mesh->Vertices.Elements[i].Bitangent = { normalisedBitangent.X, normalisedBitangent.Y, normalisedBitangent.Z, handedness };
+	}
 }
 
 OPTIONAL_BUFFER Factory::InitializeVertexBuffer(PATH_STR path, const SHARED_PTR_MESH& mesh, DEVICE device)
@@ -300,6 +408,7 @@ OPTIONAL_SHARED_PTR_MTL Factory::WavefrontMTLLoader(PATH_STR path)
 
 #pragma region Shader Functions
 
+#ifndef _DEFERRED_RENDER
 bool Factory::LoadVertexShader(PATH_STR path, SHARED_PTR_MTL material)
 {
 	OPTIONAL_SHADER_DATA_VERTEX vertex = DataStore::VertexShaders.Retrieve(path);
@@ -317,6 +426,7 @@ bool Factory::LoadPixelShader(PATH_STR path, SHARED_PTR_MTL material)
 
 	return pixel.has_value();
 }
+#endif
 
 #pragma endregion
 
