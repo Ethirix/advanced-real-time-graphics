@@ -390,11 +390,12 @@ HRESULT SimpleEngine::InitialiseRunTimeData()
 	OnWindowSizeChangeComplete();
 
 	_screenQuad = std::make_unique<ScreenQuad>(_device);
+#ifdef _DEFERRED_RENDER
 	_albedoScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f);
 	_normalScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.25f, 0.0f));
 	_worldPosScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.50f, 0.0f));
 	_depthScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.75f, 0.0f));
-
+#endif
 	return S_OK;
 }
 
@@ -960,11 +961,13 @@ void SimpleEngine::Update()
 		Helpers::ActiveCamera = cameras[selectedCamera];
 	else
 		Helpers::ActiveCamera = {};
-
+#ifdef _DEFERRED_RENDER
 	ImGui::Checkbox("Show Albedo", &_displayAlbedo);
 	ImGui::Checkbox("Show Normal", &_displayNormal);
 	ImGui::Checkbox("Show World Position", &_displayWorldPos);
 	ImGui::Checkbox("Show Depth", &_displayDepth);
+#endif
+
 	ImGui::End();
 #pragma endregion
 #pragma endregion
