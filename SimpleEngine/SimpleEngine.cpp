@@ -753,6 +753,7 @@ void SimpleEngine::Update()
 	}
 
 #pragma region ImGUI
+#pragma region PostFX
 	ImGui::Begin("Post Effects");
 	if (ImGui::TreeNode("Colour Effect"))
 	{
@@ -814,7 +815,8 @@ void SimpleEngine::Update()
 		ImGui::TreePop();
 	}
 	ImGui::End();
-
+#pragma endregion
+#pragma region SceneGraph
 	ImGui::Begin("Scene Graph");
 	ImGui::Text("Change Selected Object:");
 	ImGui::SameLine();
@@ -909,7 +911,8 @@ void SimpleEngine::Update()
 	else if (SceneGraph::GetObjectAtPosition(_selectedObject).expired())
 		_selectedObject = -1;
 	ImGui::End();
-
+#pragma endregion
+#pragma region CameraMenu
 	ImGui::Begin("Camera Menu");
 	static int selectedCamera = -1;
 	static bool initialiseSelectedCamera = false;
@@ -933,9 +936,8 @@ void SimpleEngine::Update()
 	if (ImGui::ArrowButton("DecreaseCam", ImGuiDir_Left) && selectedCamera >= 0)
 		selectedCamera--;
 	ImGui::SameLine();
-	if (ImGui::ArrowButton("IncreaseCam", ImGuiDir_Right))
-		if (selectedCamera < cameras.size() - 1)
-			selectedCamera++;
+	if (ImGui::ArrowButton("IncreaseCam", ImGuiDir_Right) && (selectedCamera < cameras.size() - 1 || selectedCamera == -1))
+		selectedCamera++;
 	ImGui::SameLine();
 	selectedCamera < 0 ? ImGui::Text("None") : ImGui::Text("%d", selectedCamera);
 
@@ -943,9 +945,8 @@ void SimpleEngine::Update()
 		Helpers::ActiveCamera = cameras[selectedCamera];
 	else
 		Helpers::ActiveCamera = {};
-
-
 	ImGui::End();
+#pragma endregion
 #pragma endregion
 
 	D3D11_MAPPED_SUBRESOURCE extraData;
