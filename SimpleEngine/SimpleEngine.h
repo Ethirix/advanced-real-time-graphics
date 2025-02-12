@@ -6,7 +6,6 @@
 #include <windows.h>
 #include <wrl.h>
 
-#include "CameraComponent.h"
 #include "SceneGraph.h"
 #include "ScreenQuad.h"
 

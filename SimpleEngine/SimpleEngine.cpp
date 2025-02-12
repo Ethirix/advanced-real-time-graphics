@@ -940,6 +940,12 @@ void SimpleEngine::Update()
 		selectedCamera++;
 	ImGui::SameLine();
 	selectedCamera < 0 ? ImGui::Text("None") : ImGui::Text("%d", selectedCamera);
+	if (selectedCamera >= 0)
+	{
+		ImGui::Text("Camera Name:");
+		ImGui::SameLine();
+		ImGui::Text(Helpers::ActiveCamera.lock()->GameObject.lock()->Name.c_str());
+	}
 
 	if (selectedCamera >= 0)
 		Helpers::ActiveCamera = cameras[selectedCamera];
@@ -947,6 +953,25 @@ void SimpleEngine::Update()
 		Helpers::ActiveCamera = {};
 	ImGui::End();
 #pragma endregion
+#pragma endregion
+
+#pragma region Spline
+	static std::shared_ptr<TransformComponent> otherCameraTransform = cameras[1].lock()->GameObject.lock()->Transform;
+	static float u = 0;
+	static Vector3 p0 = Vector3(-10,5,0);
+	static Vector3 p1 = Vector3(0, 25, 0);
+	static Vector3 p2 = Vector3(10, 5, 0);
+	static float direction = 1;
+	u += static_cast<float>(deltaTime / 5.0) * direction;
+	if (u >= 0 && u <= 1)
+	{
+		Vector3 target = ((p0 * std::pow(1 - u, 2)) + (p1 * (2 * u * (1 - u))) + (p2 * std::pow(u, 2)));
+		otherCameraTransform->SetPosition(target.ToDXFloat3());
+	}
+	else
+	{
+		direction = u > 1 ? -1 : 1;
+	}
 #pragma endregion
 
 	D3D11_MAPPED_SUBRESOURCE extraData;
