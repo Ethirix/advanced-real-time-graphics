@@ -107,6 +107,7 @@ HRESULT SimpleEngine::CreateWindowHandle(HINSTANCE hInstance)
 		Screen::Width, Screen::Height, nullptr, nullptr, hInstance, nullptr);
 
     SetWindowLongPtrA(_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+	Helpers::WindowHandle = _hwnd;
 
 	return S_OK;
 }
@@ -379,7 +380,7 @@ HRESULT SimpleEngine::InitialiseRunTimeData()
 
 	if (auto cameraComponent = SceneGraph::TryGetComponentFromObjects<CameraComponent>();
 		cameraComponent.has_value())
-		_camera = cameraComponent.value();
+		Helpers::ActiveCamera = cameraComponent.value();
 
 	OnWindowSizeChangeComplete();
 
@@ -718,7 +719,7 @@ void SimpleEngine::OnWindowSizeChangeComplete()
     {
 	    DirectX::XMMATRIX perspective = DirectX::XMMatrixPerspectiveFovLH(
 		    DirectX::XMConvertToRadians(camera.lock()->GetFieldOfView()), aspect, 
-			_camera.lock()->GetNearDepth(), camera.lock()->GetFarDepth());
+			Helpers::ActiveCamera.lock()->GetNearDepth(), camera.lock()->GetFarDepth());
 		XMStoreFloat4x4(&camera.lock()->GetProjection(), perspective);
     }
 }
@@ -745,24 +746,226 @@ void SimpleEngine::Update()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	if (_camera.expired())
+	if (Helpers::ActiveCamera.expired())
 	{
 		if (auto cameraComponent = SceneGraph::TryGetComponentFromObjects<CameraComponent>(); cameraComponent.has_value())
-			_camera = cameraComponent.value();
+			Helpers::ActiveCamera = cameraComponent.value();
 	}
-	
-	Buffers::CBExtraData.BufferData.ColourEffect = { 0.5, 0.0, 0.5 };
-	Buffers::CBExtraData.BufferData.ColourMode = static_cast<unsigned>(BlendType::Darken);
 
-	Buffers::CBExtraData.BufferData.BlurIterations = 2;
-	Buffers::CBExtraData.BufferData.BlurSampleSize = 4;
+#pragma region ImGUI
+#pragma region PostFX
+	ImGui::Begin("Post Effects");
+	if (ImGui::TreeNode("Colour Effect"))
+	{
+		static ImGuiColorEditFlags flags  = ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_Float;
+		static DirectX::XMFLOAT3& color = Buffers::CBExtraData.BufferData.ColourEffect;
+		static unsigned& blendType = Buffers::CBExtraData.BufferData.ColourMode;
 
-	Buffers::CBExtraData.BufferData.FocalBlendDistance = 50;
-	Buffers::CBExtraData.BufferData.FocalDepth = 25;
+		static const char* blendTypes[] = {
+			"None", "Darken", "Multiply", "ColorBurn", "LinearBurn", "Lighten", "Screen", "ColorDodge", "LinearDodge",
+			"Difference", "Exclusion"
+		};
+
+		ImGui::ColorEdit3("Blend Colour", reinterpret_cast<float*>(&color), flags);
+		if (ImGui::BeginCombo("Blend Types", blendTypes[blendType]))
+		{
+			for (unsigned i = 0; i < IM_ARRAYSIZE(blendTypes); i++)
+			{
+				if (ImGui::Selectable(blendTypes[i], i == blendType))
+				{
+					blendType = i;
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Depth of Field Effect"))
+	{
+		static bool enableDoF = true;
+		static unsigned& blurIterations = Buffers::CBExtraData.BufferData.BlurIterations;
+		static unsigned& blurSampleSize = Buffers::CBExtraData.BufferData.BlurSampleSize;
+		static float& focalDepth = Buffers::CBExtraData.BufferData.FocalDepth;
+		static float& focalBlendDistance = Buffers::CBExtraData.BufferData.FocalBlendDistance;
+
+		constexpr unsigned maxBlurIterations = 16;
+		constexpr unsigned maxSampleSize = 32;
+		constexpr float maxFocalDistance = 512;
+		constexpr unsigned minU = 0;
+		constexpr float minF = 0;
+
+		ImGui::Checkbox("Use DoF", &enableDoF);
+		if (enableDoF)
+		{
+			ImGui::SliderScalar("Blur Iterations", ImGuiDataType_U32, 
+				&blurIterations, &minU, &maxBlurIterations , "%u");
+			ImGui::SliderScalar("Blur Sample Size", ImGuiDataType_U32, 
+				&blurSampleSize, &minU, &maxSampleSize, "%u");
+			ImGui::SliderFloat("Focal Depth", &focalDepth, minF, maxFocalDistance, "%f");
+			ImGui::SliderFloat("Focal Blend Distance", &focalBlendDistance, minF, maxFocalDistance, "%f");
+		}	
+		else
+		{
+			blurIterations = 0;
+		}
+
+		ImGui::TreePop();
+	}
+	ImGui::End();
+#pragma endregion
+#pragma region SceneGraph
+	ImGui::Begin("Scene Graph");
+	ImGui::Text("Change Selected Object:");
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("DecreaseObj", ImGuiDir_Left) && _selectedObject >= 0)
+		_selectedObject--;
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("IncreaseObj", ImGuiDir_Right) && _selectedObject < SceneGraph::Size() - 1)
+		_selectedObject++;
+	ImGui::SameLine();
+	_selectedObject < 0 ? ImGui::Text("None") : ImGui::Text("%d", _selectedObject);
+
+	if (std::weak_ptr obj = SceneGraph::GetObjectAtPosition(_selectedObject); 
+		_selectedObject >= 0 && !obj.expired())
+	{
+		ImGui::Text("Name:");
+		ImGui::SameLine();
+		ImGui::Text(obj.lock()->Name.c_str());
+		if (std::weak_ptr transform = obj.lock()->Transform; 
+			!transform.expired() && ImGui::TreeNode("Transform Information"))
+		{
+			DirectX::XMFLOAT3 worldPos = transform.lock()->GetWorldPosition();
+			ImGui::Text("World Position - %f, %f, %f", worldPos.x, worldPos.y, worldPos.z);
+			if (!transform.lock()->Parent.expired())
+			{
+				DirectX::XMFLOAT3 position = transform.lock()->GetPosition();
+				ImGui::Text("Local Position - %f, %f, %f", position.x, position.y, position.z);
+			}
+
+			Vector3 worldRot = MakeEulerAnglesFromQ(Quaternion(transform.lock()->GetRotation()));
+			ImGui::Text("World Rotation - %f, %f, %f", worldRot.X, worldRot.Y, worldRot.Z);
+
+			if (ImGui::TreeNode("Apply Transform"))
+			{
+				DirectX::XMFLOAT3 pos = transform.lock()->GetPosition();
+				if (ImGui::DragFloat3("Position", reinterpret_cast<float*>(&pos)))
+					transform.lock()->SetPosition(pos);
+
+				Vector3 rot = MakeEulerAnglesFromQ(Quaternion(transform.lock()->GetRotation()));
+				if (ImGui::DragFloat3("Rotation", reinterpret_cast<float*>(&rot), 0.1f))
+				{
+					Vector3 difference = rot - MakeEulerAnglesFromQ(Quaternion(transform.lock()->GetRotation()));
+
+					transform.lock()->AddToRotation(difference.ToDXFloat3());
+				}
+					
+				ImGui::TreePop();
+			}
+
+			ImGui::TreePop();
+		}
+
+		if (std::weak_ptr physics = obj.lock()->GetComponent<PhysicsComponent>(); 
+			!physics.expired() && ImGui::TreeNode("Physics Information"))
+		{
+			ImGui::Text("Mass - %f", physics.lock()->GetMass());
+			Vector3 velocity = physics.lock()->GetVelocity();
+			ImGui::Text("Velocity - %f, %f, %f", velocity.X, velocity.Y, velocity.Z);
+			Vector3 angularVelocity = physics.lock()->GetAngularVelocity();
+			ImGui::Text("Angular Velocity - %f, %f, %f", angularVelocity.X, angularVelocity.Y, angularVelocity.Z);
+
+			if (ImGui::TreeNode("Apply Physics"))
+			{
+				static bool applyForce = false;
+				static Vector3 force = {};
+				static Vector3 forcePos = {};
+
+				ImGui::InputFloat3("Force", reinterpret_cast<float*>(&force));
+				ImGui::InputFloat3("Force Position", reinterpret_cast<float*>(&forcePos));
+				ImGui::Checkbox("Apply Force", &applyForce);
+
+				if (applyForce)
+				{
+					physics.lock()->AddRelativeForce(force * deltaTime, forcePos);
+				}
+
+				ImGui::TreePop();
+			}
+
+			ImGui::TreePop();
+		}
+
+		if (std::weak_ptr spotlight = obj.lock()->GetComponent<SpotLightComponent>(); 
+			!spotlight.expired() && ImGui::TreeNode("Spotlight Information"))
+		{
+			ImGui::InputFloat3("Camera Direction", reinterpret_cast<float*>(&spotlight.lock()->Direction));
+			ImGui::DragFloat3("Camera Direction [Drag]", reinterpret_cast<float*>(&spotlight.lock()->Direction), 0.01f);
+
+			ImGui::TreePop();
+		}
+
+	}
+	else if (SceneGraph::GetObjectAtPosition(_selectedObject).expired())
+		_selectedObject = -1;
+	ImGui::End();
+#pragma endregion
+#pragma region CameraMenu
+	ImGui::Begin("Camera Menu");
+	static int selectedCamera = -1;
+	static bool initialiseSelectedCamera = false;
+	std::vector<std::weak_ptr<CameraComponent>> cameras = SceneGraph::GetComponentsFromObjects<CameraComponent>();
+	ImGui::Text("Camera Count: %d", cameras.size());
+	if (!initialiseSelectedCamera)
+	{
+		for (unsigned i = 0; i < cameras.size(); i++)
+		{
+			if (cameras[i].lock() == Helpers::ActiveCamera.lock())
+			{
+				selectedCamera = i;
+				break;
+			}
+		}
+		initialiseSelectedCamera = true;
+	}
+
+	ImGui::Text("Change Selected Camera:");
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("DecreaseCam", ImGuiDir_Left) && selectedCamera >= 0)
+		selectedCamera--;
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("IncreaseCam", ImGuiDir_Right) && (selectedCamera < cameras.size() - 1 || selectedCamera == -1))
+		selectedCamera++;
+	ImGui::SameLine();
+	selectedCamera < 0 ? ImGui::Text("None") : ImGui::Text("%d", selectedCamera);
+
+	if (selectedCamera >= 0)
+		Helpers::ActiveCamera = cameras[selectedCamera];
+	else
+		Helpers::ActiveCamera = {};
+	ImGui::End();
+#pragma endregion
+#pragma endregion
+
 	D3D11_MAPPED_SUBRESOURCE extraData;
 	_context->Map(Buffers::CBExtraData.Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &extraData);
 	memcpy(extraData.pData, &Buffers::CBExtraData.BufferData, sizeof(Buffers::CBExtraData.BufferData));
 	_context->Unmap(Buffers::CBExtraData.Buffer.Get(), 0);
+
+	if (!Helpers::ActiveCamera.expired())
+	{
+		Buffers::CBObjectCameraData.BufferData.Eye = Helpers::ActiveCamera.lock()->GetEye();
+		Buffers::CBObjectCameraData.BufferData.At = Helpers::ActiveCamera.lock()->GetAt();
+		Buffers::CBObjectCameraData.BufferData.NearZ = Helpers::ActiveCamera.lock()->GetNearDepth();
+		Buffers::CBObjectCameraData.BufferData.FarZ = Helpers::ActiveCamera.lock()->GetFarDepth();
+
+		Buffers::CBObjectCameraData.BufferData.ViewProjection = XMMatrixTranspose(
+			XMMatrixMultiply(XMLoadFloat4x4(&Helpers::ActiveCamera.lock()->GetView()), XMLoadFloat4x4(&Helpers::ActiveCamera.lock()->GetProjection())));
+		Buffers::CBObjectCameraData.BufferData.InverseViewProjection = XMMatrixTranspose(XMMatrixMultiply(
+			XMMatrixInverse(nullptr, XMLoadFloat4x4(&Helpers::ActiveCamera.lock()->GetView())), XMMatrixInverse(nullptr, XMLoadFloat4x4(&Helpers::ActiveCamera.lock()->GetProjection()))));
+	}
 
 	LightManager::UpdateLights(_context);
 
@@ -771,85 +974,6 @@ void SimpleEngine::Update()
 
 void SimpleEngine::FixedUpdate(double fixedDeltaTime)
 {
-	#pragma region Force Keybind Logic
-	/*
-	 *	SQUARE BRACKETS - Switch Object
-	 *		[-] - Previous or Next Object in current scope
-	 *	KEYPAD - Force and Force Position
-	 *		KP_7 - X-Force Up
-	 *		KP_1 - X-Force Down
-	 *		KP_8 - Y-Force Up
-	 *		KP_2 - Y-Force Down
-	 *		KP_9 - Z-Force Up
-	 *		KP_3 - Z-Force Down
-	 *			LEFT ALT Modifier - Change the Force Position in same way
-	 *	GENERAL KEYS
-	 *		TAB - Unselect Object
-	 *		KP_DECIMAL - Zero Force
-	 *		KP_0 - Zero Force Position
-	 *		F - Apply Force
-	*/
-
-	if (GetAsyncKeyState(VK_TAB) & 0x0001)
-		_selectedObject = -1;
-
-	if (GetAsyncKeyState(VK_OEM_6) & 0x0001 && _selectedObject < SceneGraph::Size() - 1)
-		_selectedObject += 1;
-	if (GetAsyncKeyState(VK_OEM_4) & 0x0001 && _selectedObject > -1)
-		_selectedObject -= 1;
-
-	if (GetAsyncKeyState(VK_DECIMAL) & 0x0001)
-		_forcePosition = Vector3::Zero();
-	if (GetAsyncKeyState(VK_NUMPAD0) & 0x0001)
-		_force = Vector3::Zero();
-		
-
-	if (GetAsyncKeyState(VK_MENU))
-	{
-		if (GetAsyncKeyState(VK_NUMPAD7) & 0x8000)
-			_forcePosition.X += fixedDeltaTime;
-		if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
-			_forcePosition.X -= fixedDeltaTime;
-		if (GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
-			_forcePosition.Y += fixedDeltaTime;
-		if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000)
-			_forcePosition.Y -= fixedDeltaTime;
-		if (GetAsyncKeyState(VK_NUMPAD9) & 0x8000)
-			_forcePosition.Z += fixedDeltaTime;
-		if (GetAsyncKeyState(VK_NUMPAD3) & 0x8000)
-			_forcePosition.Z -= fixedDeltaTime;
-	}
-	else
-	{
-		if (GetAsyncKeyState(VK_NUMPAD7) & 0x8000)
-			_force.X += fixedDeltaTime;
-		if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
-			_force.X -= fixedDeltaTime;
-		if (GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
-			_force.Y += fixedDeltaTime;
-		if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000)
-			_force.Y -= fixedDeltaTime;
-		if (GetAsyncKeyState(VK_NUMPAD9) & 0x8000)
-			_force.Z += fixedDeltaTime;
-		if (GetAsyncKeyState(VK_NUMPAD3) & 0x8000)
-			_force.Z -= fixedDeltaTime;
-	}
-
-	std::weak_ptr<GameObject> obj = SceneGraph::GetObjectAtPosition(_selectedObject);
-	if (GetAsyncKeyState('F') & 0x8000)
-	{
-		if (!obj.expired())
-		{
-			if (auto phys = obj.lock()->GetComponent<PhysicsComponent>(); !phys.expired())
-			{
-				phys.lock()->AddRelativeForce(_force, _forcePosition);
-			}
-		}
-	}
-	#pragma endregion
-
-	Helpers::UpdateTitleBar(fixedDeltaTime, obj, _force, _forcePosition, _hwnd);
-
 	SceneGraph::FixedUpdate(fixedDeltaTime);
 }
 
@@ -865,8 +989,12 @@ void SimpleEngine::Draw()
 	_context->CopyResource(_outputCopyTexture.Get(), _baseOutputTexture.Get());
 
 	_context->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
-	_context->ClearRenderTargetView(_frameBufferView.Get(), !_camera.expired() ? backgroundColour : errorColour);
+	_context->ClearRenderTargetView(_frameBufferView.Get(), !Helpers::ActiveCamera.expired() ? backgroundColour : errorColour);
 	_context->ClearRenderTargetView(_baseOutputBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_colourEffectPassBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_blurOutputBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_blurTempBufferView.Get(), backgroundColour);
+	_context->ClearRenderTargetView(_dofBlendBufferView.Get(), backgroundColour);
 
 #pragma region Base Colour
 #ifdef _DEFERRED_RENDER
@@ -961,9 +1089,8 @@ void SimpleEngine::Draw()
 	}
 #pragma endregion
 
-	bool useDoF = true;
 #pragma region Depth Of Field
-	if (useDoF && Buffers::CBExtraData.BufferData.BlurIterations > 0)
+	if (Buffers::CBExtraData.BufferData.BlurIterations > 0)
 	{
 #pragma region Blur Effect
 		_context->VSSetShader(DataStore::VertexShaders.Retrieve("Assets/Shaders/VS_ScreenQuad.hlsl").value().Shader.Get(),
@@ -1019,7 +1146,6 @@ void SimpleEngine::Draw()
 	_screenQuad->Draw(_context);
 
 	_context->PSSetShaderResources(24, 1, &unbind);
-	_context->OMSetRenderTargets(0, nullptr, nullptr);
 #pragma endregion
 
 	ImGui::Render();

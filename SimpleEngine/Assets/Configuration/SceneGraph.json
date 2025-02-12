@@ -882,6 +882,45 @@
         }
       ],
       "Children": []
+    },
+    {
+      "Name": "SplineCamera",
+      "Position": {
+        "X": 0,
+        "Y": 10,
+        "Z": -5
+      },
+      "Scale": {
+        "X": 1,
+        "Y": 1,
+        "Z": 1
+      },
+      "Rotation": {
+        "X": 0,
+        "Y": 0,
+        "Z": 0
+      },
+      "Components": [
+        {
+          "Type": "CameraComponent",
+          "FieldOfView": 90.0,
+          "At": {
+            "X": 0,
+            "Y": 0,
+            "Z": 1
+          },
+          "Up": {
+            "X": 0,
+            "Y": 1,
+            "Z": 0
+          },
+          "NearPlane": 0.1,
+          "FarPlane": 2000.0,
+          "MovementSpeed": 0.0,
+          "RotationSpeed": 0.0
+        }
+      ],
+      "Children": []
     }
   ]
 }
