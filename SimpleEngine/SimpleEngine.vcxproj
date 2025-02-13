@@ -390,6 +390,8 @@
     <ClInclude Include="ShaderType.h" />
     <ClInclude Include="SimpleEngine.h" />
     <ClInclude Include="SphereColliderComponent.h" />
+    <ClInclude Include="Spline.h" />
+    <ClInclude Include="SplineManager.h" />
     <ClInclude Include="SpotLightComponent.h" />
     <ClInclude Include="SpotLightData.h" />
     <ClInclude Include="SRVDirectionalLights.h" />
