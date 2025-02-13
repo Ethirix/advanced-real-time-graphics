@@ -8,6 +8,7 @@
 
 #include "SceneGraph.h"
 #include "ScreenQuad.h"
+#include "SplineManager.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -52,15 +53,19 @@ private:
 	ComPtr<IDXGISwapChain1> _swapChain;
 
 #ifdef _DEFERRED_RENDER
-	std::unique_ptr<ScreenQuad> _albedoScreenQuad = nullptr;
-	std::unique_ptr<ScreenQuad> _normalScreenQuad = nullptr;
+	std::unique_ptr<ScreenQuad> _albedoScreenQuad   = nullptr;
+	std::unique_ptr<ScreenQuad> _normalScreenQuad   = nullptr;
 	std::unique_ptr<ScreenQuad> _worldPosScreenQuad = nullptr;
-	std::unique_ptr<ScreenQuad> _depthScreenQuad = nullptr;
+	std::unique_ptr<ScreenQuad> _depthScreenQuad    = nullptr;
+	std::unique_ptr<ScreenQuad> _diffuseScreenQuad  = nullptr;
+	std::unique_ptr<ScreenQuad> _specularScreenQuad = nullptr;
 
 	bool _displayAlbedo   = false;
 	bool _displayNormal   = false;
 	bool _displayWorldPos = false;
 	bool _displayDepth    = false;
+	bool _displayDiffuse  = false;
+	bool _displaySpecular = false;
 
 	ComPtr<ID3D11Texture2D> _albedoTexture;
 	ComPtr<ID3D11Texture2D> _normalTexture;
@@ -98,7 +103,6 @@ private:
 	ComPtr<ID3D11RenderTargetView> _blurTempBufferView;
 	ComPtr<ID3D11RenderTargetView> _dofBlendBufferView;
 
-
 	ComPtr<ID3D11RenderTargetView> _frameBufferView;
 	ComPtr<ID3D11Texture2D> _depthStencilBuffer;
 	ComPtr<ID3D11DepthStencilView> _depthStencilView;
@@ -116,4 +120,6 @@ private:
 	double _timeSinceLastFixedUpdate = 0;
 
 	int _selectedObject = -1;
+
+	SplineManager _splineManager{};
 };
