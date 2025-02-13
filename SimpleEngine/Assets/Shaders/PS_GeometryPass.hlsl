@@ -39,7 +39,7 @@ PSGeoPassOut PS_Main(VS_BaseOut input)
 
     output.WorldPosition = input.WorldPosition;
 
-    output.Depth = (input.Position.w - NearZ) / (FarZ - NearZ);
+    output.Depth = NearZ * FarZ / (FarZ + (input.Position.z / input.Position.w) * (NearZ - FarZ));
 
     return output;
 }
