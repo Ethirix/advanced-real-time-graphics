@@ -20,6 +20,7 @@
 #include "MeshComponent.h"
 #include "SceneGraph.h"
 #include "Screen.h"
+#include "SplineManager.h"
 #include "Assets/Shaders/Structs/BlendType.h"
 
 LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)  
@@ -395,7 +396,32 @@ HRESULT SimpleEngine::InitialiseRunTimeData()
 	_normalScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.25f, 0.0f));
 	_worldPosScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.50f, 0.0f));
 	_depthScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.75f, 0.0f));
+	_diffuseScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.0f, 0.75f));
+	_specularScreenQuad = std::make_unique<ScreenQuad>(_device, 0.25f, DirectX::XMFLOAT2(0.25f, 0.75f));
 #endif
+
+	std::weak_ptr otherCameraTransform = SceneGraph::GetComponentsFromObjects<CameraComponent>()[1].lock()->GameObject.lock()->Transform;
+	_splineManager.AddSpline({
+			Vector3(-10, 5, -10),
+			Vector3(0, 25, -10),
+			Vector3(10, 5, -10),
+			otherCameraTransform });
+	_splineManager.AddSpline({
+			Vector3(10, 5, -10),
+			Vector3(10, 25, 0),
+			Vector3(10, 5, 10),
+			otherCameraTransform });
+	_splineManager.AddSpline({
+			Vector3(10, 5, 10),
+			Vector3(0, 25, 10),
+			Vector3(-10, 5, 10),
+			otherCameraTransform });
+	_splineManager.AddSpline({
+			Vector3(-10, 5, 10),
+			Vector3(-10, 25, 0),
+			Vector3(-10, 5, -10),
+			otherCameraTransform });
+
 	return S_OK;
 }
 
@@ -966,6 +992,8 @@ void SimpleEngine::Update()
 	ImGui::Checkbox("Show Normal", &_displayNormal);
 	ImGui::Checkbox("Show World Position", &_displayWorldPos);
 	ImGui::Checkbox("Show Depth", &_displayDepth);
+	ImGui::Checkbox("Show Diffuse", &_displayDiffuse);
+	ImGui::Checkbox("Show Specular", &_displaySpecular);
 #endif
 
 	ImGui::End();
@@ -973,22 +1001,7 @@ void SimpleEngine::Update()
 #pragma endregion
 
 #pragma region Spline
-	static std::shared_ptr<TransformComponent> otherCameraTransform = cameras[1].lock()->GameObject.lock()->Transform;
-	static float u = 0;
-	static Vector3 p0 = Vector3(-10,5,0);
-	static Vector3 p1 = Vector3(0, 25, 0);
-	static Vector3 p2 = Vector3(10, 5, 0);
-	static float direction = 1;
-	u += static_cast<float>(deltaTime / 5.0) * direction;
-	if (u >= 0 && u <= 1)
-	{
-		Vector3 target = ((p0 * std::pow(1 - u, 2)) + (p1 * (2 * u * (1 - u))) + (p2 * std::pow(u, 2)));
-		otherCameraTransform->SetPosition(target.ToDXFloat3());
-	}
-	else
-	{
-		direction = u > 1 ? -1 : 1;
-	}
+	_splineManager.Update(static_cast<float>(deltaTime) / 5.0f);
 #pragma endregion
 
 	D3D11_MAPPED_SUBRESOURCE extraData;
@@ -1216,6 +1229,18 @@ void SimpleEngine::Draw()
 	{
 		_context->PSSetShaderResources(24, 1, _depthLinearShaderResourceView.GetAddressOf());
 		_depthScreenQuad->Draw(_context);
+	}
+
+	if (_displayDiffuse)
+	{
+		_context->PSSetShaderResources(24, 1, _lightingDiffuseShaderResourceView.GetAddressOf());
+		_diffuseScreenQuad->Draw(_context);
+	}
+
+	if (_displaySpecular)
+	{
+		_context->PSSetShaderResources(24, 1, _lightingSpecularShaderResourceView.GetAddressOf());
+		_specularScreenQuad->Draw(_context);
 	}
 
 	_context->PSSetShaderResources(24, 1, &unbind);
