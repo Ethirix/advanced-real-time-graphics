@@ -331,7 +331,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABBColliderComponent.h" />
-    <ClInclude Include="Assets\Shaders\Structs\BlendType.h" />
+    <ClInclude Include="BlendType.h" />
     <ClInclude Include="Bounds.h" />
     <ClInclude Include="BufferPair.h" />
     <ClInclude Include="Buffers.h" />

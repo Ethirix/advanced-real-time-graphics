@@ -8,6 +8,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "BlendType.h"
 #include "Buffers.h"
 #include "CBObjectCameraData.h"
 #include "Configuration.h"
@@ -21,7 +22,6 @@
 #include "SceneGraph.h"
 #include "Screen.h"
 #include "SplineManager.h"
-#include "Assets/Shaders/Structs/BlendType.h"
 
 LRESULT CALLBACK WndProc(const HWND hwnd, const UINT message, const WPARAM wParam, const LPARAM lParam)  
 {
